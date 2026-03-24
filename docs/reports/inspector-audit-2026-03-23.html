@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TheInspector Audit Report — 2026-03-23</title>
+<style>
+  :root {
+    --grade-d: #e67e22;
+    --p1: #e74c3c;
+    --p2: #e67e22;
+    --p3: #f1c40f;
+    --p4: #95a5a6;
+    --fixed: #27ae60;
+    --still-open: #e74c3c;
+    --new: #3498db;
+    --partial: #f39c12;
+    --bg: #fafafa;
+    --card-bg: #fff;
+    --border: #e0e0e0;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+  h1, h2, h3, h4 { margin-top: 1.5rem; margin-bottom: 0.5rem; }
+  h1 { font-size: 1.8rem; border-bottom: 3px solid var(--grade-d); padding-bottom: 0.5rem; }
+  h2 { font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; color: #34495e; }
+  h3 { font-size: 1.1rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { padding: 0.5rem 0.75rem; text-align: left; border: 1px solid var(--border); }
+  th { background: #ecf0f1; font-weight: 600; }
+  tr:nth-child(even) { background: #f9f9f9; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin: 1rem 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+  .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; color: #fff; }
+  .badge-p1 { background: var(--p1); }
+  .badge-p2 { background: var(--p2); }
+  .badge-p3 { background: var(--p3); color: #333; }
+  .badge-p4 { background: var(--p4); }
+  .badge-fixed { background: var(--fixed); }
+  .badge-still-open { background: var(--still-open); }
+  .badge-new { background: var(--new); }
+  .badge-partial { background: var(--partial); }
+  .grade-badge { font-size: 3rem; font-weight: 800; color: #fff; background: var(--grade-d); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .header-row { display: flex; align-items: center; gap: 2rem; margin-bottom: 1rem; }
+  .header-info { flex: 1; }
+  .scorecards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1rem 0; }
+  .scorecard { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center; }
+  .scorecard .number { font-size: 2rem; font-weight: 700; }
+  .scorecard .label { font-size: 0.85rem; color: var(--text-light); }
+  .specialist-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1rem; }
+  .risk-matrix { display: grid; grid-template-columns: auto repeat(5, 1fr); gap: 0; margin: 1rem 0; }
+  .risk-cell { padding: 0.5rem; border: 1px solid var(--border); text-align: center; font-size: 0.8rem; min-height: 50px; }
+  .risk-header { background: #ecf0f1; font-weight: 600; }
+  .risk-hot { background: #fdedec; }
+  .risk-warm { background: #fef5e7; }
+  .risk-cool { background: #eafaf1; }
+  .finding-expanded { border-left: 4px solid var(--p1); }
+  .finding-expanded.p2 { border-left-color: var(--p2); }
+  code { background: #ecf0f1; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.85rem; }
+  .bar-container { background: #ecf0f1; border-radius: 4px; height: 24px; width: 100%; position: relative; }
+  .bar-fill { background: var(--fixed); height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 0.5rem; color: #fff; font-size: 0.8rem; font-weight: 600; }
+  .section-num { color: var(--text-light); font-size: 0.85rem; }
+  .green-card { background: #eafaf1; border-color: var(--fixed); }
+  .compact-table td, .compact-table th { padding: 0.3rem 0.5rem; font-size: 0.85rem; }
+  .priority-list { list-style: none; }
+  .priority-list li { padding: 0.4rem 0; border-bottom: 1px solid var(--border); }
+  .priority-list li:last-child { border-bottom: none; }
+  @media (max-width: 768px) {
+    body { padding: 1rem; }
+    .header-row { flex-direction: column; text-align: center; }
+    .specialist-grid { grid-template-columns: 1fr; }
+    .risk-matrix { font-size: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SECTION 1: HEADER -->
+<div class="section-num">Section 1 of 16</div>
+<div class="header-row">
+  <div class="grade-badge">D</div>
+  <div class="header-info">
+    <h1>TheInspector Audit Report</h1>
+    <table style="width:auto; border:none; margin:0.5rem 0;">
+      <tr><td style="border:none; padding:0.2rem 1rem 0.2rem 0; font-weight:600;">Date</td><td style="border:none; padding:0.2rem 0;">2026-03-23</td></tr>
+      <tr><td style="border:none; padding:0.2rem 1rem 0.2rem 0; font-weight:600;">Branch</td><td style="border:none; padding:0.2rem 0;"><code>master</code> (852ccd3)</td></tr>
+      <tr><td style="border:none; padding:0.2rem 1rem 0.2rem 0; font-weight:600;">Scope</td><td style="border:none; padding:0.2rem 0;">Full codebase — post-implementation audit</td></tr>
+      <tr><td style="border:none; padding:0.2rem 1rem 0.2rem 0; font-weight:600;">Mode</td><td style="border:none; padding:0.2rem 0;">All static (backend &amp; frontend DOWN)</td></tr>
+      <tr><td style="border:none; padding:0.2rem 1rem 0.2rem 0; font-weight:600;">Project</td><td style="border:none; padding:0.2rem 0;">Development Workflow Platform</td></tr>
+      <tr><td style="border:none; padding:0.2rem 1rem 0.2rem 0; font-weight:600;">Prior Audit</td><td style="border:none; padding:0.2rem 0;">Yes (first-pass, same date)</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 2: SCORECARDS -->
+<div class="section-num">Section 2 of 16</div>
+<h2>Scorecards</h2>
+<div class="scorecards">
+  <div class="scorecard">
+    <div class="number" style="color:var(--p1);">7</div>
+    <div class="label">P1 Critical</div>
+  </div>
+  <div class="scorecard">
+    <div class="number" style="color:var(--p2);">17</div>
+    <div class="label">P2 High</div>
+  </div>
+  <div class="scorecard">
+    <div class="number" style="color:#d4ac0d;">28</div>
+    <div class="label">P3 Medium</div>
+  </div>
+  <div class="scorecard">
+    <div class="number" style="color:var(--p4);">8</div>
+    <div class="label">P4 Low</div>
+  </div>
+  <div class="scorecard">
+    <div class="number" style="color:var(--fixed);">100%</div>
+    <div class="label">Spec Coverage</div>
+  </div>
+  <div class="scorecard">
+    <div class="number">0</div>
+    <div class="label">Dynamic Tests</div>
+  </div>
+  <div class="scorecard">
+    <div class="number" style="color:var(--fixed);">2</div>
+    <div class="label">FIXED</div>
+  </div>
+  <div class="scorecard">
+    <div class="number" style="color:var(--text);">60</div>
+    <div class="label">Total Findings</div>
+  </div>
+</div>
+
+<!-- SECTION 3: EXECUTIVE SUMMARY -->
+<div class="section-num">Section 3 of 16</div>
+<h2>Executive Summary</h2>
+<div class="card">
+  <p>Post-implementation audit of the Development Workflow Platform built by TheATeam. The codebase implements all 32 functional requirements with 100% spec traceability and 343 test cases. However, significant security and reliability gaps prevent production readiness:</p>
+  <ol style="margin:1rem 0 0 1.5rem;">
+    <li><strong>Zero authentication &amp; authorization</strong> — The entire API is anonymously accessible. Any network caller can create, read, update, delete, approve, deny, and vote on all entities. This is the single most critical finding. (SEC-001, SEC-002)</li>
+    <li><strong>Database performance will degrade rapidly</strong> — N+1 query patterns on the two most-used list endpoints, zero database indexes on any foreign key, and unbounded queries that load entire tables into memory. The dashboard activity endpoint does 6 full table scans per request. (PERF-001&#8211;005)</li>
+    <li><strong>Data integrity at risk under failure</strong> — <code>createCycle()</code> performs multi-table writes without a transaction. A crash mid-operation leaves the database inconsistent. Bug status transitions have no guards. Deleting entities referenced by active cycles creates dangling pointers. (CHAOS-005, CHAOS-006, CHAOS-013)</li>
+    <li><strong>No process lifecycle management</strong> — No SIGTERM handler, no uncaughtException handler, no unhandledRejection handler, no process manager. Any crash is permanent until manual restart. (CHAOS-001, CHAOS-003, CHAOS-008)</li>
+    <li><strong>4 known CVEs in dev tooling</strong> — esbuild CSRF vulnerability (moderate) affects both backend and frontend via vite/vitest. Resolved by upgrading vitest to 4.1.0+. (DEP-001)</li>
+  </ol>
+</div>
+
+<!-- SECTION 4: SCOPE & ENVIRONMENT -->
+<div class="section-num">Section 4 of 16</div>
+<h2>Scope &amp; Environment</h2>
+<div class="card">
+  <table>
+    <tr><th>Item</th><th>Value</th></tr>
+    <tr><td>Codebase</td><td>Source/Backend (15 source files), Source/Frontend (26 source files), Source/Shared (2 files)</td></tr>
+    <tr><td>Test files</td><td>16 (8 backend, 8 frontend) — 343 test cases total</td></tr>
+    <tr><td>Spec file</td><td>Specifications/dev-workflow-platform.md — 32 FRs</td></tr>
+    <tr><td>Database</td><td>SQLite (better-sqlite3) — 7 tables</td></tr>
+    <tr><td>Dependencies</td><td>973 total packages (549 backend, 424 frontend)</td></tr>
+    <tr><td>Services tested dynamically</td><td>None (backend: DOWN, frontend: DOWN)</td></tr>
+  </table>
+  <h4 style="margin-top:1rem;">Specialist Modes</h4>
+  <table>
+    <tr><th>Specialist</th><th>Mode</th><th>Findings</th></tr>
+    <tr><td>Red-teamer</td><td>Static</td><td>14</td></tr>
+    <tr><td>Quality Oracle</td><td>Static</td><td>5</td></tr>
+    <tr><td>Performance Profiler</td><td>Static</td><td>15</td></tr>
+    <tr><td>Chaos Monkey</td><td>Static</td><td>16</td></tr>
+    <tr><td>Dependency Auditor</td><td>Static</td><td>10</td></tr>
+    <tr><td colspan="2"><strong>Total</strong></td><td><strong>60</strong></td></tr>
+  </table>
+  <p style="margin-top:0.75rem; color:var(--text-light); font-size:0.9rem;"><strong>Data caveat:</strong> All findings are from static analysis only. Performance latency estimates and exploitability assessments could not be validated dynamically. Actual runtime behavior may differ.</p>
+</div>
+
+<!-- SECTION 5: TREND -->
+<div class="section-num">Section 5 of 16</div>
+<h2>Trend</h2>
+<div class="card">
+  <table>
+    <tr><th>Metric</th><th>Prior Audit</th><th>Current</th><th>Change</th></tr>
+    <tr><td>Overall Grade</td><td>&#8212;</td><td>D</td><td>First graded audit</td></tr>
+    <tr><td>Spec Coverage</td><td>96.9% (31/32)</td><td>100% (32/32)</td><td style="color:var(--fixed);">+3.1%</td></tr>
+    <tr><td>P1 Count</td><td>~5 (est.)</td><td>7</td><td style="color:var(--p1);">+2 new P1s identified</td></tr>
+    <tr><td>P2 Count</td><td>~12 (est.)</td><td>17</td><td style="color:var(--p2);">+5 new P2s identified</td></tr>
+    <tr><td>Total Findings</td><td>~38</td><td>60</td><td>+22 new (deeper analysis)</td></tr>
+    <tr><td>FIXED</td><td>&#8212;</td><td>2</td><td style="color:var(--fixed);">COUNT(*) ID gen, FR-032 traceability</td></tr>
+    <tr><td>Test Cases</td><td>271</td><td>343</td><td style="color:var(--fixed);">+72</td></tr>
+  </table>
+</div>
+
+<!-- SECTION 6: SPECIALIST REPORTS -->
+<div class="section-num">Section 6 of 16</div>
+<h2>Specialist Reports</h2>
+<div class="specialist-grid">
+  <div class="card">
+    <div class="card-header"><h3>Red-Teamer</h3><span class="badge badge-p1">2 P1</span></div>
+    <table class="compact-table">
+      <tr><td>Mode</td><td>Static</td></tr>
+      <tr><td>Verdict</td><td style="color:var(--p1); font-weight:600;">FAIL &#8212; Zero auth</td></tr>
+      <tr><td>Findings</td><td>14 (2 P1, 3 P2, 8 P3, 1 P4)</td></tr>
+      <tr><td>Status</td><td>6 still open, 8 new</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>Quality Oracle</h3><span class="badge badge-fixed">100%</span></div>
+    <table class="compact-table">
+      <tr><td>Mode</td><td>Static</td></tr>
+      <tr><td>Verdict</td><td style="color:var(--fixed); font-weight:600;">PASS &#8212; Full spec coverage</td></tr>
+      <tr><td>Findings</td><td>5 (0 P1, 3 P2, 1 P3, 1 P4)</td></tr>
+      <tr><td>Status</td><td>1 fixed, 5 still open</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>Performance Profiler</h3><span class="badge badge-p1">4 P1</span></div>
+    <table class="compact-table">
+      <tr><td>Mode</td><td>Static</td></tr>
+      <tr><td>Verdict</td><td style="color:var(--p1); font-weight:600;">FAIL &#8212; Critical query patterns</td></tr>
+      <tr><td>Findings</td><td>15 (4 P1, 3 P2, 5 P3, 3 P4)</td></tr>
+      <tr><td>Status</td><td>1 fixed, 8 still open, 7 new</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>Chaos Monkey</h3><span class="badge badge-p1">1 P1</span></div>
+    <table class="compact-table">
+      <tr><td>Mode</td><td>Static</td></tr>
+      <tr><td>Verdict</td><td style="color:var(--p2); font-weight:600;">FAIL &#8212; Transaction &amp; lifecycle gaps</td></tr>
+      <tr><td>Findings</td><td>16 (1 P1, 6 P2, 8 P3, 1 P4)</td></tr>
+      <tr><td>Status</td><td>9 still open, 1 partial, 6 new</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>Dependency Auditor</h3><span class="badge badge-p3">4 CVEs</span></div>
+    <table class="compact-table">
+      <tr><td>Mode</td><td>Static</td></tr>
+      <tr><td>Verdict</td><td style="color:var(--p2); font-weight:600;">WARN &#8212; Outdated deps + CVEs</td></tr>
+      <tr><td>Findings</td><td>10 (0 P1, 2 P2, 6 P3, 2 P4)</td></tr>
+      <tr><td>Status</td><td>9 still open, 1 new</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 7: RE-VERIFICATION SUMMARY -->
+<div class="section-num">Section 7 of 16</div>
+<h2>Re-Verification Summary</h2>
+<div class="scorecards" style="grid-template-columns: repeat(4, 1fr);">
+  <div class="scorecard"><div class="number" style="color:var(--fixed);">2</div><div class="label">FIXED</div></div>
+  <div class="scorecard"><div class="number" style="color:var(--still-open);">37</div><div class="label">STILL OPEN</div></div>
+  <div class="scorecard"><div class="number" style="color:var(--partial);">1</div><div class="label">PARTIALLY FIXED</div></div>
+  <div class="scorecard"><div class="number" style="color:var(--new);">22</div><div class="label">NEW</div></div>
+</div>
+<table>
+  <tr><th>Status</th><th>Count</th><th>Details</th></tr>
+  <tr style="background:#eafaf1;"><td><span class="badge badge-fixed">FIXED</span></td><td>2</td><td>COUNT(*) ID generation (PERF), FR-032 traceability gap (QUAL)</td></tr>
+  <tr><td><span class="badge badge-partial">PARTIAL</span></td><td>1</td><td>CHAOS-010: Input validation added to FR service only, not bug/ticket/learning</td></tr>
+  <tr><td><span class="badge badge-still-open">STILL OPEN</span></td><td>37</td><td>Red-teamer: 6, Quality: 5, Performance: 8, Chaos: 9, Dependency: 9</td></tr>
+  <tr><td><span class="badge badge-new">NEW</span></td><td>22</td><td>Red-teamer: 8, Quality: 0, Performance: 7, Chaos: 6, Dependency: 1</td></tr>
+  <tr><td>REGRESSED</td><td>0</td><td>&#8212;</td></tr>
+</table>
+
+<!-- SECTION 8: CROSS-REFERENCE MAP -->
+<div class="section-num">Section 8 of 16</div>
+<h2>Cross-Reference Map</h2>
+<p style="color:var(--text-light); font-size:0.9rem; margin-bottom:1rem;">Root causes spanning multiple specialists. One fix resolves findings from 2+ specialists.</p>
+<table>
+  <tr><th>Root Cause</th><th>Affected Findings</th><th>Specialists</th><th>Fix Impact</th></tr>
+  <tr>
+    <td><strong>No authentication/authorization</strong></td>
+    <td>SEC-001 (P1), SEC-002 (P1), SEC-008 (P2), SEC-011 (P3)</td>
+    <td>Red-teamer</td>
+    <td>Resolves 2 P1s + 1 P2 + 1 P3. Shifts 25 findings to lower exploitability.</td>
+  </tr>
+  <tr>
+    <td><strong>Sequential ID generation</strong></td>
+    <td>SEC-003 (P2), SEC-004 (P3), CHAOS-004 (P2)</td>
+    <td>Red-teamer, Chaos</td>
+    <td>Switching to UUIDs resolves 2 P2s + 1 P3</td>
+  </tr>
+  <tr>
+    <td><strong>Missing database indexes</strong></td>
+    <td>PERF-001 (P1), PERF-002 (P1), PERF-003 (P1)</td>
+    <td>Performance</td>
+    <td>Adding FK indexes resolves/mitigates 3 P1s</td>
+  </tr>
+  <tr>
+    <td><strong>Unbounded queries / no pagination</strong></td>
+    <td>PERF-004 (P2), PERF-005 (P1), SEC-007 (P3), CHAOS-009 (P3)</td>
+    <td>Performance, Red-teamer, Chaos</td>
+    <td>Adding LIMIT/pagination resolves 1 P1 + 1 P2 + 2 P3s</td>
+  </tr>
+  <tr>
+    <td><strong>Inconsistent input validation</strong></td>
+    <td>SEC-006 (P3), SEC-010 (P3), SEC-012 (P3), CHAOS-010 (P3)</td>
+    <td>Red-teamer, Chaos</td>
+    <td>Applying FR-service validation pattern everywhere resolves 4 P3s</td>
+  </tr>
+  <tr>
+    <td><strong>Missing process lifecycle handlers</strong></td>
+    <td>CHAOS-001 (P2), CHAOS-003 (P2), CHAOS-008 (P2)</td>
+    <td>Chaos</td>
+    <td>3 process handlers in index.ts resolves 3 P2s</td>
+  </tr>
+  <tr>
+    <td><strong>Service layer architecture violations</strong></td>
+    <td>QUAL-001 (P2), QUAL-002 (P2), QUAL-003 (P2)</td>
+    <td>Quality</td>
+    <td>Refactoring service ownership resolves 3 P2s</td>
+  </tr>
+  <tr>
+    <td><strong>Transaction boundary gaps</strong></td>
+    <td>CHAOS-006 (P1), CHAOS-014 (P3)</td>
+    <td>Chaos</td>
+    <td>Wrapping in db.transaction() resolves 1 P1 + 1 P3</td>
+  </tr>
+  <tr>
+    <td><strong>Frontend resilience gaps</strong></td>
+    <td>CHAOS-011 (P3), CHAOS-012 (P3), CHAOS-016 (P4), PERF-013 (P3)</td>
+    <td>Chaos, Performance</td>
+    <td>AbortController + caching layer resolves 3 P3s + 1 P4</td>
+  </tr>
+  <tr>
+    <td><strong>Outdated vitest/vite (CVE root)</strong></td>
+    <td>DEP-001 (P3), DEP-002 (P4), DEP-003 (P2), DEP-004 (P2)</td>
+    <td>Dependency</td>
+    <td>Upgrading vitest+vite resolves 4 CVEs + 2 P2s</td>
+  </tr>
+</table>
+
+<!-- SECTION 9: P1 FINDINGS -->
+<div class="section-num">Section 9 of 16</div>
+<h2>P1 Findings (Critical)</h2>
+
+<div class="card finding-expanded">
+  <div class="card-header">
+    <h3>SEC-001: Complete Absence of Authentication</h3>
+    <div><span class="badge badge-p1">P1</span> <span class="badge badge-still-open">STILL OPEN</span></div>
+  </div>
+  <p><strong>Specialist:</strong> Red-teamer | <strong>Category:</strong> auth-bypass (OWASP A07)</p>
+  <p><strong>Files:</strong> <code>Source/Backend/src/index.ts</code>, <code>Source/Backend/src/middleware/</code>, <code>Source/Backend/package.json</code></p>
+  <p><strong>Exploit:</strong> Any HTTP request to any endpoint succeeds without credentials. No auth middleware, no auth dependencies, no users table, no session management.</p>
+  <p><strong>Impact:</strong> Complete anonymous access to all CRUD operations, all data, all administrative actions.</p>
+  <p><strong>Recommendation:</strong> Implement JWT-based auth middleware. Add users table with password hashing (argon2/bcrypt). Register auth middleware before all <code>/api/*</code> routes.</p>
+</div>
+
+<div class="card finding-expanded">
+  <div class="card-header">
+    <h3>SEC-002: Complete Absence of Authorization / Access Control</h3>
+    <div><span class="badge badge-p1">P1</span> <span class="badge badge-still-open">STILL OPEN</span></div>
+  </div>
+  <p><strong>Specialist:</strong> Red-teamer | <strong>Category:</strong> privilege-escalation (OWASP A01)</p>
+  <p><strong>Files:</strong> <code>routes/featureRequests.ts:176,196,140</code>, <code>routes/cycles.ts:159</code>, all DELETE endpoints</p>
+  <p><strong>Exploit:</strong> Admin operations (approve, deny, vote, complete, delete) have zero permission checks. Any caller can manipulate the entire pipeline.</p>
+  <p><strong>Impact:</strong> Full data manipulation, pipeline sabotage, bypass of human-in-the-loop approval workflow.</p>
+  <p><strong>Recommendation:</strong> Implement RBAC. Critical operations require admin role; standard CRUD requires authenticated user.</p>
+</div>
+
+<div class="card finding-expanded">
+  <div class="card-header">
+    <h3>PERF-001: N+1 Query in listFeatureRequests</h3>
+    <div><span class="badge badge-p1">P1</span> <span class="badge badge-still-open">STILL OPEN</span></div>
+  </div>
+  <p><strong>Specialist:</strong> Performance | <strong>Category:</strong> N+1 query</p>
+  <p><strong>File:</strong> <code>Source/Backend/src/services/featureRequestService.ts:152</code></p>
+  <p><strong>Detail:</strong> Fetches all FRs then calls <code>getVotesForFR(db, row.id)</code> per row. 100 FRs = 101 queries. Compounded by missing index on <code>votes.feature_request_id</code>.</p>
+  <p><strong>Recommendation:</strong> Use JOIN query or batch votes with <code>WHERE feature_request_id IN (...)</code>.</p>
+</div>
+
+<div class="card finding-expanded">
+  <div class="card-header">
+    <h3>PERF-002: N+1 Query in listCycles</h3>
+    <div><span class="badge badge-p1">P1</span> <span class="badge badge-still-open">STILL OPEN</span></div>
+  </div>
+  <p><strong>Specialist:</strong> Performance | <strong>Category:</strong> N+1 query</p>
+  <p><strong>File:</strong> <code>Source/Backend/src/services/cycleService.ts:143</code></p>
+  <p><strong>Detail:</strong> Fetches all cycles then calls <code>getTicketsForCycle(db, row.id)</code> per row. Missing index on <code>tickets.cycle_id</code> compounds the issue.</p>
+  <p><strong>Recommendation:</strong> Use JOIN or batch tickets query with <code>WHERE cycle_id IN (...)</code>.</p>
+</div>
+
+<div class="card finding-expanded">
+  <div class="card-header">
+    <h3>PERF-003: Missing Database Indexes on All Foreign Keys</h3>
+    <div><span class="badge badge-p1">P1</span> <span class="badge badge-still-open">STILL OPEN</span></div>
+  </div>
+  <p><strong>Specialist:</strong> Performance | <strong>Category:</strong> missing-index</p>
+  <p><strong>File:</strong> <code>Source/Backend/src/database/schema.ts</code></p>
+  <p><strong>Detail:</strong> Zero explicit indexes. Every FK lookup is a full table scan. Missing: <code>votes.feature_request_id</code>, <code>tickets.cycle_id</code>, <code>learnings.cycle_id</code>, <code>feature_requests.status</code>, <code>bugs.status</code>, <code>cycles.status</code>.</p>
+  <p><strong>Recommendation:</strong> Add <code>CREATE INDEX IF NOT EXISTS</code> for all FK and filter columns.</p>
+</div>
+
+<div class="card finding-expanded">
+  <div class="card-header">
+    <h3>PERF-005: Dashboard Activity &#8212; 6 Full Table Scans Per Request</h3>
+    <div><span class="badge badge-p1">P1</span> <span class="badge badge-still-open">STILL OPEN</span></div>
+  </div>
+  <p><strong>Specialist:</strong> Performance | <strong>Category:</strong> unbounded query</p>
+  <p><strong>File:</strong> <code>Source/Backend/src/services/dashboardService.ts:72-227</code></p>
+  <p><strong>Detail:</strong> Queries ALL rows from 6 tables, builds ~2x activity items in memory, sorts in JS, then slices to limit. Output capped at 200 but intermediate array is unbounded.</p>
+  <p><strong>Recommendation:</strong> Use <code>UNION ALL</code> with <code>ORDER BY timestamp DESC LIMIT ?</code> at SQL level.</p>
+</div>
+
+<div class="card finding-expanded">
+  <div class="card-header">
+    <h3>CHAOS-006: createCycle Multi-Table Writes Without Transaction</h3>
+    <div><span class="badge badge-p1">P1</span> <span class="badge badge-still-open">STILL OPEN</span></div>
+  </div>
+  <p><strong>Specialist:</strong> Chaos Monkey | <strong>Category:</strong> transaction-boundary</p>
+  <p><strong>File:</strong> <code>Source/Backend/src/services/cycleService.ts:157-218</code></p>
+  <p><strong>Detail:</strong> INSERT into <code>cycles</code> + UPDATE <code>bugs</code>/<code>feature_requests</code> status are separate unwrapped statements. Crash between them creates inconsistent state.</p>
+  <p><strong>Recommendation:</strong> Wrap in <code>db.transaction(() =&gt; { ... })()</code>.</p>
+</div>
+
+<!-- SECTION 10: RISK MATRIX -->
+<div class="section-num">Section 10 of 16</div>
+<h2>Risk Matrix</h2>
+<p style="color:var(--text-light); font-size:0.9rem; margin-bottom:0.5rem;">Severity vs Exploitability. Numbers = finding count per cell.</p>
+<div class="risk-matrix">
+  <div class="risk-cell risk-header"></div>
+  <div class="risk-cell risk-header">Zero-precondition</div>
+  <div class="risk-cell risk-header">Authenticated</div>
+  <div class="risk-cell risk-header">Privileged</div>
+  <div class="risk-cell risk-header">Admin</div>
+  <div class="risk-cell risk-header">Physical</div>
+
+  <div class="risk-cell risk-header">P1</div>
+  <div class="risk-cell risk-hot"><strong>5</strong><br><small>SEC-001,002<br>PERF-001,002,005</small></div>
+  <div class="risk-cell risk-cool">0</div>
+  <div class="risk-cell risk-cool">0</div>
+  <div class="risk-cell risk-cool">0</div>
+  <div class="risk-cell risk-warm"><strong>2</strong><br><small>PERF-003<br>CHAOS-006</small></div>
+
+  <div class="risk-cell risk-header">P2</div>
+  <div class="risk-cell risk-hot"><strong>8</strong><br><small>SEC-003,005,008<br>CHAOS-001,003,004,005,008</small></div>
+  <div class="risk-cell risk-cool">0</div>
+  <div class="risk-cell risk-cool">0</div>
+  <div class="risk-cell risk-cool">0</div>
+  <div class="risk-cell risk-warm"><strong>9</strong><br><small>PERF-004,006,015<br>QUAL-001,002,003<br>CHAOS-013 DEP-003,004</small></div>
+
+  <div class="risk-cell risk-header">P3</div>
+  <div class="risk-cell risk-warm"><strong>12</strong><br><small>SEC-004,006,007,009,010,011,012<br>CHAOS-009,010,011<br>PERF-009,013</small></div>
+  <div class="risk-cell risk-cool">0</div>
+  <div class="risk-cell risk-cool">0</div>
+  <div class="risk-cell risk-cool">0</div>
+  <div class="risk-cell risk-cool"><strong>16</strong><br><small>SEC-013 PERF-007,010,011<br>QUAL-004 CHAOS-002,007,<br>012,014,015 DEP-001,<br>005,006,007,008,010</small></div>
+
+  <div class="risk-cell risk-header">P4</div>
+  <div class="risk-cell risk-cool"><strong>2</strong><br><small>SEC-014<br>CHAOS-016</small></div>
+  <div class="risk-cell risk-cool">0</div>
+  <div class="risk-cell risk-cool">0</div>
+  <div class="risk-cell risk-cool">0</div>
+  <div class="risk-cell risk-cool"><strong>6</strong><br><small>PERF-008,012,014<br>QUAL-005 DEP-002,009</small></div>
+</div>
+<p style="font-size:0.85rem; color:var(--text-light);"><strong>Key insight:</strong> 27 findings are exploitable with zero preconditions because the API has no authentication. Adding auth shifts most to higher-precondition columns.</p>
+
+<!-- SECTION 11: SPEC COVERAGE -->
+<div class="section-num">Section 11 of 16</div>
+<h2>Spec Coverage</h2>
+<div class="card">
+  <h3>Overall: 100% (32/32 FRs)</h3>
+  <div class="bar-container" style="margin:1rem 0;">
+    <div class="bar-fill" style="width:100%;">100% &#8212; 32 of 32 FRs traced</div>
+  </div>
+  <p>All 32 functional requirements from <code>Specifications/dev-workflow-platform.md</code> have both implementation and test traceability.</p>
+  <h4 style="margin-top:1rem;">Prior Audit Comparison</h4>
+  <table class="compact-table">
+    <tr><th>Metric</th><th>Prior</th><th>Current</th></tr>
+    <tr><td>Coverage</td><td>96.9% (31/32)</td><td>100% (32/32)</td></tr>
+    <tr><td>Gap</td><td>FR-032 missing</td><td>FIXED</td></tr>
+    <tr><td>Test cases</td><td>271</td><td>343 (+72)</td></tr>
+  </table>
+  <h4 style="margin-top:1rem;">Top 10 Uncovered Requirements</h4>
+  <p>None &#8212; all requirements are covered.</p>
+</div>
+
+<!-- SECTION 12: LATENCY BASELINES -->
+<div class="section-num">Section 12 of 16</div>
+<h2>Latency Baselines</h2>
+<div class="card">
+  <p style="color:var(--text-light); font-size:0.9rem;"><strong>Mode: Static only</strong> &#8212; No actual p50/p95/p99 measurements. Table shows risk assessment from code analysis.</p>
+  <table>
+    <tr><th>Endpoint</th><th>Budget (p95)</th><th>p50</th><th>p95</th><th>p99</th><th>Risk</th></tr>
+    <tr style="background:#fdedec;"><td><code>GET /api/dashboard/activity</code></td><td>500ms</td><td>&#8212;</td><td>&#8212;</td><td>&#8212;</td><td style="color:var(--p1); font-weight:600;">CRITICAL</td></tr>
+    <tr style="background:#fdedec;"><td><code>GET /api/feature-requests</code></td><td>500ms</td><td>&#8212;</td><td>&#8212;</td><td>&#8212;</td><td style="color:var(--p1); font-weight:600;">HIGH</td></tr>
+    <tr style="background:#fdedec;"><td><code>GET /api/cycles</code></td><td>500ms</td><td>&#8212;</td><td>&#8212;</td><td>&#8212;</td><td style="color:var(--p1); font-weight:600;">HIGH</td></tr>
+    <tr style="background:#fef5e7;"><td><code>POST /api/cycles/:id/complete</code></td><td>500ms</td><td>&#8212;</td><td>&#8212;</td><td>&#8212;</td><td style="color:var(--p2); font-weight:600;">HIGH</td></tr>
+    <tr style="background:#fef5e7;"><td><code>POST /api/feature-requests</code></td><td>500ms</td><td>&#8212;</td><td>&#8212;</td><td>&#8212;</td><td style="color:var(--p2); font-weight:600;">MEDIUM</td></tr>
+    <tr style="background:#fef5e7;"><td><code>PATCH /api/feature-requests/:id</code></td><td>500ms</td><td>&#8212;</td><td>&#8212;</td><td>&#8212;</td><td style="color:var(--p2); font-weight:600;">MEDIUM</td></tr>
+    <tr><td><code>GET /api/bugs</code></td><td>500ms</td><td>&#8212;</td><td>&#8212;</td><td>&#8212;</td><td>LOW</td></tr>
+    <tr><td><code>GET /api/learnings</code></td><td>500ms</td><td>&#8212;</td><td>&#8212;</td><td>&#8212;</td><td>LOW</td></tr>
+    <tr><td><code>GET /api/features?q=</code></td><td>500ms</td><td>&#8212;</td><td>&#8212;</td><td>&#8212;</td><td>LOW-MED</td></tr>
+    <tr><td><code>GET /api/dashboard/summary</code></td><td>500ms</td><td>&#8212;</td><td>&#8212;</td><td>&#8212;</td><td>LOW</td></tr>
+  </table>
+  <p style="margin-top:0.75rem; font-size:0.9rem;">No prior baselines exist. Dynamic profiling required for actual measurements.</p>
+</div>
+
+<!-- SECTION 13: P2 FINDINGS -->
+<div class="section-num">Section 13 of 16</div>
+<h2>P2 Findings (High)</h2>
+<table>
+  <tr><th>ID</th><th>Category</th><th>Title</th><th>File</th><th>Status</th></tr>
+  <tr><td>SEC-003</td><td>IDOR</td><td>Sequential/predictable ID generation enables enumeration</td><td>All service files</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>SEC-005</td><td>Info disclosure</td><td>Unauthenticated /metrics endpoint</td><td>index.ts, metrics.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>SEC-008</td><td>DoS</td><td>No rate limiting on any endpoint</td><td>index.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>PERF-004</td><td>Unbounded</td><td>All list endpoints return all rows, no pagination</td><td>All service files</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>PERF-006</td><td>Algorithmic</td><td>O(N) Jaccard duplicate detection on every FR create</td><td>featureRequestService.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>PERF-015</td><td>Latency</td><td>completeCycle triggers 10+ cascading queries</td><td>cycleService.ts</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>QUAL-001</td><td>Architecture</td><td>Route handlers call getDb() directly</td><td>All 6 route files</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>QUAL-002</td><td>Architecture</td><td>Services import AppError from middleware module</td><td>All 5 service files</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>QUAL-003</td><td>Architecture</td><td>9 input types duplicated between Shared and services</td><td>Shared/api.ts, services</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>CHAOS-001</td><td>Shutdown</td><td>No SIGTERM/SIGINT handler</td><td>index.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>CHAOS-003</td><td>Error handling</td><td>No uncaughtException handler</td><td>index.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>CHAOS-004</td><td>State invariant</td><td>Sequential ID TOCTOU race condition</td><td>All service files</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>CHAOS-005</td><td>State invariant</td><td>Bug status has no transition guards</td><td>bugService.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>CHAOS-008</td><td>Error handling</td><td>No unhandledRejection handler</td><td>index.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>CHAOS-013</td><td>State invariant</td><td>Delete FR/Bug ignores active cycle references</td><td>featureRequestService, bugService</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>DEP-003</td><td>Outdated</td><td>vitest 2 major versions behind (1.6.1 vs 4.1.0)</td><td>package.json (both)</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>DEP-004</td><td>Outdated</td><td>vite 2 major versions behind (5.4.21 vs 8.0.1)</td><td>Frontend/package.json</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+</table>
+
+<!-- SECTION 14: FIXED FINDINGS -->
+<div class="section-num">Section 14 of 16</div>
+<h2>Fixed Findings</h2>
+<div class="card green-card">
+  <div class="card-header">
+    <h3>PERF (prior): COUNT(*) ID Generation</h3>
+    <span class="badge badge-fixed">FIXED</span>
+  </div>
+  <p>ID generation previously used <code>SELECT COUNT(*) FROM table</code> which produced incorrect IDs after deletes. Now uses <code>SELECT id ... ORDER BY ROWID DESC LIMIT 1</code>, correctly handling gaps.</p>
+</div>
+<div class="card green-card">
+  <div class="card-header">
+    <h3>QUAL (prior): FR-032 Traceability Gap</h3>
+    <span class="badge badge-fixed">FIXED</span>
+  </div>
+  <p>FR-032 previously had no <code>// Verifies: FR-032</code> comments. Now traced in 4 frontend test files. Spec coverage improved from 96.9% to 100%.</p>
+</div>
+
+<!-- SECTION 15: RECOMMENDATIONS -->
+<div class="section-num">Section 15 of 16</div>
+<h2>Recommendations</h2>
+
+<h3 style="margin-top:1rem;"><span class="badge" style="background:var(--p1); padding:0.3rem 0.8rem;">Block Deployment</span></h3>
+<ol style="margin:0.5rem 0 1.5rem 1.5rem;">
+  <li><strong>Implement authentication</strong> &#8212; JWT middleware, users table, password hashing. Resolves SEC-001 + SEC-002 (2 P1s), shifts 25 findings to lower exploitability.</li>
+  <li><strong>Implement authorization (RBAC)</strong> &#8212; Role-based guards on approve/deny/vote/complete/delete.</li>
+  <li><strong>Add database indexes</strong> &#8212; CREATE INDEX on all FK and filter columns. Resolves PERF-003, mitigates PERF-001/002 (3 P1s).</li>
+  <li><strong>Fix N+1 queries</strong> &#8212; JOINs or batch queries for listFeatureRequests and listCycles. Resolves PERF-001/002.</li>
+  <li><strong>Wrap createCycle in transaction</strong> &#8212; Prevents data inconsistency. Resolves CHAOS-006 (1 P1).</li>
+  <li><strong>Fix dashboard activity query</strong> &#8212; SQL-level UNION ALL with LIMIT. Resolves PERF-005 (1 P1).</li>
+</ol>
+
+<h3><span class="badge" style="background:var(--p2); padding:0.3rem 0.8rem;">This Sprint</span></h3>
+<ol start="7" style="margin:0.5rem 0 1.5rem 1.5rem;">
+  <li>Add process lifecycle handlers (SIGTERM, uncaughtException, unhandledRejection) &#8212; 3 P2s</li>
+  <li>Switch to UUID IDs &#8212; 2 P2s (SEC-003, CHAOS-004)</li>
+  <li>Add pagination to all list endpoints &#8212; 1 P2 (PERF-004)</li>
+  <li>Add bug status transition guards &#8212; 1 P2 (CHAOS-005)</li>
+  <li>Add rate limiting (express-rate-limit) &#8212; 1 P2 (SEC-008)</li>
+  <li>Gate /metrics endpoint &#8212; 1 P2 (SEC-005)</li>
+  <li>Upgrade vitest to 4.1.0+ &#8212; fixes 4 CVEs (DEP-001/002/003)</li>
+  <li>Block delete when cycle active &#8212; 1 P2 (CHAOS-013)</li>
+</ol>
+
+<h3><span class="badge" style="background:var(--p3); color:#333; padding:0.3rem 0.8rem;">Next Sprint</span></h3>
+<ol start="15" style="margin:0.5rem 0 1.5rem 1.5rem;">
+  <li>Refactor service layer (DB ownership, AppError location, deduplicate types) &#8212; QUAL-001/002/003</li>
+  <li>Consistent input validation across all entities &#8212; SEC-006/010/012, CHAOS-010</li>
+  <li>Add security headers (helmet) &#8212; SEC-009</li>
+  <li>Frontend resilience (AbortController, unmount cleanup, error types) &#8212; CHAOS-011/012/016</li>
+  <li>Upgrade vite to 8.0.1 &#8212; DEP-004</li>
+  <li>Add health check DB probe &#8212; CHAOS-007</li>
+  <li>Log OTEL init failures &#8212; CHAOS-002, QUAL-004</li>
+</ol>
+
+<h3><span class="badge" style="background:var(--p4); padding:0.3rem 0.8rem;">Backlog</span></h3>
+<ol start="22" style="margin:0.5rem 0 1.5rem 1.5rem;">
+  <li>Eliminate redundant double reads on writes (PERF-007/009)</li>
+  <li>Frontend request dedup/caching (PERF-013)</li>
+  <li>Optimize createCycle work item selection (PERF-010/012)</li>
+  <li>Add FTS5 for features search (PERF-011)</li>
+  <li>Upgrade React 19, OTel, Express 5 (DEP-005/006/010)</li>
+  <li>Update type definitions and dev tooling (DEP-007/008)</li>
+  <li>Add process manager config (CHAOS-015)</li>
+  <li>Wrap deleteFeatureRequest in transaction (CHAOS-014)</li>
+</ol>
+
+<!-- SECTION 16: P3/P4 SUMMARY -->
+<div class="section-num">Section 16 of 16</div>
+<h2>P3/P4 Summary</h2>
+
+<h3>P3 Findings (28)</h3>
+<table class="compact-table">
+  <tr><th>ID</th><th>Specialist</th><th>Category</th><th>Title</th><th>Status</th></tr>
+  <tr><td>SEC-004</td><td>Red-teamer</td><td>Integrity</td><td>Race condition in sequential ID generation</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>SEC-006</td><td>Red-teamer</td><td>DoS</td><td>Missing input length limits on bugs/tickets/learnings</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>SEC-007</td><td>Red-teamer</td><td>DoS</td><td>Unbounded activity feed query</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>SEC-009</td><td>Red-teamer</td><td>Misconfig</td><td>No security headers (missing helmet)</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>SEC-010</td><td>Red-teamer</td><td>Injection</td><td>Missing source_system validation on bugs</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>SEC-011</td><td>Red-teamer</td><td>Auth-bypass</td><td>No CSRF protection (future risk)</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>SEC-012</td><td>Red-teamer</td><td>XSS</td><td>Assignee field accepts unsanitized input</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>SEC-013</td><td>Red-teamer</td><td>Path traversal</td><td>DB_PATH env var not validated</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>PERF-007</td><td>Performance</td><td>Latency</td><td>Redundant double/triple reads on writes</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>PERF-009</td><td>Performance</td><td>Latency</td><td>Triple read in PATCH route handlers</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>PERF-010</td><td>Performance</td><td>Payload</td><td>createCycle fetches full rows unnecessarily</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>PERF-011</td><td>Performance</td><td>Index</td><td>Features search uses LIKE without FTS</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>PERF-013</td><td>Performance</td><td>Payload</td><td>Frontend has no request dedup or caching</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>QUAL-004</td><td>Quality</td><td>Pattern</td><td>Silent OTEL init failure</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>CHAOS-002</td><td>Chaos</td><td>Error</td><td>Tracing init swallows errors silently</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>CHAOS-007</td><td>Chaos</td><td>Health</td><td>Health check does not probe database</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>CHAOS-009</td><td>Chaos</td><td>Resource</td><td>Dashboard activity loads entire tables</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>CHAOS-010</td><td>Chaos</td><td>Input</td><td>Inconsistent input length limits</td><td><span class="badge badge-partial">PARTIAL</span></td></tr>
+  <tr><td>CHAOS-011</td><td>Chaos</td><td>Timeout</td><td>Frontend API client has no timeout</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>CHAOS-012</td><td>Chaos</td><td>Leak</td><td>useApi hook doesn't cancel on unmount</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>CHAOS-014</td><td>Chaos</td><td>Transaction</td><td>deleteFeatureRequest not transactional</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>CHAOS-015</td><td>Chaos</td><td>Recovery</td><td>No auto-restart / process manager</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>DEP-001</td><td>Dependency</td><td>CVE</td><td>esbuild CSRF in dev server</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>DEP-005</td><td>Dependency</td><td>Outdated</td><td>React ecosystem 1 major behind</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>DEP-006</td><td>Dependency</td><td>Outdated</td><td>OpenTelemetry 166 minor versions behind</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>DEP-007</td><td>Dependency</td><td>Outdated</td><td>Type definitions drifted</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>DEP-008</td><td>Dependency</td><td>Outdated</td><td>Dev tooling fragmentation</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>DEP-010</td><td>Dependency</td><td>Outdated</td><td>uuid 4 majors behind, express 1 behind</td><td><span class="badge badge-new">NEW</span></td></tr>
+</table>
+
+<h3 style="margin-top:1.5rem;">P4 Findings (8)</h3>
+<table class="compact-table">
+  <tr><th>ID</th><th>Specialist</th><th>Category</th><th>Title</th><th>Status</th></tr>
+  <tr><td>SEC-014</td><td>Red-teamer</td><td>DoS</td><td>human_approval_comment has no length limit</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>PERF-008</td><td>Performance</td><td>Sync I/O</td><td>Synchronous fs calls in getDb()</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>PERF-012</td><td>Performance</td><td>Algorithm</td><td>In-memory sort in createCycle</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>PERF-014</td><td>Performance</td><td>Latency</td><td>deleteFeatureRequest loads full entity for existence check</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>QUAL-005</td><td>Quality</td><td>Pattern</td><td>2 eslint-disable comments lack justification</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>CHAOS-016</td><td>Chaos</td><td>Error</td><td>Frontend doesn't distinguish network vs API errors</td><td><span class="badge badge-new">NEW</span></td></tr>
+  <tr><td>DEP-002</td><td>Dependency</td><td>CVE</td><td>vitest inherited CVE from vite/esbuild</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  <tr><td>DEP-009</td><td>Dependency</td><td>Supply chain</td><td>973 packages in dependency tree</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+</table>
+
+<hr style="margin:2rem 0;">
+<p style="color:var(--text-light); font-size:0.85rem; text-align:center;">
+  Generated by TheInspector &#8212; 2026-03-23 &#8212; Branch: master (852ccd3) &#8212; Grade: D
+</p>
+
+</body>
+</html>

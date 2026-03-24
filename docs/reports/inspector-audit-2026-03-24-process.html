@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TheInspector — Process Traceability Audit — 2026-03-24</title>
+<style>
+  :root {
+    --grade-color: #e67e22;
+    --p1: #e74c3c;
+    --p2: #e67e22;
+    --p3: #f1c40f;
+    --p4: #95a5a6;
+    --fixed: #27ae60;
+    --still-open: #e67e22;
+    --regressed: #c0392b;
+    --new: #3498db;
+    --bg: #f8f9fa;
+    --card-bg: #fff;
+    --border: #dee2e6;
+    --text: #212529;
+    --text-muted: #6c757d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+  h1, h2, h3, h4 { margin-top: 1.5rem; margin-bottom: 0.75rem; }
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.4rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; }
+  h3 { font-size: 1.15rem; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; }
+  .card-p1 { border-left: 4px solid var(--p1); }
+  .card-p2 { border-left: 4px solid var(--p2); }
+  .card-p3 { border-left: 4px solid var(--p3); }
+  .card-p4 { border-left: 4px solid var(--p4); }
+  .card-fixed { border-left: 4px solid var(--fixed); background: #eafaf1; }
+  .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; color: #fff; }
+  .badge-p1 { background: var(--p1); }
+  .badge-p2 { background: var(--p2); }
+  .badge-p3 { background: var(--p3); color: #333; }
+  .badge-p4 { background: var(--p4); }
+  .badge-fixed { background: var(--fixed); }
+  .badge-still-open { background: var(--still-open); }
+  .badge-regressed { background: var(--regressed); }
+  .badge-new { background: var(--new); }
+  .grade-badge { font-size: 4rem; font-weight: 900; color: var(--grade-color); display: inline-block; border: 4px solid var(--grade-color); border-radius: 16px; padding: 0.25rem 1.5rem; margin-right: 1rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+  th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  th { background: #f1f3f5; font-weight: 600; }
+  tr:hover { background: #f8f9fa; }
+  .scorecard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin: 1rem 0; }
+  .scorecard { text-align: center; padding: 1rem; border-radius: 8px; background: var(--card-bg); border: 1px solid var(--border); }
+  .scorecard .num { font-size: 2rem; font-weight: 700; }
+  .scorecard .label { font-size: 0.8rem; color: var(--text-muted); }
+  .bar-container { background: #e9ecef; border-radius: 4px; height: 20px; overflow: hidden; margin: 0.25rem 0; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+  .risk-matrix { border: 2px solid var(--border); }
+  .risk-matrix th { text-align: center; }
+  .risk-matrix td { text-align: center; min-width: 80px; }
+  code { background: #e9ecef; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.85rem; }
+  .meta { color: var(--text-muted); font-size: 0.9rem; }
+  .section-num { color: var(--text-muted); font-size: 0.85rem; margin-right: 0.5rem; }
+  .rec-block { background: #fff3cd; border-left: 3px solid #ffc107; padding: 0.5rem 0.75rem; margin: 0.5rem 0; font-size: 0.9rem; }
+  .rec-critical { background: #f8d7da; border-left: 3px solid var(--p1); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ SECTION 1: HEADER ═══════════ -->
+<header style="display: flex; align-items: center; margin-bottom: 2rem;">
+  <div class="grade-badge">D</div>
+  <div>
+    <h1>Process Traceability Audit</h1>
+    <p class="meta">
+      <strong>Branch:</strong> master &nbsp;|&nbsp;
+      <strong>Date:</strong> 2026-03-24 &nbsp;|&nbsp;
+      <strong>Scope:</strong> Post-work audit — TheATeam completed FR-001–FR-069 &nbsp;|&nbsp;
+      <strong>Team:</strong> TheInspector
+    </p>
+    <p class="meta">
+      <strong>Focus:</strong> Bug/ticket FR references, complete issue info, team attribution, feedback traceability, traceability reports
+    </p>
+  </div>
+</header>
+
+<!-- ═══════════ SECTION 2: SCORECARDS ═══════════ -->
+<h2><span class="section-num">§2</span>Scorecards</h2>
+<div class="scorecard-grid">
+  <div class="scorecard"><div class="num" style="color:var(--p1)">7</div><div class="label">P1 (Process)</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--p2)">2</div><div class="label">P2 (Process)</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--p3)">1</div><div class="label">P3 (Process)</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--p4)">0</div><div class="label">P4 (Process)</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--still-open)">29</div><div class="label">Prior Still Open</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--regressed)">1</div><div class="label">Regressed</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--fixed)">0</div><div class="label">Fixed</div></div>
+  <div class="scorecard"><div class="num">68.1%</div><div class="label">Source // Verifies Coverage</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--fixed)">100%</div><div class="label">Test Coverage (69/69 FRs)</div></div>
+  <div class="scorecard"><div class="num">2</div><div class="label">Specialists (hybrid mode)</div></div>
+</div>
+
+<!-- ═══════════ SECTION 3: EXECUTIVE SUMMARY ═══════════ -->
+<h2><span class="section-num">§3</span>Executive Summary</h2>
+<div class="card rec-critical">
+  <p><strong>What an operator needs to know:</strong></p>
+  <ol style="margin-top: 0.5rem; padding-left: 1.5rem;">
+    <li><strong>The backend server was never restarted after FR-050–FR-069 was implemented.</strong> Schema migrations for the entire traceability feature (8 new columns, 1 new table) were never applied. This single deployment gap is the root cause of 7 of 10 new findings. A server restart self-heals the DB via idempotent migrations.</li>
+    <li><strong>All live bugs, tickets, and features have zero traceability links.</strong> No bug references an originating FR. No ticket has considered fixes. No feature has a cycle_id or traceability report. The traceability chain is broken at 4 of 9 links.</li>
+    <li><strong>Zero feedback records exist.</strong> The feedback loop from pipeline QA stages back to cycle records was never exercised. Feedback API returns 404 due to stale server.</li>
+    <li><strong>Bug backlog is incomplete.</strong> 26 of 34 P2 entries lack file paths and recommendations. Inspector findings have no cross-references to database FR/BUG IDs.</li>
+    <li><strong>All 29 prior findings remain open (0% remediation).</strong> No security, quality, performance, chaos, or dependency finding has been addressed since the first audit. QUAL-007 (missing source markers) has regressed from 6 to 16 FRs.</li>
+  </ol>
+</div>
+
+<!-- ═══════════ SECTION 4: SCOPE & ENVIRONMENT ═══════════ -->
+<h2><span class="section-num">§4</span>Scope &amp; Environment</h2>
+<div class="card">
+  <table>
+    <tr><th>Item</th><th>Detail</th></tr>
+    <tr><td>Audit type</td><td>Post-work process traceability audit</td></tr>
+    <tr><td>Scope</td><td>All work by TheATeam: FR-001–FR-032 (original), FR-033–FR-049 (pipeline), FR-050–FR-069 (traceability)</td></tr>
+    <tr><td>Backend</td><td>http://localhost:3001 — <strong>UP</strong> (stale process, started 01:28 UTC, code modified 02:35–02:39 UTC)</td></tr>
+    <tr><td>Frontend</td><td>http://localhost:5173 — <strong>UP</strong></td></tr>
+    <tr><td>DB</td><td>SQLite — schema missing FR-052 migrations (8 columns + 1 table absent)</td></tr>
+    <tr><td>Git</td><td>Single commit (852ccd3 "Initial commit") on master</td></tr>
+    <tr><td>Specialists</td><td>quality-oracle (hybrid), red-teamer (hybrid) — 2 of 5 specialists used (focused audit)</td></tr>
+    <tr><td>Live data</td><td>3 cycles, 2 bugs, 2 tickets, 3 features, 3 pipeline runs — all test/manual fixtures</td></tr>
+    <tr><td>Data caveat</td><td>All entity records were created before FR-050–FR-069 schema existed — traceability fields are structurally absent, not just empty</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════ SECTION 5: TREND ═══════════ -->
+<h2><span class="section-num">§5</span>Trend</h2>
+<div class="card">
+  <table>
+    <tr><th>Audit</th><th>Date</th><th>Grade</th><th>P1</th><th>P2</th><th>Spec Coverage</th><th>Notes</th></tr>
+    <tr><td>1st (full)</td><td>2026-03-23</td><td>—</td><td>1</td><td>~15</td><td>96.9%</td><td>Initial baseline, static only</td></tr>
+    <tr><td>2nd (full)</td><td>2026-03-24</td><td>D</td><td>8</td><td>26</td><td>79.6%</td><td>Pipeline features added, many new findings</td></tr>
+    <tr><td>3rd (process)</td><td>2026-03-24</td><td><strong>D</strong></td><td>7</td><td>2</td><td>68.1%</td><td>This audit — focused on traceability process</td></tr>
+  </table>
+  <p style="margin-top: 0.75rem;"><strong>Trend:</strong> Grade stable at D. Remediation rate across all audits is 0% — no finding has been fixed. Spec coverage dropped from 96.9% to 68.1% as new FRs were added without formal source markers. Test coverage remains at 100% (69/69 FRs).</p>
+</div>
+
+<!-- ═══════════ SECTION 6: SPECIALIST REPORTS ═══════════ -->
+<h2><span class="section-num">§6</span>Specialist Reports</h2>
+
+<div class="card">
+  <h3>quality-oracle</h3>
+  <table>
+    <tr><td><strong>Mode</strong></td><td>Hybrid (static + dynamic API verification)</td></tr>
+    <tr><td><strong>Verdict</strong></td><td style="color:var(--p1);">FAIL — 7 P1, 2 P2, 1 P3 process findings</td></tr>
+    <tr><td><strong>Prior findings</strong></td><td>9 re-verified: 8 STILL OPEN, 1 REGRESSED (QUAL-007)</td></tr>
+    <tr><td><strong>Root cause</strong></td><td>Stale server — schema migrations never applied after FR-050–FR-069 code merged</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h3>red-teamer</h3>
+  <table>
+    <tr><td><strong>Mode</strong></td><td>Hybrid (static schema review + dynamic API verification)</td></tr>
+    <tr><td><strong>Verdict</strong></td><td style="color:var(--p1);">FAIL — 2 HIGH, 4 MEDIUM, 2 LOW process findings</td></tr>
+    <tr><td><strong>Prior findings</strong></td><td>20 re-verified: 20 STILL OPEN (0% remediation)</td></tr>
+    <tr><td><strong>Key insight</strong></td><td>Traceability chain broken at 4 of 9 links — schema exists but data layer is empty</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════ SECTION 7: RE-VERIFICATION SUMMARY ═══════════ -->
+<h2><span class="section-num">§7</span>Re-Verification Summary</h2>
+<div class="card">
+  <table>
+    <tr><th>Status</th><th>Count</th><th>IDs</th></tr>
+    <tr><td><span class="badge badge-fixed">FIXED</span></td><td>0</td><td>—</td></tr>
+    <tr><td><span class="badge badge-still-open">STILL OPEN</span></td><td>28</td><td>QUAL-001–006, QUAL-008–009, SEC-001–020, CHAOS-006</td></tr>
+    <tr><td><span class="badge badge-regressed">REGRESSED</span></td><td>1</td><td>QUAL-007 (6 FRs → 16 FRs missing source markers)</td></tr>
+    <tr><td><span class="badge badge-new">NEW (process)</span></td><td>10</td><td>QUAL-P001–P010</td></tr>
+    <tr><td><span class="badge badge-new">NEW (process integrity)</span></td><td>8</td><td>SEC-P001–P008</td></tr>
+  </table>
+  <p class="meta" style="margin-top:0.5rem;"><strong>Remediation rate: 0/29 prior findings (0%).</strong> No finding from any prior audit has been addressed.</p>
+</div>
+
+<!-- ═══════════ SECTION 8: CROSS-REFERENCE MAP ═══════════ -->
+<h2><span class="section-num">§8</span>Cross-Reference Map</h2>
+<div class="card">
+  <p><em>Root causes that span multiple specialists — a single fix resolves findings from 2+ specialists.</em></p>
+  <table>
+    <tr><th>Root Cause</th><th>Affected Findings</th><th>Fix</th><th>Fix Impact</th></tr>
+    <tr>
+      <td><strong>Stale server — no restart after FR-050–FR-069</strong></td>
+      <td>QUAL-P001, QUAL-P002, QUAL-P003, QUAL-P004, QUAL-P005, QUAL-P006, QUAL-P007, SEC-P001, SEC-P002, SEC-P003, SEC-P004</td>
+      <td>Restart backend server (<code>npx tsx src/index.ts</code>)</td>
+      <td><strong>Resolves 11 findings</strong> — schema self-heals via idempotent migrations; all routes register; team_name hydration activates</td>
+    </tr>
+    <tr>
+      <td><strong>Bug backlog format lacks FR/work-item cross-references</strong></td>
+      <td>QUAL-P008, SEC-P005</td>
+      <td>Add <code>work_item_id</code>, <code>file</code>, <code>recommendation</code> to all backlog entries</td>
+      <td><strong>Resolves 2 findings</strong> — enables mechanical tracing from audit findings to database work items</td>
+    </tr>
+    <tr>
+      <td><strong>Traceability enforcer reads only FR-001–FR-032</strong></td>
+      <td>QUAL-P009, QUAL-006, SEC-P006</td>
+      <td>Update enforcer to read all 3 requirements files (or consolidate into one)</td>
+      <td><strong>Resolves 3 findings</strong> — enforcer will report accurate 69-FR coverage</td>
+    </tr>
+    <tr>
+      <td><strong>Services import AppError from middleware (framework coupling)</strong></td>
+      <td>QUAL-002, QUAL-008</td>
+      <td>Extract <code>AppError</code> into <code>lib/errors.ts</code></td>
+      <td><strong>Resolves 2 findings</strong> — decouples business logic from Express middleware</td>
+    </tr>
+    <tr>
+      <td><strong>Zero auth middleware</strong></td>
+      <td>SEC-001, SEC-002, SEC-015, SEC-020 + amplifies all process integrity findings</td>
+      <td>Implement JWT auth + RBAC middleware</td>
+      <td><strong>Resolves 4+ findings</strong> — prevents traceability data poisoning by unauthenticated callers</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══════════ SECTION 9: P1 FINDINGS ═══════════ -->
+<h2><span class="section-num">§9</span>P1 Findings</h2>
+
+<div class="card card-p1">
+  <h3><span class="badge badge-p1">P1</span> QUAL-P001: Live DB Missing All FR-052 Schema Migrations</h3>
+  <p><strong>Specialist:</strong> quality-oracle &nbsp;|&nbsp; <strong>Status:</strong> <span class="badge badge-new">NEW</span></p>
+  <p><strong>File:</strong> <code>Source/Backend/src/database/schema.ts</code></p>
+  <p><strong>Exploit scenario:</strong> Backend server started at 01:28 UTC before schema code was written (02:35 UTC). Never restarted. 8 columns across 3 tables + 1 table (<code>cycle_feedback</code>) absent from live DB. All traceability features non-functional at runtime.</p>
+  <p><strong>Impact:</strong> ALL process traceability audit criteria fail. Bugs have no FR refs, tickets have no considered fixes, cycles show no team, features have no reports.</p>
+  <div class="rec-block rec-critical"><strong>Recommendation:</strong> Restart backend server. Migrations are idempotent. Add post-merge restart step to pipeline runbook.</div>
+</div>
+
+<div class="card card-p1">
+  <h3><span class="badge badge-p1">P1</span> QUAL-P002: Feedback API Returns 404</h3>
+  <p><strong>Specialist:</strong> quality-oracle &nbsp;|&nbsp; <strong>Status:</strong> <span class="badge badge-new">NEW</span></p>
+  <p><strong>File:</strong> <code>Source/Backend/src/routes/cycles.ts:210-238</code></p>
+  <p><strong>Exploit scenario:</strong> <code>GET/POST /api/cycles/:id/feedback</code> return 404. Routes are defined in source but were not loaded at startup because server pre-dates the code.</p>
+  <p><strong>Impact:</strong> Feedback collection (FR-059) completely non-functional. Zero feedback records possible.</p>
+  <div class="rec-block rec-critical"><strong>Recommendation:</strong> Restart server (same root cause as QUAL-P001).</div>
+</div>
+
+<div class="card card-p1">
+  <h3><span class="badge badge-p1">P1</span> QUAL-P003: No Bugs Have FR References</h3>
+  <p><strong>Specialist:</strong> quality-oracle &nbsp;|&nbsp; <strong>Status:</strong> <span class="badge badge-new">NEW</span></p>
+  <p><strong>File:</strong> <code>Source/Backend/src/database/schema.ts</code> (bugs table)</p>
+  <p><strong>Exploit scenario:</strong> <code>GET /api/bugs</code> returns BUG-0001 and BUG-0002 with no <code>related_work_item_id</code>, <code>related_work_item_type</code>, or <code>related_cycle_id</code>. Columns absent from DB.</p>
+  <p><strong>Impact:</strong> Audit criterion 1 fails: bugs cannot be traced to originating FRs or cycles.</p>
+  <div class="rec-block rec-critical"><strong>Recommendation:</strong> Restart server. After migration, populate traceability fields on bug creation. Backfill existing bugs.</div>
+</div>
+
+<div class="card card-p1">
+  <h3><span class="badge badge-p1">P1</span> QUAL-P004: Tickets Missing Issue Info and Considered Fixes</h3>
+  <p><strong>Specialist:</strong> quality-oracle &nbsp;|&nbsp; <strong>Status:</strong> <span class="badge badge-new">NEW</span></p>
+  <p><strong>File:</strong> <code>Source/Backend/src/database/schema.ts</code> (tickets table)</p>
+  <p><strong>Exploit scenario:</strong> TKT-0001 and TKT-0002 lack <code>work_item_ref</code>, <code>issue_description</code>, <code>considered_fixes</code>. DB columns absent.</p>
+  <p><strong>Impact:</strong> Audit criterion 2 fails: tickets have no structured issue information or fix considerations.</p>
+  <div class="rec-block rec-critical"><strong>Recommendation:</strong> Restart server. Ensure ticket creation populates all traceability fields per FR-055.</div>
+</div>
+
+<div class="card card-p1">
+  <h3><span class="badge badge-p1">P1</span> QUAL-P005: Cycles Missing Team Attribution</h3>
+  <p><strong>Specialist:</strong> quality-oracle &nbsp;|&nbsp; <strong>Status:</strong> <span class="badge badge-new">NEW</span></p>
+  <p><strong>File:</strong> <code>Source/Backend/src/services/cycleService.ts:174-196</code></p>
+  <p><strong>Exploit scenario:</strong> All 3 cycles return no <code>team_name</code> despite pipeline runs having <code>team: "TheATeam"</code>. Server running pre-hydration code.</p>
+  <p><strong>Impact:</strong> Audit criterion 3 fails: cycles cannot be attributed to teams.</p>
+  <div class="rec-block rec-critical"><strong>Recommendation:</strong> Restart server. Also update <code>listCycles()</code> to hydrate <code>team_name</code> (currently only in <code>getCycleById()</code>).</div>
+</div>
+
+<div class="card card-p1">
+  <h3><span class="badge badge-p1">P1</span> QUAL-P006: Zero Feedback Records — Feedback Loop Not Exercised</h3>
+  <p><strong>Specialist:</strong> quality-oracle &nbsp;|&nbsp; <strong>Status:</strong> <span class="badge badge-new">NEW</span></p>
+  <p><strong>File:</strong> <code>Source/Backend/src/database/schema.ts</code> (cycle_feedback table)</p>
+  <p><strong>Exploit scenario:</strong> <code>cycle_feedback</code> table absent from DB. Feedback route returns 404. No stage completion has created feedback records via FR-060 integration.</p>
+  <p><strong>Impact:</strong> Audit criterion 4 fails: feedback loop from QA stages to cycles is non-functional.</p>
+  <div class="rec-block rec-critical"><strong>Recommendation:</strong> Restart server. Ensure <code>completeStage()</code> creates feedback records per FR-060. Establish process requiring feedback submission before cycle closure.</div>
+</div>
+
+<div class="card card-p1">
+  <h3><span class="badge badge-p1">P1</span> QUAL-P007: Features Missing Traceability Reports</h3>
+  <p><strong>Specialist:</strong> quality-oracle &nbsp;|&nbsp; <strong>Status:</strong> <span class="badge badge-new">NEW</span></p>
+  <p><strong>File:</strong> <code>Source/Backend/src/database/schema.ts</code> (features table)</p>
+  <p><strong>Exploit scenario:</strong> All 3 features lack <code>cycle_id</code> and <code>traceability_report</code>. Columns absent from DB. Traceability reports exist as files in <code>Plans/</code> but are not linked to Feature records.</p>
+  <p><strong>Impact:</strong> Audit criterion 5 fails: completed features have no programmatic traceability reports.</p>
+  <div class="rec-block rec-critical"><strong>Recommendation:</strong> Restart server. Ensure <code>completeCycle()</code> passes <code>cycle_id</code> to <code>createFeature()</code>. Backfill existing features. Consider implementing <code>GET /api/features/:id/traceability</code>.</div>
+</div>
+
+<!-- ═══════════ SECTION 10: RISK MATRIX ═══════════ -->
+<h2><span class="section-num">§10</span>Risk Matrix</h2>
+<div class="card">
+  <table class="risk-matrix">
+    <tr>
+      <th></th>
+      <th>Zero-precondition<br><small>(no auth needed)</small></th>
+      <th>Authenticated</th>
+      <th>Privileged</th>
+      <th>Admin</th>
+      <th>Physical</th>
+    </tr>
+    <tr>
+      <th>P1</th>
+      <td style="background:#fde8e8;">QUAL-P001–P007<br>SEC-P001, SEC-P002<br><small>(7 process + 2 integrity)</small></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <th>P2</th>
+      <td style="background:#fef3e0;">QUAL-P008, QUAL-P009<br>SEC-P005<br><small>(2 process + 1 integrity)</small></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <th>P3</th>
+      <td style="background:#fef9e7;">QUAL-P010<br>SEC-P003<br><small>(1 process + 1 integrity)</small></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <th>P4</th>
+      <td style="background:#f4f6f7;">SEC-P007, SEC-P008<br><small>(2 low-severity)</small></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  </table>
+  <p class="meta" style="margin-top:0.5rem;"><strong>Note:</strong> All findings are zero-precondition because there is no authentication layer (SEC-001). Any network-accessible caller can observe or exploit all gaps.</p>
+</div>
+
+<!-- ═══════════ SECTION 11: SPEC COVERAGE ═══════════ -->
+<h2><span class="section-num">§11</span>Spec Coverage</h2>
+<div class="card">
+  <h3>Source <code>// Verifies:</code> Coverage: 68.1% (47 of 69 FRs)</h3>
+  <div class="bar-container"><div class="bar-fill" style="width:68.1%;background:var(--p2);"></div></div>
+
+  <h3>Test Coverage: 100% (69 of 69 FRs)</h3>
+  <div class="bar-container"><div class="bar-fill" style="width:100%;background:var(--fixed);"></div></div>
+
+  <h3>Traceability Enforcer Scope: 46.4% (32 of 69 FRs)</h3>
+  <div class="bar-container"><div class="bar-fill" style="width:46.4%;background:var(--p1);"></div></div>
+
+  <h4>Top uncovered requirements (missing source <code>// Verifies:</code> markers):</h4>
+  <table>
+    <tr><th>#</th><th>FR</th><th>File</th><th>Category</th></tr>
+    <tr><td>1</td><td>FR-033</td><td>types.ts</td><td>Pipeline types</td></tr>
+    <tr><td>2</td><td>FR-034</td><td>api.ts</td><td>Pipeline API contracts</td></tr>
+    <tr><td>3</td><td>FR-035</td><td>schema.ts</td><td>Pipeline schema</td></tr>
+    <tr><td>4</td><td>FR-039</td><td>cycleService.ts</td><td>Cycle integration</td></tr>
+    <tr><td>5</td><td>FR-041</td><td>cycleService.ts</td><td>Cycle routes</td></tr>
+    <tr><td>6</td><td>FR-042</td><td>dashboardService.ts</td><td>Dashboard metrics</td></tr>
+    <tr><td>7</td><td>FR-050</td><td>types.ts</td><td>Traceability types</td></tr>
+    <tr><td>8</td><td>FR-051</td><td>api.ts</td><td>Traceability API</td></tr>
+    <tr><td>9</td><td>FR-052</td><td>schema.ts</td><td>Traceability schema</td></tr>
+    <tr><td>10</td><td>FR-054</td><td>bugService.ts</td><td>Bug traceability</td></tr>
+  </table>
+  <p class="meta">6 additional FRs also missing: FR-055, FR-056, FR-057, FR-058, FR-060, FR-061</p>
+</div>
+
+<!-- ═══════════ SECTION 12: LATENCY BASELINES ═══════════ -->
+<h2><span class="section-num">§12</span>Latency Baselines</h2>
+<div class="card">
+  <p><em>Not profiled in this audit. This is a focused process traceability audit — performance-profiler was not dispatched.</em></p>
+  <p>Refer to <code>Teams/TheInspector/findings/performance-profiler-2026-03-24.md</code> for the most recent latency baselines from the prior full audit.</p>
+  <table>
+    <tr><th>Metric</th><th>Prior Audit Value</th><th>Budget</th><th>Status</th></tr>
+    <tr><td>Default p95</td><td>See prior report</td><td>500ms</td><td>—</td></tr>
+    <tr><td>Default p99</td><td>See prior report</td><td>2000ms</td><td>—</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════ SECTION 13: P2 FINDINGS ═══════════ -->
+<h2><span class="section-num">§13</span>P2 Findings</h2>
+<div class="card">
+  <table>
+    <tr><th>ID</th><th>Category</th><th>Title</th><th>File</th><th>Status</th></tr>
+    <tr>
+      <td>QUAL-P008</td><td>Process</td><td>Bug backlog missing recommendations for 26 of 34 entries</td>
+      <td><code>docs/reports/bug-backlog-2026-03-24.json</code></td>
+      <td><span class="badge badge-new">NEW</span></td>
+    </tr>
+    <tr>
+      <td>QUAL-P009</td><td>Process</td><td>Traceability enforcer requirements still missing FR-033–FR-069</td>
+      <td><code>tools/traceability-enforcer.py</code></td>
+      <td><span class="badge badge-new">NEW</span></td>
+    </tr>
+    <tr>
+      <td>SEC-P005</td><td>Integrity</td><td>Bug backlog has no work_item_id cross-references to DB records</td>
+      <td><code>docs/reports/bug-backlog-2026-03-24.json</code></td>
+      <td><span class="badge badge-new">NEW</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══════════ SECTION 14: FIXED FINDINGS ═══════════ -->
+<h2><span class="section-num">§14</span>Fixed Findings</h2>
+<div class="card card-fixed">
+  <p><strong>None.</strong> No findings from any prior audit have been resolved. Remediation rate: 0/29 (0%).</p>
+</div>
+
+<!-- ═══════════ SECTION 15: RECOMMENDATIONS ═══════════ -->
+<h2><span class="section-num">§15</span>Recommendations</h2>
+
+<div class="rec-block rec-critical">
+  <h4>🛑 Block Deployment (Immediate)</h4>
+  <ol>
+    <li><strong>Restart the backend server</strong> to apply FR-050–FR-069 schema migrations. This single action resolves QUAL-P001 through QUAL-P007 and SEC-P001 through SEC-P004 (11 findings). Command: <code>cd /workspace/Source/Backend && npx tsx src/index.ts</code></li>
+    <li><strong>Backfill traceability data</strong> on existing bugs (BUG-0001, BUG-0002), tickets (TKT-0001, TKT-0002), and features (FEAT-0001–FEAT-0003) with correct FR references, cycle IDs, and considered fixes.</li>
+    <li><strong>Add post-merge restart step</strong> to pipeline runbook — ensure schema migrations always apply after code is merged.</li>
+  </ol>
+</div>
+
+<div class="rec-block">
+  <h4>📋 This Sprint</h4>
+  <ol>
+    <li><strong>Complete bug backlog entries</strong> — add <code>file</code>, <code>recommendation</code>, and <code>work_item_id</code> fields to all 26 incomplete P2 entries (QUAL-P008, SEC-P005).</li>
+    <li><strong>Update traceability enforcer</strong> to cover all 69 FRs (QUAL-P009). Either consolidate requirements files or update the enforcer to read all three Plan directories.</li>
+    <li><strong>Hydrate team_name in listCycles()</strong> — currently only hydrated in getCycleById() (SEC-P003).</li>
+    <li><strong>Exercise the feedback loop</strong> — submit TheInspector findings as cycle feedback via <code>POST /api/cycles/:id/feedback</code> (SEC-P004).</li>
+  </ol>
+</div>
+
+<div class="rec-block">
+  <h4>📅 Next Sprint</h4>
+  <ol>
+    <li><strong>Add formal <code>// Verifies: FR-XXX</code> markers</strong> to 16 source files missing them (QUAL-P010).</li>
+    <li><strong>Implement <code>GET /api/features/:id/traceability</code> endpoint</strong> to expose the traceability report JSON (SEC-P006).</li>
+    <li><strong>Establish process requirement</strong> that all pipeline stage completions must include feedback records (FR-060 enforcement).</li>
+    <li><strong>Consider adding <code>raised_by_team</code> column</strong> to bugs table for direct team attribution (SEC-P007).</li>
+  </ol>
+</div>
+
+<div class="rec-block">
+  <h4>📦 Backlog</h4>
+  <ol>
+    <li>Remove hardcoded <code>DEFAULT 'TheATeam'</code> from pipeline_runs.team — require explicit team declaration (SEC-P008).</li>
+    <li>Add CHECK constraint on <code>related_work_item_id</code> format matching <code>related_work_item_type</code> (SEC-P007).</li>
+    <li>Address the 29 prior audit findings that remain at 0% remediation rate.</li>
+  </ol>
+</div>
+
+<!-- ═══════════ SECTION 16: P3/P4 SUMMARY ═══════════ -->
+<h2><span class="section-num">§16</span>P3/P4 Summary</h2>
+<div class="card">
+  <table>
+    <tr><th>ID</th><th>Severity</th><th>Category</th><th>Title</th><th>Status</th></tr>
+    <tr>
+      <td>QUAL-P010</td><td><span class="badge badge-p3">P3</span></td><td>Process</td>
+      <td>16 non-meta FRs lack formal source <code>// Verifies:</code> comments</td>
+      <td><span class="badge badge-new">NEW</span></td>
+    </tr>
+    <tr>
+      <td>SEC-P003</td><td><span class="badge badge-p3">P3</span></td><td>Integrity</td>
+      <td>Cycles list endpoint missing team_name and feedback[]</td>
+      <td><span class="badge badge-new">NEW</span></td>
+    </tr>
+    <tr>
+      <td>SEC-P007</td><td><span class="badge badge-p4">P4</span></td><td>Schema</td>
+      <td>Bugs table uses polymorphic pattern instead of direct related_fr_id FK</td>
+      <td><span class="badge badge-new">NEW</span></td>
+    </tr>
+    <tr>
+      <td>SEC-P008</td><td><span class="badge badge-p4">P4</span></td><td>Integrity</td>
+      <td>Pipeline runs team field has hardcoded default 'TheATeam'</td>
+      <td><span class="badge badge-new">NEW</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<hr style="margin-top: 2rem;">
+<p class="meta" style="text-align: center; margin-top: 1rem;">
+  Generated by <strong>TheInspector</strong> — Process Traceability Audit<br>
+  Team: quality-oracle (hybrid), red-teamer (hybrid)<br>
+  2026-03-24 &nbsp;|&nbsp; Branch: master &nbsp;|&nbsp; Commit: 852ccd3
+</p>
+
+</body>
+</html>

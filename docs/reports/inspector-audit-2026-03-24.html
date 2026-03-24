@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TheInspector Audit Report — 2026-03-24</title>
+<style>
+  :root {
+    --grade-d: #e67e22;
+    --p1: #e74c3c;
+    --p2: #e67e22;
+    --p3: #f1c40f;
+    --p4: #95a5a6;
+    --fixed: #27ae60;
+    --still-open: #e74c3c;
+    --new: #3498db;
+    --regressed: #9b59b6;
+    --bg: #fafafa;
+    --card-bg: #fff;
+    --border: #e0e0e0;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+  h1, h2, h3, h4 { margin-top: 1.5rem; margin-bottom: 0.5rem; }
+  h1 { font-size: 1.8rem; border-bottom: 3px solid var(--grade-d); padding-bottom: 0.5rem; }
+  h2 { font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; color: #34495e; }
+  h3 { font-size: 1.1rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { padding: 0.5rem 0.75rem; text-align: left; border: 1px solid var(--border); }
+  th { background: #ecf0f1; font-weight: 600; }
+  tr:nth-child(even) { background: #f9f9f9; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin: 1rem 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+  .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; color: #fff; }
+  .badge-p1 { background: var(--p1); }
+  .badge-p2 { background: var(--p2); }
+  .badge-p3 { background: var(--p3); color: #333; }
+  .badge-p4 { background: var(--p4); }
+  .badge-fixed { background: var(--fixed); }
+  .badge-still-open { background: var(--still-open); }
+  .badge-new { background: var(--new); }
+  .badge-regressed { background: var(--regressed); }
+  .grade-badge { font-size: 3rem; font-weight: 800; color: #fff; background: var(--grade-d); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .header-row { display: flex; align-items: center; gap: 2rem; margin-bottom: 1rem; }
+  .header-info { flex: 1; }
+  .scorecards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1rem 0; }
+  .scorecard { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center; }
+  .scorecard .number { font-size: 2rem; font-weight: 700; }
+  .scorecard .label { font-size: 0.85rem; color: var(--text-light); }
+  .bar-container { background: #ecf0f1; border-radius: 4px; height: 20px; margin: 0.25rem 0; }
+  .bar { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 0.5rem; font-size: 0.75rem; font-weight: 600; color: #fff; }
+  .bar-green { background: var(--fixed); }
+  .bar-red { background: var(--p1); }
+  .bar-yellow { background: var(--p3); color: #333; }
+  .risk-matrix { border-collapse: collapse; }
+  .risk-matrix td { width: 120px; height: 60px; text-align: center; vertical-align: middle; font-size: 0.85rem; }
+  .risk-high { background: #fadbd8; }
+  .risk-medium { background: #fdebd0; }
+  .risk-low { background: #d5f5e3; }
+  .risk-none { background: #f2f3f4; }
+  ul { margin-left: 1.5rem; margin-top: 0.5rem; }
+  li { margin-bottom: 0.3rem; }
+  code { background: #ecf0f1; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.9em; }
+  .section-num { color: var(--text-light); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<!-- ================================================================ -->
+<!-- SECTION 1: HEADER -->
+<!-- ================================================================ -->
+<h1>TheInspector Audit Report</h1>
+<div class="header-row">
+  <div class="grade-badge">D</div>
+  <div class="header-info">
+    <p><strong>Branch:</strong> master</p>
+    <p><strong>Date:</strong> 2026-03-24</p>
+    <p><strong>Scope:</strong> Post-work audit — Pipeline orchestration feature (FR-033 through FR-049) after TheATeam completion</p>
+    <p><strong>Prior audit:</strong> 2026-03-23 (Grade D)</p>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 2: SCORECARDS -->
+<!-- ================================================================ -->
+<h2><span class="section-num">2.</span> Scorecards</h2>
+<div class="scorecards">
+  <div class="scorecard">
+    <div class="number" style="color: var(--p1);">8</div>
+    <div class="label">P1 Critical</div>
+  </div>
+  <div class="scorecard">
+    <div class="number" style="color: var(--p2);">19</div>
+    <div class="label">P2 Major</div>
+  </div>
+  <div class="scorecard">
+    <div class="number" style="color: #d4ac0d;">30</div>
+    <div class="label">P3 Moderate</div>
+  </div>
+  <div class="scorecard">
+    <div class="number" style="color: var(--p4);">8</div>
+    <div class="label">P4 Minor</div>
+  </div>
+  <div class="scorecard">
+    <div class="number" style="color: var(--fixed);">79.6%</div>
+    <div class="label">Spec Coverage (source)</div>
+  </div>
+  <div class="scorecard">
+    <div class="number" style="color: var(--fixed);">3/5</div>
+    <div class="label">Dynamic Mode</div>
+  </div>
+  <div class="scorecard">
+    <div class="number" style="color: var(--fixed);">1</div>
+    <div class="label">FIXED</div>
+  </div>
+  <div class="scorecard">
+    <div class="number" style="color: var(--new);">21</div>
+    <div class="label">NEW Findings</div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 3: EXECUTIVE SUMMARY -->
+<!-- ================================================================ -->
+<h2><span class="section-num">3.</span> Executive Summary</h2>
+<div class="card">
+  <p><strong>Top 5 findings an operator needs to know:</strong></p>
+  <ol>
+    <li><strong>Zero authentication/authorization (SEC-001, SEC-002, SEC-015):</strong> Every endpoint, including the new pipeline orchestration endpoints, is fully anonymous. Any network caller can approve/deny features, advance pipeline stages, and trigger cycle completions. This is the #1 blocker for any production deployment.</li>
+    <li><strong>Pipeline/cycle state deadlock (CHAOS-017):</strong> Completing pipeline stage 5 when cycle has incomplete tickets marks the pipeline as "completed" but leaves the cycle stuck. No recovery path exists — the pipeline can't be re-completed and the cycle can't be manually advanced. Dynamically confirmed.</li>
+    <li><strong>Pipeline bypass via direct cycle completion (SEC-016, CHAOS-018):</strong> POST /cycles/:id/complete works on pipeline-linked cycles, bypassing all 5 quality gate stages. Subsequent stage completions then rewrite the cycle status backward. Dynamically confirmed.</li>
+    <li><strong>Non-transactional multi-table writes (CHAOS-006, CHAOS-019):</strong> Both createCycle and createPipelineRun perform multiple database writes without transactions. A crash mid-operation leaves inconsistent state with no recovery.</li>
+    <li><strong>Missing database indexes (PERF-003, PERF-017):</strong> Zero explicit indexes on any table, including the new pipeline tables. Every foreign key lookup is a full table scan. All latency budgets pass at current scale but will degrade.</li>
+  </ol>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 4: SCOPE & ENVIRONMENT -->
+<!-- ================================================================ -->
+<h2><span class="section-num">4.</span> Scope &amp; Environment</h2>
+<div class="card">
+  <table>
+    <tr><th>Item</th><th>Value</th></tr>
+    <tr><td>What was audited</td><td>Pipeline orchestration feature (FR-033—FR-049), full re-verification of all prior findings</td></tr>
+    <tr><td>Backend</td><td>http://localhost:3001 — UP</td></tr>
+    <tr><td>Frontend</td><td>http://localhost:5173 — UP</td></tr>
+    <tr><td>Tech stack</td><td>Node.js/Express/TypeScript, React/Vite/Tailwind, SQLite (better-sqlite3)</td></tr>
+    <tr><td>Dataset size</td><td>Small (~10 FRs, ~5 bugs, 2 cycles, 2 pipeline runs)</td></tr>
+    <tr><td>Source files analyzed</td><td>22 backend + 18 frontend + 2 shared = 42 TypeScript files</td></tr>
+    <tr><td>Test files</td><td>18 test files, 429 test cases</td></tr>
+  </table>
+
+  <h4>Specialist Modes &amp; Durations</h4>
+  <table>
+    <tr><th>Specialist</th><th>Mode</th><th>Findings</th></tr>
+    <tr><td>Red Teamer</td><td>Hybrid (static + dynamic)</td><td>20 (6 new, 14 re-verified)</td></tr>
+    <tr><td>Quality Oracle</td><td>Static</td><td>9 (4 new, 5 re-verified)</td></tr>
+    <tr><td>Performance Profiler</td><td>Hybrid (static + dynamic)</td><td>22 (7 new, 15 re-verified)</td></tr>
+    <tr><td>Chaos Monkey</td><td>Hybrid (static + dynamic)</td><td>21 (5 new, 16 re-verified)</td></tr>
+    <tr><td>Dependency Auditor</td><td>Static</td><td>13 (3 new, 10 re-verified)</td></tr>
+  </table>
+  <p><strong>Data caveats:</strong> Dynamic latency measurements at small dataset. Performance findings are structural — degradation expected at scale.</p>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 5: TREND -->
+<!-- ================================================================ -->
+<h2><span class="section-num">5.</span> Trend</h2>
+<div class="card">
+  <table>
+    <tr><th>Metric</th><th>Prior (2026-03-23)</th><th>Current (2026-03-24)</th><th>Change</th></tr>
+    <tr><td>Grade</td><td><span class="badge badge-p2">D</span></td><td><span class="badge badge-p2">D</span></td><td>No change</td></tr>
+    <tr><td>P1 findings</td><td>5</td><td>8</td><td style="color: var(--p1);">+3 (new pipeline transaction/state issues)</td></tr>
+    <tr><td>P2 findings</td><td>14</td><td>19</td><td style="color: var(--p2);">+5</td></tr>
+    <tr><td>P3 findings</td><td>22</td><td>30</td><td style="color: #d4ac0d;">+8</td></tr>
+    <tr><td>P4 findings</td><td>6</td><td>8</td><td>+2</td></tr>
+    <tr><td>Total findings</td><td>47</td><td>65</td><td>+18 new, 1 fixed</td></tr>
+    <tr><td>Spec coverage (source)</td><td>100% (32/32)</td><td>79.6% (39/49)</td><td style="color: var(--p1);">-20.4% (6 new FRs lack formal traceability)</td></tr>
+    <tr><td>Spec coverage (test)</td><td>100% (32/32)</td><td>100% (49/49)</td><td style="color: var(--fixed);">Maintained</td></tr>
+    <tr><td>Test cases</td><td>343</td><td>429</td><td style="color: var(--fixed);">+86</td></tr>
+    <tr><td>FIXED findings</td><td>1</td><td>1 (CHAOS-010)</td><td>Input length limits now on all entities</td></tr>
+  </table>
+  <p><strong>Trend assessment:</strong> Grade unchanged at D. The pipeline feature adds significant new functionality with good test coverage (+86 tests) but introduces 3 new P1 transaction/state-machine issues and inherits the foundational auth gap. The codebase is growing more capable but the security and reliability debt is compounding.</p>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 6: SPECIALIST REPORTS -->
+<!-- ================================================================ -->
+<h2><span class="section-num">6.</span> Specialist Reports</h2>
+
+<div class="card">
+  <div class="card-header">
+    <h3>Red Teamer</h3>
+    <span class="badge badge-p1">3 P1 / 5 P2 / 11 P3 / 1 P4</span>
+  </div>
+  <p><strong>Mode:</strong> Hybrid (static + dynamic) | <strong>Verdict:</strong> FAIL — zero auth on all endpoints including new pipeline routes</p>
+  <p>6 new findings. SEC-015 (unauthenticated pipeline manipulation) is critical. SEC-016/SEC-017 show pipeline bypass and transition validation gaps. 14 prior findings all STILL OPEN.</p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>Quality Oracle</h3>
+    <span class="badge badge-p2">0 P1 / 4 P2 / 3 P3 / 2 P4</span>
+  </div>
+  <p><strong>Mode:</strong> Static | <strong>Verdict:</strong> PARTIAL PASS — 100% test coverage but 79.6% source traceability</p>
+  <p>4 new findings. QUAL-006 (enforcer requirements outdated) is highest impact. 429 test cases across 18 files. No spec drift in pipeline implementation.</p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>Performance Profiler</h3>
+    <span class="badge badge-p1">1 P1 / 3 P2 / 3 P3 / 1 P4</span>
+  </div>
+  <p><strong>Mode:</strong> Hybrid (static + dynamic) | <strong>Verdict:</strong> PASS (latency budgets met) with structural concerns</p>
+  <p>7 new findings. PERF-017 (missing pipeline indexes) is P1. All endpoints pass latency budgets at small dataset. 15 prior findings all STILL OPEN (1 compounded).</p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>Chaos Monkey</h3>
+    <span class="badge badge-p1">4 P1 / 7 P2 / 8 P3 / 1 P4</span>
+  </div>
+  <p><strong>Mode:</strong> Hybrid (static + dynamic) | <strong>Verdict:</strong> FAIL — 3 new P1 transaction/state corruption issues dynamically confirmed</p>
+  <p>5 new findings. CHAOS-017 (pipeline/cycle deadlock) and CHAOS-018 (pipeline bypass state corruption) both dynamically reproduced. 1 prior finding FIXED (CHAOS-010).</p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>Dependency Auditor</h3>
+    <span class="badge badge-p3">0 P1 / 2 P2 / 8 P3 / 3 P4</span>
+  </div>
+  <p><strong>Mode:</strong> Static | <strong>Verdict:</strong> PASS — no new deps, no new CVEs, all licenses permissive</p>
+  <p>3 new findings (version drift). No new dependencies added for pipeline feature. 10 prior findings all STILL OPEN.</p>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 7: RE-VERIFICATION SUMMARY -->
+<!-- ================================================================ -->
+<h2><span class="section-num">7.</span> Re-Verification Summary</h2>
+<div class="card">
+  <table>
+    <tr><th>Status</th><th>Count</th><th>Details</th></tr>
+    <tr><td><span class="badge badge-fixed">FIXED</span></td><td>1</td><td>CHAOS-010 (input length limits on all entities)</td></tr>
+    <tr><td><span class="badge badge-still-open">STILL OPEN</span></td><td>43</td><td>All prior P1/P2/P3/P4 findings except CHAOS-010</td></tr>
+    <tr><td><span class="badge badge-regressed">REGRESSED</span></td><td>0</td><td>None</td></tr>
+    <tr><td><span class="badge badge-new">NEW</span></td><td>21</td><td>6 security + 4 quality + 7 performance + 3 chaos + 3 dependency</td></tr>
+  </table>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 8: CROSS-REFERENCE MAP -->
+<!-- ================================================================ -->
+<h2><span class="section-num">8.</span> Cross-Reference Map</h2>
+<div class="card">
+  <p>Root causes that span multiple specialists. Fixing one root cause resolves findings across 2+ domains.</p>
+  <table>
+    <tr><th>Root Cause</th><th>Affected Findings</th><th>Fix Impact</th></tr>
+    <tr>
+      <td><strong>No authentication/authorization layer</strong></td>
+      <td>SEC-001, SEC-002, SEC-005, SEC-008, SEC-011, SEC-015, SEC-020</td>
+      <td>Adding auth middleware + RBAC resolves 7 findings across security domain and blocks all unauthenticated pipeline manipulation</td>
+    </tr>
+    <tr>
+      <td><strong>Pipeline bypass — completeCycle() missing pipeline guard</strong></td>
+      <td>SEC-016, SEC-017, CHAOS-017, CHAOS-018</td>
+      <td>Adding pipeline_run_id check in completeCycle() + wrapping stage-5 path in transaction resolves 4 findings across security and chaos domains</td>
+    </tr>
+    <tr>
+      <td><strong>Non-transactional multi-table writes</strong></td>
+      <td>CHAOS-006, CHAOS-019, PERF-018, CHAOS-014</td>
+      <td>Wrapping createCycle + createPipelineRun in db.transaction() resolves 4 findings across chaos and performance domains</td>
+    </tr>
+    <tr>
+      <td><strong>Sequential ID generation (TOCTOU race)</strong></td>
+      <td>SEC-003, SEC-004, SEC-019, CHAOS-004, CHAOS-021</td>
+      <td>Switching to UUIDs or AUTOINCREMENT resolves 5 findings across security and chaos domains</td>
+    </tr>
+    <tr>
+      <td><strong>Missing database indexes</strong></td>
+      <td>PERF-003, PERF-017</td>
+      <td>Adding CREATE INDEX for all FK columns resolves 2 performance findings</td>
+    </tr>
+    <tr>
+      <td><strong>N+1 query pattern</strong></td>
+      <td>PERF-001, PERF-002, PERF-016</td>
+      <td>Refactoring to JOIN queries resolves 3 performance findings</td>
+    </tr>
+    <tr>
+      <td><strong>Service-layer framework coupling</strong></td>
+      <td>QUAL-001, QUAL-002, QUAL-008</td>
+      <td>Extracting AppError + metrics into lib/ modules resolves 3 quality findings</td>
+    </tr>
+    <tr>
+      <td><strong>Redundant double-read on write operations</strong></td>
+      <td>PERF-007, PERF-009, PERF-019, PERF-020, PERF-021</td>
+      <td>Returning constructed objects instead of re-reading resolves 5 performance findings</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 9: P1 FINDINGS -->
+<!-- ================================================================ -->
+<h2><span class="section-num">9.</span> P1 Findings</h2>
+
+<div class="card" style="border-left: 4px solid var(--p1);">
+  <div class="card-header">
+    <h3>SEC-001: No Authentication <span class="badge badge-still-open">STILL OPEN</span></h3>
+    <span class="badge badge-p1">P1</span>
+  </div>
+  <p><strong>File:</strong> <code>Source/Backend/src/index.ts</code></p>
+  <p><strong>Exploit:</strong> Any caller on the network can access every endpoint without credentials.</p>
+  <p><strong>Impact:</strong> Complete system compromise. All data readable, writable, deletable by anonymous callers.</p>
+  <p><strong>Recommendation:</strong> Implement JWT-based authentication middleware. Gate all routes behind auth. Add user/role tables.</p>
+</div>
+
+<div class="card" style="border-left: 4px solid var(--p1);">
+  <div class="card-header">
+    <h3>SEC-002: No Authorization <span class="badge badge-still-open">STILL OPEN</span></h3>
+    <span class="badge badge-p1">P1</span>
+  </div>
+  <p><strong>File:</strong> <code>Source/Backend/src/index.ts</code></p>
+  <p><strong>Exploit:</strong> No role-based access control. No user concept. All operations available to all callers.</p>
+  <p><strong>Impact:</strong> Admin operations (approve/deny FRs, advance pipeline stages, complete cycles) available to everyone.</p>
+  <p><strong>Recommendation:</strong> Implement RBAC with roles: user, agent, pipeline-operator, admin.</p>
+</div>
+
+<div class="card" style="border-left: 4px solid var(--p1);">
+  <div class="card-header">
+    <h3>SEC-015: Unauthenticated Pipeline Stage Manipulation <span class="badge badge-new">NEW</span></h3>
+    <span class="badge badge-p1">P1</span>
+  </div>
+  <p><strong>File:</strong> <code>Source/Backend/src/routes/pipelines.ts:57-108</code></p>
+  <p><strong>Exploit:</strong> Any caller can discover pipeline runs via GET, then start/complete all 5 stages with approved verdict, triggering completeCycle() with all side-effects (work items marked complete, feature/learning records created).</p>
+  <p><strong>Impact:</strong> Complete pipeline sabotage. Work items fast-tracked without actual development.</p>
+  <p><strong>Recommendation:</strong> Add auth middleware. Validate caller identity matches stage's agent_ids.</p>
+</div>
+
+<div class="card" style="border-left: 4px solid var(--p1);">
+  <div class="card-header">
+    <h3>PERF-017: Missing Indexes on Pipeline Tables <span class="badge badge-new">NEW</span></h3>
+    <span class="badge badge-p1">P1</span>
+  </div>
+  <p><strong>File:</strong> <code>Source/Backend/src/database/schema.ts:102-130</code></p>
+  <p><strong>Exploit:</strong> Every getStagesForRun() call performs a full table scan on pipeline_stages.</p>
+  <p><strong>Impact:</strong> At 1000 pipeline runs (5000 stage rows), all pipeline operations degrade significantly.</p>
+  <p><strong>Recommendation:</strong> <code>CREATE INDEX idx_pipeline_stages_run_id ON pipeline_stages(pipeline_run_id)</code></p>
+</div>
+
+<div class="card" style="border-left: 4px solid var(--p1);">
+  <div class="card-header">
+    <h3>CHAOS-006: createCycle Non-Transactional Multi-Table Writes <span class="badge badge-still-open">STILL OPEN</span></h3>
+    <span class="badge badge-p1">P1</span>
+  </div>
+  <p><strong>File:</strong> <code>Source/Backend/src/services/cycleService.ts:208-221</code></p>
+  <p><strong>Exploit:</strong> INSERT into cycles + UPDATE work item status are separate writes. Crash between them leaves inconsistent state.</p>
+  <p><strong>Impact:</strong> Cycle exists without work item status update, or vice versa. No recovery path.</p>
+  <p><strong>Recommendation:</strong> Wrap in <code>db.transaction()</code>.</p>
+</div>
+
+<div class="card" style="border-left: 4px solid var(--p1);">
+  <div class="card-header">
+    <h3>CHAOS-017: Pipeline Stage 5 Non-Transactional — Pipeline/Cycle Deadlock <span class="badge badge-new">NEW</span></h3>
+    <span class="badge badge-p1">P1</span>
+  </div>
+  <p><strong>File:</strong> <code>Source/Backend/src/services/pipelineService.ts:274-288</code></p>
+  <p><strong>Exploit:</strong> Stage 5 completion marks pipeline as "completed" BEFORE calling completeCycle(). If completeCycle() throws (incomplete tickets), pipeline is completed but cycle is stuck. No recovery path.</p>
+  <p><strong>Impact:</strong> <strong>Dynamically confirmed.</strong> Pipeline reports success; cycle stuck in smoke_test. System deadlocked.</p>
+  <p><strong>Recommendation:</strong> Wrap pipeline update + completeCycle() in single <code>db.transaction()</code>.</p>
+</div>
+
+<div class="card" style="border-left: 4px solid var(--p1);">
+  <div class="card-header">
+    <h3>CHAOS-018: Pipeline Bypass via Direct Cycle Completion <span class="badge badge-new">NEW</span></h3>
+    <span class="badge badge-p1">P1</span>
+  </div>
+  <p><strong>File:</strong> <code>Source/Backend/src/services/cycleService.ts:397-469</code></p>
+  <p><strong>Exploit:</strong> POST /cycles/:id/complete works on pipeline-linked cycles (no pipeline_run_id guard). After direct completion, pipeline stage completions rewrite cycle status backward (complete → ticket_breakdown).</p>
+  <p><strong>Impact:</strong> <strong>Dynamically confirmed.</strong> Pipeline quality gates bypassed. Cycle status oscillates.</p>
+  <p><strong>Recommendation:</strong> Add guard: <code>if (cycle.pipeline_run_id) throw new AppError(409, ...)</code></p>
+</div>
+
+<div class="card" style="border-left: 4px solid var(--p1);">
+  <div class="card-header">
+    <h3>CHAOS-019: createPipelineRun Non-Transactional 7 DB Writes <span class="badge badge-new">NEW</span></h3>
+    <span class="badge badge-p1">P1</span>
+  </div>
+  <p><strong>File:</strong> <code>Source/Backend/src/services/pipelineService.ts:120-156</code></p>
+  <p><strong>Exploit:</strong> 1 INSERT (run) + 5 INSERTs (stages) + 1 UPDATE (cycle) without transaction. Failure mid-way leaves partial pipeline state.</p>
+  <p><strong>Impact:</strong> Pipeline run exists with incomplete stages. Cycle has no pipeline_run_id. No recovery.</p>
+  <p><strong>Recommendation:</strong> Wrap all writes in <code>db.transaction()</code>.</p>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 10: RISK MATRIX -->
+<!-- ================================================================ -->
+<h2><span class="section-num">10.</span> Risk Matrix</h2>
+<div class="card">
+  <table class="risk-matrix">
+    <tr>
+      <th></th>
+      <th>Zero-precondition</th>
+      <th>Authenticated</th>
+      <th>Privileged</th>
+      <th>Admin</th>
+      <th>Physical</th>
+    </tr>
+    <tr>
+      <th>P1</th>
+      <td class="risk-high">SEC-001, SEC-002, SEC-015, CHAOS-017, CHAOS-018, CHAOS-019</td>
+      <td class="risk-none">—</td>
+      <td class="risk-none">—</td>
+      <td class="risk-none">—</td>
+      <td class="risk-none">—</td>
+    </tr>
+    <tr>
+      <th>P2</th>
+      <td class="risk-high">SEC-003, SEC-005, SEC-008, SEC-016, SEC-017, CHAOS-005, CHAOS-013</td>
+      <td class="risk-none">—</td>
+      <td class="risk-none">—</td>
+      <td class="risk-none">—</td>
+      <td class="risk-none">—</td>
+    </tr>
+    <tr>
+      <th>P3</th>
+      <td class="risk-medium">SEC-004, SEC-006, SEC-007, SEC-009, SEC-010, SEC-011, SEC-012, SEC-018, SEC-019, SEC-020</td>
+      <td class="risk-none">—</td>
+      <td class="risk-none">—</td>
+      <td class="risk-none">—</td>
+      <td class="risk-low">SEC-013</td>
+    </tr>
+    <tr>
+      <th>P4</th>
+      <td class="risk-low">SEC-014</td>
+      <td class="risk-none">—</td>
+      <td class="risk-none">—</td>
+      <td class="risk-none">—</td>
+      <td class="risk-none">—</td>
+    </tr>
+  </table>
+  <p><em>Note: All security findings are zero-precondition because there is no authentication layer. Adding auth would redistribute most P2/P3 findings to the "Authenticated" or "Privileged" columns.</em></p>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 11: SPEC COVERAGE -->
+<!-- ================================================================ -->
+<h2><span class="section-num">11.</span> Spec Coverage</h2>
+<div class="card">
+  <h4>Source Traceability: 79.6% (39/49 FRs)</h4>
+  <div class="bar-container">
+    <div class="bar bar-green" style="width: 79.6%;">79.6%</div>
+  </div>
+
+  <h4>Test Traceability: 100% (49/49 FRs)</h4>
+  <div class="bar-container">
+    <div class="bar bar-green" style="width: 100%;">100%</div>
+  </div>
+
+  <h4>Top 10 Uncovered Requirements (source traceability)</h4>
+  <table>
+    <tr><th>FR</th><th>Description</th><th>Issue</th></tr>
+    <tr><td>FR-033</td><td>PipelineRun/PipelineStage shared types</td><td>Informal // FR-033 comment, not formal // Verifies:</td></tr>
+    <tr><td>FR-034</td><td>API request/response types for pipeline</td><td>Informal // (FR-034) comment</td></tr>
+    <tr><td>FR-035</td><td>Pipeline tables + pipeline_run_id column</td><td>Informal // (FR-035) comment</td></tr>
+    <tr><td>FR-039</td><td>Block manual PATCH on pipeline-linked cycles</td><td>Informal // FR-039: comment in cycleService.ts</td></tr>
+    <tr><td>FR-041</td><td>Hydrate pipeline_run in cycle GET response</td><td>Informal // FR-041: comment in cycles.ts</td></tr>
+    <tr><td>FR-042</td><td>Dashboard summary includes pipeline info</td><td>Informal // FR-042: comment in dashboardService.ts</td></tr>
+  </table>
+  <p><em>All 6 have informal inline comments but lack the formal <code>// Verifies: FR-XXX</code> pattern. The traceability enforcer's requirements file also needs updating (only checks FR-001 through FR-032).</em></p>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 12: LATENCY BASELINES -->
+<!-- ================================================================ -->
+<h2><span class="section-num">12.</span> Latency Baselines</h2>
+<div class="card">
+  <table>
+    <tr><th>Endpoint</th><th>p50 (ms)</th><th>p95 (ms)</th><th>p99 (ms)</th><th>Budget (ms)</th><th>Status</th></tr>
+    <tr><td>GET /api/pipeline-runs</td><td>1.30</td><td>1.99</td><td>1.99</td><td>500</td><td style="color: var(--fixed);">PASS</td></tr>
+    <tr><td>GET /api/pipeline-runs/:id</td><td>1.45</td><td>2.05</td><td>2.05</td><td>200</td><td style="color: var(--fixed);">PASS</td></tr>
+    <tr><td>GET /api/cycles/:id/pipeline</td><td>1.43</td><td>1.87</td><td>1.87</td><td>200</td><td style="color: var(--fixed);">PASS</td></tr>
+    <tr><td>POST stages/:n/start</td><td>~1.9</td><td>~2.2</td><td>~2.2</td><td>200</td><td style="color: var(--fixed);">PASS</td></tr>
+    <tr><td>POST stages/1-4/complete</td><td>~2.0</td><td>~2.5</td><td>~2.5</td><td>200</td><td style="color: var(--fixed);">PASS</td></tr>
+    <tr><td>POST stages/5/complete (cascade)</td><td>~3.8</td><td>~3.8</td><td>~3.8</td><td>200</td><td style="color: var(--fixed);">PASS</td></tr>
+    <tr><td>GET /api/feature-requests</td><td>1.56</td><td>2.19</td><td>2.19</td><td>500</td><td style="color: var(--fixed);">PASS</td></tr>
+    <tr><td>GET /api/dashboard/summary</td><td>1.43</td><td>2.07</td><td>2.07</td><td>200</td><td style="color: var(--fixed);">PASS</td></tr>
+    <tr><td>GET /api/dashboard/activity</td><td>1.69</td><td>2.64</td><td>2.64</td><td>500</td><td style="color: var(--fixed);">PASS</td></tr>
+  </table>
+  <p><em>All endpoints pass at current small dataset. The N+1/missing-index/unbounded-query findings will manifest at scale (100+ cycles, 500+ pipeline runs). No regressions vs prior audit baselines.</em></p>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 13: P2 FINDINGS -->
+<!-- ================================================================ -->
+<h2><span class="section-num">13.</span> P2 Findings</h2>
+<div class="card">
+  <table>
+    <tr><th>ID</th><th>Category</th><th>Title</th><th>File</th><th>Status</th></tr>
+    <tr><td>SEC-003</td><td>Security</td><td>Sequential ID / IDOR (extended to pipeline)</td><td>All ID generators</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>SEC-005</td><td>Security</td><td>Unauthenticated /metrics (extended)</td><td>middleware/metrics.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>SEC-008</td><td>Security</td><td>No rate limiting</td><td>index.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>SEC-016</td><td>Security</td><td>Pipeline bypass via direct cycle completion</td><td>cycleService.ts:397</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>SEC-017</td><td>Security</td><td>Pipeline stage bypasses cycle transition validation</td><td>pipelineService.ts:292</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>QUAL-001</td><td>Quality</td><td>Route handlers call getDb() directly</td><td>All 7 route files</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>QUAL-002</td><td>Quality</td><td>Services import AppError from middleware</td><td>All 6 service files</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>QUAL-003</td><td>Quality</td><td>Duplicate type definitions (9 types)</td><td>Shared/api.ts + services</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>QUAL-006</td><td>Quality</td><td>Traceability enforcer requirements outdated</td><td>Plans/requirements.md</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>PERF-001</td><td>Performance</td><td>N+1 in listFeatureRequests</td><td>featureRequestService.ts:152</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>PERF-002</td><td>Performance</td><td>N+1 in listCycles</td><td>cycleService.ts:149</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>PERF-003</td><td>Performance</td><td>Missing FK indexes (all original tables)</td><td>schema.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>PERF-004</td><td>Performance</td><td>Unbounded list queries</td><td>All list endpoints</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>PERF-005</td><td>Performance</td><td>Dashboard activity full-scan</td><td>dashboardService.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>PERF-006</td><td>Performance</td><td>O(N) Jaccard duplicate detection</td><td>featureRequestService.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>PERF-016</td><td>Performance</td><td>N+1 in listPipelineRuns</td><td>pipelineService.ts:174</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>PERF-022</td><td>Performance</td><td>listPipelineRuns no pagination</td><td>pipelineService.ts:162</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>CHAOS-001</td><td>Resilience</td><td>No SIGTERM/SIGINT handler</td><td>index.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>CHAOS-003</td><td>Resilience</td><td>No uncaughtException handler</td><td>index.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>CHAOS-004</td><td>Resilience</td><td>Sequential ID TOCTOU race</td><td>All ID generators</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>CHAOS-005</td><td>Resilience</td><td>Bug status no transition guards</td><td>bugService.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>CHAOS-008</td><td>Resilience</td><td>No unhandledRejection handler</td><td>index.ts</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>CHAOS-013</td><td>Resilience</td><td>Delete creates dangling cycle refs</td><td>featureRequestService/bugService</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>CHAOS-021</td><td>Resilience</td><td>Pipeline ID TOCTOU race</td><td>pipelineService.ts:103</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>DEP-003</td><td>Dependencies</td><td>vitest 2+ majors behind</td><td>package.json</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>DEP-004</td><td>Dependencies</td><td>vite 2+ majors behind</td><td>package.json</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+  </table>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 14: FIXED FINDINGS -->
+<!-- ================================================================ -->
+<h2><span class="section-num">14.</span> Fixed Findings</h2>
+<div class="card" style="border-left: 4px solid var(--fixed);">
+  <div class="card-header">
+    <h3>CHAOS-010: Unbounded Input on Free-Text Fields</h3>
+    <span class="badge badge-fixed">FIXED</span>
+  </div>
+  <p><strong>Prior status:</strong> PARTIALLY FIXED (only featureRequestService had limits)</p>
+  <p><strong>Current status:</strong> FIXED — All entity creation endpoints now validate input lengths:</p>
+  <ul>
+    <li><code>bugService.ts</code>: TITLE_MAX_LENGTH=200, DESCRIPTION_MAX_LENGTH=10000</li>
+    <li><code>learningService.ts</code>: CONTENT_MAX_LENGTH=10000</li>
+    <li><code>cycleService.ts</code>: TICKET_TITLE_MAX_LENGTH=200, TICKET_DESCRIPTION_MAX_LENGTH=10000</li>
+    <li><code>featureRequestService.ts</code>: TITLE_MAX_LENGTH=200, DESCRIPTION_MAX_LENGTH=10000 (from prior audit)</li>
+  </ul>
+  <p><strong>Dynamically confirmed:</strong> POST /api/bugs with 250-char title returns 400. POST /api/learnings with 15000-char content returns 400.</p>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 15: RECOMMENDATIONS -->
+<!-- ================================================================ -->
+<h2><span class="section-num">15.</span> Recommendations</h2>
+<div class="card">
+  <h4 style="color: var(--p1);">Block Deployment (must fix before any production deployment)</h4>
+  <ul>
+    <li><strong>Implement authentication &amp; authorization</strong> — SEC-001, SEC-002, SEC-015. This is the #1 priority. Every endpoint is open.</li>
+    <li><strong>Fix pipeline/cycle state deadlock</strong> — CHAOS-017. Wrap completeStageAction stage 5 in db.transaction(). Without this, the pipeline can deadlock with no recovery.</li>
+    <li><strong>Add pipeline guard to completeCycle()</strong> — SEC-016, CHAOS-018. Add <code>if (cycle.pipeline_run_id) throw 409</code> to prevent bypassing pipeline quality gates.</li>
+    <li><strong>Wrap createCycle + createPipelineRun in transactions</strong> — CHAOS-006, CHAOS-019. Prevents inconsistent state on failure.</li>
+  </ul>
+
+  <h4 style="color: var(--p2);">This Sprint</h4>
+  <ul>
+    <li><strong>Add database indexes</strong> — PERF-003, PERF-017. Zero-risk change, significant performance improvement at scale.</li>
+    <li><strong>Add pipeline-run status guard</strong> — SEC-018. Prevent operations on completed pipeline runs.</li>
+    <li><strong>Add bug status transition guards</strong> — CHAOS-005. Bug status machine allows arbitrary jumps.</li>
+    <li><strong>Update traceability enforcer</strong> — QUAL-006. Add FR-033 through FR-049 to requirements file.</li>
+    <li><strong>Fix formal traceability comments</strong> — QUAL-007. Add <code>// Verifies:</code> for 6 pipeline FRs.</li>
+    <li><strong>Gate /metrics behind auth</strong> — SEC-005, SEC-020. Once auth is implemented.</li>
+  </ul>
+
+  <h4 style="color: var(--p3);">Next Sprint</h4>
+  <ul>
+    <li><strong>Refactor N+1 queries to JOINs</strong> — PERF-001, PERF-002, PERF-016.</li>
+    <li><strong>Add pagination to all list endpoints</strong> — PERF-004, PERF-022.</li>
+    <li><strong>Add rate limiting</strong> — SEC-008.</li>
+    <li><strong>Add security headers (helmet)</strong> — SEC-009.</li>
+    <li><strong>Add SIGTERM/SIGINT handlers</strong> — CHAOS-001.</li>
+    <li><strong>Add unhandledRejection handler</strong> — CHAOS-008.</li>
+    <li><strong>Extract AppError/metrics to lib/</strong> — QUAL-002, QUAL-008.</li>
+    <li><strong>Add pipeline metrics for rejections</strong> — CHAOS-020.</li>
+  </ul>
+
+  <h4 style="color: var(--p4);">Backlog</h4>
+  <ul>
+    <li>Migrate to UUID-based IDs — SEC-003, SEC-019, CHAOS-004, CHAOS-021</li>
+    <li>Upgrade vitest to 4.x (resolves CVE) — DEP-001, DEP-002, DEP-003</li>
+    <li>Upgrade vite to 8.x — DEP-004</li>
+    <li>Upgrade React to 19.x — DEP-005</li>
+    <li>Upgrade OpenTelemetry packages — DEP-006</li>
+    <li>Reduce redundant double-reads — PERF-007, PERF-019, PERF-021</li>
+    <li>Add frontend request timeouts/deduplication — CHAOS-011, CHAOS-012, PERF-013</li>
+    <li>Deduplicate shared type definitions — QUAL-003</li>
+    <li>Add delete guards for entities with active cycles — CHAOS-013</li>
+    <li>Refactor dashboard activity to SQL-level pagination — PERF-005</li>
+  </ul>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 16: P3/P4 SUMMARY -->
+<!-- ================================================================ -->
+<h2><span class="section-num">16.</span> P3/P4 Summary</h2>
+<div class="card">
+  <h4>P3 Findings (30)</h4>
+  <table>
+    <tr><th>ID</th><th>Category</th><th>Title</th><th>Status</th></tr>
+    <tr><td>SEC-004</td><td>Security</td><td>Race condition in ID generation</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>SEC-006</td><td>Security</td><td>Missing input length limits (some fields)</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>SEC-007</td><td>Security</td><td>Unbounded activity feed</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>SEC-009</td><td>Security</td><td>No security headers</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>SEC-010</td><td>Security</td><td>source_system unvalidated (XSS)</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>SEC-011</td><td>Security</td><td>No CSRF protection</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>SEC-012</td><td>Security</td><td>assignee unvalidated (XSS)</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>SEC-013</td><td>Security</td><td>DB path controllable via env</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>SEC-018</td><td>Security</td><td>No guard on completed pipeline runs</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>SEC-019</td><td>Security</td><td>Sequential pipeline run IDs (IDOR)</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>SEC-020</td><td>Security</td><td>Pipeline metrics exposed unauthenticated</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>QUAL-004</td><td>Quality</td><td>Silent OTEL init failure</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>QUAL-007</td><td>Quality</td><td>6 pipeline FRs lack formal Verifies comments</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>QUAL-008</td><td>Quality</td><td>Pipeline service imports from middleware</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>PERF-007</td><td>Performance</td><td>Redundant double reads on writes</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>PERF-008</td><td>Performance</td><td>Synchronous fs calls in getDb()</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>PERF-009</td><td>Performance</td><td>Triple read in PATCH handlers</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>PERF-010</td><td>Performance</td><td>createCycle full row fetch</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>PERF-011</td><td>Performance</td><td>LIKE without FTS index</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>PERF-012</td><td>Performance</td><td>In-memory sort in createCycle</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>PERF-013</td><td>Performance</td><td>Frontend no request deduplication</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>PERF-018</td><td>Performance</td><td>createPipelineRun unbatched writes</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>PERF-019</td><td>Performance</td><td>Double-read in start/complete stage</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>PERF-021</td><td>Performance</td><td>POST /cycles creates then re-reads twice</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>CHAOS-002</td><td>Resilience</td><td>Tracing init swallows errors</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>CHAOS-007</td><td>Resilience</td><td>Health check no DB probe</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>CHAOS-009</td><td>Resilience</td><td>Dashboard full-table scans</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>CHAOS-011</td><td>Resilience</td><td>Frontend no request timeout</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>CHAOS-012</td><td>Resilience</td><td>useApi no unmount cleanup</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>CHAOS-014</td><td>Resilience</td><td>deleteFeatureRequest non-transactional</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>CHAOS-015</td><td>Resilience</td><td>No auto-restart / process manager</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>CHAOS-020</td><td>Resilience</td><td>Pipeline metrics only track approvals</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>DEP-001</td><td>Dependencies</td><td>esbuild CSRF CVE (GHSA-67mh-4wv8-2f99)</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>DEP-002</td><td>Dependencies</td><td>vitest inherited CVE</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>DEP-005</td><td>Dependencies</td><td>React ecosystem 1 major behind</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>DEP-006</td><td>Dependencies</td><td>OpenTelemetry major gap</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>DEP-007</td><td>Dependencies</td><td>Type definition drift</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>DEP-008</td><td>Dependencies</td><td>Dev tooling fragmentation</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>DEP-011</td><td>Dependencies</td><td>TypeScript 6.0 available</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>DEP-012</td><td>Dependencies</td><td>@testing-library/react 2 majors behind</td><td><span class="badge badge-new">NEW</span></td></tr>
+  </table>
+
+  <h4>P4 Findings (8)</h4>
+  <table>
+    <tr><th>ID</th><th>Category</th><th>Title</th><th>Status</th></tr>
+    <tr><td>SEC-014</td><td>Security</td><td>human_approval_comment no length limit</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>QUAL-005</td><td>Quality</td><td>ESLint suppressions undocumented</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>QUAL-009</td><td>Quality</td><td>pipelines.test.ts exceeds 500-line guideline</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>PERF-014</td><td>Performance</td><td>deleteFeatureRequest loads full entity</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>PERF-015</td><td>Performance</td><td>completeCycle cascading reads (compounded)</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>PERF-020</td><td>Performance</td><td>getCyclePipelineHandler redundant cycle check</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>CHAOS-016</td><td>Resilience</td><td>Frontend no network error distinction</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>DEP-009</td><td>Dependencies</td><td>Dependency tree complexity</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>DEP-010</td><td>Dependencies</td><td>uuid &amp; express major lag</td><td><span class="badge badge-still-open">STILL OPEN</span></td></tr>
+    <tr><td>DEP-013</td><td>Dependencies</td><td>supertest 1 major behind</td><td><span class="badge badge-new">NEW</span></td></tr>
+  </table>
+</div>
+
+<hr style="margin-top: 2rem;">
+<p style="color: var(--text-light); font-size: 0.85rem; margin-top: 1rem;">
+  Generated by TheInspector audit pipeline. Report: <code>docs/reports/inspector-audit-2026-03-24.html</code> |
+  Bug backlog: <code>docs/reports/bug-backlog-2026-03-24.json</code> |
+  Findings: <code>Teams/TheInspector/findings/*-2026-03-24.md</code>
+</p>
+
+</body>
+</html>

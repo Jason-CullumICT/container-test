@@ -1,0 +1,67 @@
+{
+  "run_id": "run-1774234977-187",
+  "team": "TheATeam",
+  "status": "completed",
+  "started_at": "2026-03-23T03:02:57Z",
+  "task_title": "Development Workflow Platform",
+  "agents": {
+    "team_leader": {
+      "name": "Team Leader",
+      "model": "sonnet",
+      "status": "running",
+      "started_at": "2026-03-23T03:02:57Z",
+      "updated_at": "2026-03-23T03:25:56Z"
+    },
+    "requirements_reviewer": {
+      "name": "Requirements Reviewer",
+      "model": "sonnet",
+      "status": "completed",
+      "started_at": "2026-03-23T03:03:24Z",
+      "completed_at": "2026-03-23T03:05:11Z"
+    },
+    "api_contract": {
+      "name": "API Contract",
+      "model": "haiku",
+      "status": "completed",
+      "started_at": "2026-03-23T03:06:04Z",
+      "completed_at": "2026-03-23T03:08:12Z"
+    },
+    "backend_coder": {
+      "name": "Backend Coder",
+      "model": "sonnet",
+      "status": "completed",
+      "started_at": "2026-03-23T03:32:35Z",
+      "completed_at": "2026-03-23T03:35:45Z"
+    },
+    "frontend_coder": {
+      "name": "Frontend Coder",
+      "model": "sonnet",
+      "status": "completed",
+      "started_at": "2026-03-23T03:10:17Z",
+      "completed_at": "2026-03-23T03:23:20Z"
+    }
+  },
+  "metrics": {
+    "task_title": "Development Workflow Platform",
+    "fr_count": 32,
+    "backend_pts": 35,
+    "frontend_pts": 21,
+    "total_pts": 56,
+    "verdict": "APPROVED",
+    "current_stage": 3,
+    "stages_total": 4,
+    "agents_spawned": 5,
+    "agents_completed": 5,
+    "tests_passed": 49,
+    "tests_failed": 0,
+    "ts_errors": 0,
+    "frs_completed": "FR-022,FR-023,FR-024,FR-025,FR-026,FR-027,FR-028,FR-029,FR-030,FR-032",
+    "frs_implemented": "FR-002,FR-003,FR-004,FR-005,FR-006,FR-007,FR-008,FR-009,FR-010,FR-021",
+    "tests_added": 81,
+    "tests_total": 221,
+    "all_passing": true
+  },
+  "verdict": "",
+  "completed_at": "2026-03-23T03:35:45Z",
+  "updated_at": "2026-03-23T03:25:56Z"
+}
