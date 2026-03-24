@@ -3,7 +3,6 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 
 interface SidebarProps {
-  pendingApprovals: number
   activeBugs: number
   pendingFRs: number
 }
@@ -15,13 +14,12 @@ interface NavItem {
   icon: string
 }
 
-export function Sidebar({ pendingApprovals, activeBugs, pendingFRs }: SidebarProps) {
+export function Sidebar({ activeBugs, pendingFRs }: SidebarProps) {
   const navItems: NavItem[] = [
     { path: '/', label: 'Dashboard', icon: '🏠' },
     { path: '/feature-requests', label: 'Feature Requests', icon: '✨', badge: pendingFRs },
     { path: '/bugs', label: 'Bug Reports', icon: '🐛', badge: activeBugs },
     { path: '/cycle', label: 'Dev Cycle', icon: '🔄' },
-    { path: '/approvals', label: 'Approvals', icon: '✅', badge: pendingApprovals },
     { path: '/features', label: 'Feature Browser', icon: '📦' },
     { path: '/learnings', label: 'Learnings', icon: '📚' },
   ]

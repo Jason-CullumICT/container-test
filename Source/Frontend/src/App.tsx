@@ -6,7 +6,6 @@ import { DashboardPage } from './pages/DashboardPage'
 import { FeatureRequestsPage } from './pages/FeatureRequestsPage'
 import { BugReportsPage } from './pages/BugReportsPage'
 import { DevelopmentCyclePage } from './pages/DevelopmentCyclePage'
-import { ApprovalsPage } from './pages/ApprovalsPage'
 import { FeatureBrowserPage } from './pages/FeatureBrowserPage'
 import { LearningsPage } from './pages/LearningsPage'
 
@@ -19,7 +18,6 @@ export default function App() {
           <Route path="/feature-requests" element={<FeatureRequestsPage />} />
           <Route path="/bugs" element={<BugReportsPage />} />
           <Route path="/cycle" element={<DevelopmentCyclePage />} />
-          <Route path="/approvals" element={<ApprovalsPage />} />
           <Route path="/features" element={<FeatureBrowserPage />} />
           <Route path="/learnings" element={<LearningsPage />} />
         </Route>

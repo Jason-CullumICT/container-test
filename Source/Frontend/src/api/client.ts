@@ -284,3 +284,38 @@ export const pipelineRuns = {
     return apiFetch(`/api/cycles/${cycleId}/pipeline`)
   },
 }
+
+// --- Orchestrator (claude-ai-OS pipeline) ---
+
+export const orchestrator = {
+  health(): Promise<{ status: string; docker: boolean; cycles: any; ports: any }> {
+    return apiFetch('/api/orchestrator/api/health')
+  },
+
+  submitWork(task: string, team?: string): Promise<{ id: string; status: string; statusUrl: string; ports: any; branch: string }> {
+    return apiFetch('/api/orchestrator/api/work', {
+      method: 'POST',
+      body: JSON.stringify({ task, team }),
+    })
+  },
+
+  listRuns(): Promise<{ data: any[] }> {
+    return apiFetch('/api/orchestrator/api/runs')
+  },
+
+  getRun(id: string): Promise<any> {
+    return apiFetch(`/api/orchestrator/api/runs/${id}`)
+  },
+
+  listCycles(): Promise<{ data: any[] }> {
+    return apiFetch('/api/orchestrator/api/cycles')
+  },
+
+  getCycle(id: string): Promise<any> {
+    return apiFetch(`/api/orchestrator/api/cycles/${id}`)
+  },
+
+  stopCycle(id: string): Promise<{ stopped: boolean }> {
+    return apiFetch(`/api/orchestrator/api/cycles/${id}/stop`, { method: 'POST' })
+  },
+}
