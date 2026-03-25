@@ -1,8 +1,12 @@
 // Verifies: FR-026
 // Verifies: FR-068
-import React from 'react'
+// Verifies: FR-085
+import React, { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import type { BugReport } from '../../../../Shared/types'
+import type { BugReport, ImageAttachment } from '../../../../Shared/types'
+import { images } from '../../api/client'
+import { ImageThumbnails } from '../common/ImageThumbnails'
+import { ImageUpload } from '../common/ImageUpload'
 
 interface BugDetailProps {
   bug: BugReport
@@ -25,6 +29,42 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 export function BugDetail({ bug, onClose }: BugDetailProps) {
+  const [attachedImages, setAttachedImages] = useState<ImageAttachment[]>([])
+  const [error, setError] = useState<string | null>(null)
+
+  // FR-085: Fetch images on mount
+  const fetchImages = useCallback(async () => {
+    try {
+      const result = await images.list('bugs', bug.id)
+      setAttachedImages(result.data)
+    } catch {
+      // Image fetch failure is non-blocking
+    }
+  }, [bug.id])
+
+  useEffect(() => {
+    fetchImages()
+  }, [fetchImages])
+
+  const handleImageUpload = async (files: File[]) => {
+    if (files.length === 0) return
+    try {
+      await images.upload('bugs', bug.id, files)
+      fetchImages()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to upload images')
+    }
+  }
+
+  const handleImageDelete = async (imageId: string) => {
+    try {
+      await images.delete('bugs', bug.id, imageId)
+      setAttachedImages((prev) => prev.filter((img) => img.id !== imageId))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete image')
+    }
+  }
+
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-5">
       <div className="flex items-start justify-between gap-4">
@@ -89,6 +129,24 @@ export function BugDetail({ bug, onClose }: BugDetailProps) {
           </span>
           <p className="text-gray-700 mt-0.5">{new Date(bug.updated_at).toLocaleString()}</p>
         </div>
+      </div>
+
+      {/* FR-085: Image Attachments */}
+      <div>
+        <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+          Screenshots ({attachedImages.length})
+        </h4>
+        <ImageThumbnails
+          images={attachedImages}
+          allowDelete
+          onDelete={handleImageDelete}
+        />
+        <div className="mt-2">
+          <ImageUpload onFilesSelected={handleImageUpload} />
+        </div>
+        {error && (
+          <p className="text-xs text-red-600 mt-1">{error}</p>
+        )}
       </div>
 
       {/* FR-068: Related work item and cycle links */}

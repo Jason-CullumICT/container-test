@@ -56,6 +56,14 @@ export const cycleFeedbackCounter = new client.Counter({
   registers: [register],
 });
 
+// Image uploads counter (FR-079)
+export const imageUploadsCounter = new client.Counter({
+  name: 'image_uploads_total',
+  help: 'Total number of image uploads',
+  labelNames: ['entity_type'],
+  registers: [register],
+});
+
 export function metricsMiddleware(req: Request, res: Response, next: NextFunction): void {
   const start = Date.now();
 

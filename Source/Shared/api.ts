@@ -4,7 +4,8 @@
 import type {
   FeatureRequest, Vote, BugReport, DevelopmentCycle, Ticket,
   Learning, Feature, DashboardSummary, ActivityItem,
-  PipelineRun, PipelineStage, CycleFeedback, ConsideredFix
+  PipelineRun, PipelineStage, CycleFeedback, ConsideredFix,
+  ImageAttachment
 } from './types';
 
 // --- Generic Wrappers ---
@@ -120,6 +121,10 @@ export interface CreateCycleFeedbackInput {
   feedback_type: 'rejection' | 'finding' | 'suggestion' | 'approval';
   content: string;
 }
+
+// --- Image Attachments (FR-071) ---
+export type ImageAttachmentListResponse = DataResponse<ImageAttachment>;
+export type ImageUploadResponse = DataResponse<ImageAttachment>;
 
 // --- Pipeline Runs (FR-034) ---
 export type PipelineRunListResponse = DataResponse<PipelineRun>;

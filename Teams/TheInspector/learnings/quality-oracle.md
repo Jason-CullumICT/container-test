@@ -85,3 +85,38 @@ Based on inspector.config.yml grading thresholds:
 
 ### All Prior Findings Still Open
 QUAL-001 through QUAL-005 remain STILL OPEN (3 audits running).
+
+## Fourth Audit: 2026-03-25 — Image Upload Feature
+
+### Spec Coverage: Image Upload FRs (FR-070 through FR-089)
+
+- **Image upload FRs: FR-070 – FR-089 = 20 requirements**
+- Enforcer PASS: all implemented FRs have test coverage
+- FR-070 and FR-071 carry section-comment references (`// --- Image Attachment Types (FR-070) ---`) but NOT formal `// Verifies: FR-070` annotations — the enforcer does not scan section comments, only `Verifies:` lines. These two are untraced in the enforcer sense.
+- All other 18 FRs (FR-072 through FR-089) have proper `// Verifies: FR-XXX` annotations in source and tests.
+- Enforcer requirements file (`Plans/dev-workflow-platform/requirements.md`) still only lists FR-001–FR-032 — image upload FRs live in `Plans/image-upload/requirements.md` and are NOT loaded by the enforcer. The enforcer reports 32 total requirements and 62 implemented — the 20 new FRs are silently excluded from the "pending" count.
+
+### New Image Upload Findings
+- QUAL-010 (P3): FR-070 and FR-071 lack `// Verifies: FR-070/071` comments — section labels exist but not enforcer-visible annotations
+- QUAL-011 (P2): `imageService.ts` sequential ID generation (`generateImageId`) is NOT safe under concurrent inserts — uses SELECT MAX(id) in a transaction but the transaction wraps only INSERT, not the SELECT. Under concurrent load, two callers could read the same max ID and produce duplicate IMG-XXXX collisions. Should use uuid-based IDs or a single atomic sequence.
+- QUAL-012 (P3): `ImageUploadResponse` and `ImageAttachmentListResponse` types defined in `Source/Shared/api.ts` are never imported by the backend routes — they exist as dead exports. Routes inline `{ data: images }` JSON directly without using the shared response type. Extends QUAL-003 (unused shared types).
+- QUAL-013 (P2): Traceability enforcer requirements file still does not include image-upload FRs (FR-070–FR-089). The enforcer's "32 total requirements" count is stale — QUAL-006 remains open and image upload has made it worse.
+
+### Architecture Compliance (Image Upload)
+- Service layer pattern: STILL OPEN (QUAL-001). Image upload routes call `getDb()` directly, same pattern as all other routes.
+- AppError import from middleware: STILL OPEN (QUAL-002). `imageService.ts` imports `AppError` from `../middleware/errorHandler`.
+- No `console.log` in new files: CLEAN
+- All new list endpoints return `{data: T[]}`: CLEAN
+- Structured logging used correctly in imageService and routes: CLEAN
+- `imageUploadsCounter` Prometheus metric added to metrics.ts: CLEAN (FR-079)
+- Static file serving mounted at `/uploads/`: CLEAN (FR-077)
+- Multer config matches contracts.md spec exactly (5MB, 5 files, 4 MIME types): CLEAN (FR-073)
+
+### Test Statistics (Fourth Audit)
+- New test files: images.test.ts, imageService.test.ts, imageRoutes.test.ts, orchestratorProxy.test.ts (backend); ImageComponents.test.tsx, ImageUpload.test.tsx (frontend)
+- All new test files carry `// Verifies: FR-XXX` file-level headers
+- Dual coverage: images.test.ts and imageRoutes.test.ts both test routes (FR-075–FR-077), imageService.test.ts and images.test.ts both test the service (FR-074) — provides redundant coverage
+- FR-088 (backend tests) and FR-089 (frontend tests) meta-requirements: COVERED
+
+### Prior Findings Status
+- QUAL-001 through QUAL-009: ALL STILL OPEN (4 audits running for QUAL-001–005)

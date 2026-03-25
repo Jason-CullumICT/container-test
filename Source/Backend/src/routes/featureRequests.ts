@@ -14,6 +14,8 @@ import {
   approveFeatureRequest,
   denyFeatureRequest,
 } from '../services/featureRequestService';
+import { uploadImagesService, listImages, deleteImage } from '../services/imageService';
+import { uploadImages as uploadMiddleware } from '../middleware/upload';
 import { AppError } from '../middleware/errorHandler';
 import { featureRequestTransitionsCounter, aiVotingCounter } from '../middleware/metrics';
 import { withSpan } from '../lib/tracing';
@@ -211,6 +213,76 @@ router.post('/:id/deny', async (req: Request, res: Response, next: NextFunction)
       logger.info('Feature request denied', { id });
       res.json(fr);
     });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/feature-requests/:id/images
+// Verifies: FR-075
+router.post('/:id/images', (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const db = getDb();
+    const fr = getFeatureRequestById(db, id);
+    if (!fr) {
+      res.status(404).json({ error: 'Feature request not found' });
+      return;
+    }
+
+    uploadMiddleware(req, res, (err: unknown) => {
+      if (err) {
+        const message = err instanceof Error ? err.message : 'Upload failed';
+        if (message.includes('File too large') || message.includes('LIMIT_FILE_SIZE')) {
+          res.status(400).json({ error: 'File too large (max 5MB)' });
+          return;
+        }
+        if (message.includes('Invalid file type')) {
+          res.status(400).json({ error: message });
+          return;
+        }
+        next(err);
+        return;
+      }
+
+      const files = req.files as Express.Multer.File[];
+      if (!files || files.length === 0) {
+        res.status(400).json({ error: 'No files uploaded' });
+        return;
+      }
+
+      const images = uploadImagesService(db, id, 'feature_request', files);
+      logger.info('Images uploaded for feature request', { fr_id: id, count: images.length });
+      res.status(201).json({ data: images });
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/feature-requests/:id/images
+// Verifies: FR-077
+router.get('/:id/images', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const db = getDb();
+    const fr = getFeatureRequestById(db, id);
+    if (!fr) throw new AppError(404, 'Feature request not found');
+
+    const images = listImages(db, id, 'feature_request');
+    res.json({ data: images });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE /api/feature-requests/:id/images/:imageId
+// Verifies: FR-077
+router.delete('/:id/images/:imageId', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { imageId } = req.params;
+    deleteImage(getDb(), imageId);
+    res.status(204).send();
   } catch (err) {
     next(err);
   }

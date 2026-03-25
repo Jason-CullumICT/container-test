@@ -122,6 +122,21 @@ export interface ConsideredFix {
   selected: boolean;                   // which fix was chosen
 }
 
+// --- Image Attachment Types (FR-070) ---
+
+export type ImageEntityType = 'feature_request' | 'bug';
+
+export interface ImageAttachment {
+  id: string;                          // IMG-XXXX
+  entity_id: string;                   // FR-XXXX or BUG-XXXX
+  entity_type: ImageEntityType;        // 'feature_request' | 'bug'
+  filename: string;                    // stored filename (uuid-based)
+  original_name: string;               // original upload filename
+  mime_type: string;                   // image/jpeg, image/png, image/gif, image/webp
+  size_bytes: number;
+  created_at: string;                  // ISO timestamp
+}
+
 // --- Dashboard Types ---
 
 export interface DashboardSummary {

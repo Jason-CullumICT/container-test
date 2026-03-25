@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inspector Audit Report — 2026-03-25</title>
+<style>
+  :root { --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #e2e8f0; --muted: #94a3b8; --red: #ef4444; --orange: #f97316; --yellow: #eab308; --green: #22c55e; --blue: #3b82f6; --purple: #a855f7; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  h1, h2, h3, h4 { margin-bottom: 0.5rem; }
+  h2 { color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-top: 2rem; }
+  h3 { color: var(--muted); margin-top: 1rem; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin: 1rem 0; }
+  .card-p1 { border-left: 4px solid var(--red); }
+  .card-p2 { border-left: 4px solid var(--orange); }
+  .card-p3 { border-left: 4px solid var(--yellow); }
+  .card-p4 { border-left: 4px solid var(--muted); }
+  .card-fixed { border-left: 4px solid var(--green); background: #0f2a1e; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+  th, td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: var(--card); color: var(--muted); font-size: 0.85rem; text-transform: uppercase; }
+  .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; }
+  .badge-p1 { background: var(--red); color: #fff; }
+  .badge-p2 { background: var(--orange); color: #fff; }
+  .badge-p3 { background: var(--yellow); color: #000; }
+  .badge-p4 { background: var(--muted); color: #000; }
+  .badge-new { background: var(--purple); color: #fff; }
+  .badge-open { background: var(--orange); color: #fff; }
+  .badge-fixed { background: var(--green); color: #fff; }
+  .grade { font-size: 4rem; font-weight: 900; display: inline-block; width: 100px; height: 100px; line-height: 100px; text-align: center; border-radius: 50%; }
+  .grade-d { background: var(--orange); color: #fff; }
+  .header { display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+  .header-info { flex: 1; }
+  .scorecards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+  .scorecard { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center; }
+  .scorecard .num { font-size: 2rem; font-weight: 900; }
+  .scorecard .label { color: var(--muted); font-size: 0.85rem; }
+  code { background: #334155; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+  .file { color: var(--blue); font-family: monospace; font-size: 0.9em; }
+  .risk-matrix { display: grid; grid-template-columns: auto repeat(5, 1fr); gap: 2px; }
+  .risk-cell { padding: 0.5rem; text-align: center; font-size: 0.8rem; background: var(--card); border: 1px solid var(--border); }
+  .risk-header { background: var(--border); font-weight: 700; }
+  .risk-high { background: #7f1d1d; }
+  .risk-med { background: #78350f; }
+  .risk-low { background: #1e3a2f; }
+  .bar { height: 20px; border-radius: 3px; }
+  .bar-fill { height: 100%; border-radius: 3px; background: var(--green); }
+  .specialist-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1rem; }
+  ul, ol { margin-left: 1.5rem; }
+  li { margin: 0.3rem 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ============================================ -->
+<!-- SECTION 1: HEADER                            -->
+<!-- ============================================ -->
+<div class="header">
+  <div class="grade grade-d">D</div>
+  <div class="header-info">
+    <h1>Inspector Audit Report</h1>
+    <p><strong>Date:</strong> 2026-03-25</p>
+    <p><strong>Branch:</strong> <code>cycle/run-1774399447307-405283e6</code></p>
+    <p><strong>Scope:</strong> Post-work audit — Image upload feature (feature requests &amp; bug reports)</p>
+    <p><strong>Mode:</strong> Static (all services down)</p>
+    <p><strong>Prior audit:</strong> First audit with this configuration — no baseline comparison available for grade trend</p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 2: SCORECARDS                        -->
+<!-- ============================================ -->
+<h2>2. Scorecards</h2>
+<div class="scorecards">
+  <div class="scorecard"><div class="num" style="color:var(--red)">5</div><div class="label">P1 Critical</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--orange)">12</div><div class="label">P2 High</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--yellow)">17</div><div class="label">P3 Medium</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--muted)">3</div><div class="label">P4 Low</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--green)">90%</div><div class="label">Spec Coverage</div></div>
+  <div class="scorecard"><div class="num">0</div><div class="label">Dynamic Tests</div></div>
+  <div class="scorecard"><div class="num">0</div><div class="label">Fixed</div></div>
+  <div class="scorecard"><div class="num">37</div><div class="label">Total Findings</div></div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 3: EXECUTIVE SUMMARY                 -->
+<!-- ============================================ -->
+<h2>3. Executive Summary</h2>
+<div class="card">
+<ol>
+  <li><strong>Unauthenticated file upload creates an attack chain to stored XSS/RCE:</strong> All image endpoints lack authentication. MIME validation is client-header-only (bypassable). File extensions are preserved from attacker input. SVG files with embedded scripts can be uploaded and served to any user. This is the highest-priority chain (SEC-021 + SEC-022 + SEC-023 + SEC-028).</li>
+  <li><strong>Non-atomic create+upload flow causes data integrity issues:</strong> Entity creation and image upload are two separate calls with no rollback. Upload failure after entity creation leaves orphaned records and confuses users (CHAOS-021).</li>
+  <li><strong>Sequential image ID generation is fragile and has a latent overflow bug:</strong> <code>IMG-NNNN</code> text-based IDs will collide after 9999 images due to lexicographic sorting. Multiple specialists flagged this independently (SEC-027, QO-011, PERF-023, CHAOS-023).</li>
+  <li><strong>File deletion order creates permanent orphans on crash:</strong> DB record is deleted before the file. Process kill between the two operations leaves unreferenced files on disk forever (CHAOS-025).</li>
+  <li><strong>No rate limiting + no disk quota = trivial disk exhaustion DoS:</strong> Unauthenticated users can fill the server disk with unlimited 25MB upload batches (SEC-025).</li>
+</ol>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 4: SCOPE & ENVIRONMENT               -->
+<!-- ============================================ -->
+<h2>4. Scope &amp; Environment</h2>
+<div class="card">
+  <p><strong>What was audited:</strong> All uncommitted changes on branch <code>cycle/run-1774399447307-405283e6</code> vs <code>master</code> — 19 modified files + 14 new files implementing image upload for feature requests and bug reports.</p>
+  <p><strong>Services:</strong> Backend (DOWN @ localhost:3001), Frontend (DOWN @ localhost:5173)</p>
+  <p><strong>Specialist modes:</strong></p>
+  <ul>
+    <li>Red-teamer: Static only (no dynamic verification)</li>
+    <li>Quality-oracle: Static</li>
+    <li>Performance-profiler: Static only (no load testing)</li>
+    <li>Chaos-monkey: Static only (no fault injection)</li>
+    <li>Dependency-auditor: Static</li>
+  </ul>
+  <p><strong>Caveats:</strong> All findings are from static analysis. Dynamic exploitation was not verified. Performance latency baselines could not be measured. Chaos fault injection was not executed.</p>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 5: TREND                             -->
+<!-- ============================================ -->
+<h2>5. Trend</h2>
+<div class="card">
+  <p>First audit under this configuration — no baseline. Grade: <strong style="color:var(--orange)">D</strong>.</p>
+  <p>Grading criteria applied: P1=5 (threshold for C is max 2), P2=12, spec coverage=90%. The P1 count alone disqualifies grades A through C.</p>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 6: SPECIALIST REPORTS                -->
+<!-- ============================================ -->
+<h2>6. Specialist Reports</h2>
+<div class="specialist-grid">
+  <div class="card">
+    <h3>Red-Teamer</h3>
+    <p><strong>Mode:</strong> Static | <strong>Verdict:</strong> <span style="color:var(--red)">FAIL</span></p>
+    <p>P1: 2 &middot; P2: 3 &middot; P3: 4 &middot; P4: 1 &middot; <strong>Total: 10</strong></p>
+    <p>Critical attack chain: unauthenticated upload &rarr; MIME bypass &rarr; stored XSS via SVG. IDOR allows cross-entity image deletion.</p>
+  </div>
+  <div class="card">
+    <h3>Quality Oracle</h3>
+    <p><strong>Mode:</strong> Static | <strong>Verdict:</strong> <span style="color:var(--yellow)">WARN</span></p>
+    <p>P1: 0 &middot; P2: 2 &middot; P3: 3 &middot; <strong>Total: 5</strong></p>
+    <p>Spec coverage 90%. Traceability enforcer excludes image-upload FRs. Shared types exported but unused.</p>
+  </div>
+  <div class="card">
+    <h3>Performance Profiler</h3>
+    <p><strong>Mode:</strong> Static | <strong>Verdict:</strong> <span style="color:var(--orange)">WARN</span></p>
+    <p>P1: 1 &middot; P2: 4 &middot; P3: 5 &middot; P4: 2 &middot; <strong>Total: 12</strong></p>
+    <p>N+1 ID generation, sync filesystem I/O in request handlers, no caching on static uploads, serial image download for orchestrator.</p>
+  </div>
+  <div class="card">
+    <h3>Chaos Monkey</h3>
+    <p><strong>Mode:</strong> Static | <strong>Verdict:</strong> <span style="color:var(--red)">FAIL</span></p>
+    <p>P1: 2 &middot; P2: 3 &middot; P3: 3 &middot; <strong>Total: 8</strong></p>
+    <p>Non-atomic create+upload, orphaned files on crash, no error indicators in UI, disk-full handling missing.</p>
+  </div>
+  <div class="card">
+    <h3>Dependency Auditor</h3>
+    <p><strong>Mode:</strong> Static | <strong>Verdict:</strong> <span style="color:var(--green)">PASS</span></p>
+    <p>P1: 0 &middot; P2: 0 &middot; P3: 2 &middot; <strong>Total: 2</strong></p>
+    <p>multer@1.4.5-lts.1 added (MIT, no CVEs). One major version behind. MIME validation is client-header-only.</p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 7: RE-VERIFICATION SUMMARY           -->
+<!-- ============================================ -->
+<h2>7. Re-Verification Summary</h2>
+<div class="card">
+<table>
+  <thead><tr><th>Status</th><th>Count</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td><span class="badge badge-fixed">FIXED</span></td><td>0</td><td>No prior findings were remediated</td></tr>
+    <tr><td><span class="badge badge-open">STILL OPEN</span></td><td>0</td><td>Prior findings not in scope of image upload work</td></tr>
+    <tr><td><span style="color:var(--red)">REGRESSED</span></td><td>0</td><td>No regressions detected</td></tr>
+    <tr><td><span class="badge badge-new">NEW</span></td><td>37</td><td>All findings are new to this audit</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 8: CROSS-REFERENCE MAP               -->
+<!-- ============================================ -->
+<h2>8. Cross-Reference Map</h2>
+<div class="card">
+<table>
+  <thead><tr><th>Root Cause</th><th>Affected Findings</th><th>Fix Impact</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Sequential IMG-ID generation</strong><br>String-ordered counter with no UUID fallback</td>
+      <td>SEC-027, SEC-029, QO-011, PERF-023, CHAOS-023</td>
+      <td>Switch to UUID-based IDs &rarr; resolves 5 findings across 4 specialists</td>
+    </tr>
+    <tr>
+      <td><strong>Client-controlled MIME/filename trusted</strong><br>No magic-byte validation, extension preserved</td>
+      <td>SEC-021, SEC-022, DEP-014</td>
+      <td>Add <code>file-type</code> magic-byte check + force safe extensions &rarr; resolves 3 findings across 2 specialists</td>
+    </tr>
+    <tr>
+      <td><strong>No authentication on any endpoint</strong><br>Systemic: entire API unauthenticated</td>
+      <td>SEC-023, SEC-024, SEC-025, SEC-028</td>
+      <td>Add auth middleware globally &rarr; resolves 4 security findings, reduces exploitability of all others</td>
+    </tr>
+    <tr>
+      <td><strong>Synchronous filesystem ops in request path</strong><br>mkdirSync at module load, unlinkSync in handlers</td>
+      <td>PERF-024, PERF-025, CHAOS-020</td>
+      <td>Switch to async fs methods + move dir creation to startup &rarr; resolves 3 findings across 2 specialists</td>
+    </tr>
+    <tr>
+      <td><strong>Non-atomic entity+image creation</strong><br>Two sequential API calls, no rollback</td>
+      <td>CHAOS-021, CHAOS-022</td>
+      <td>Add partial-success handling or decouple upload from create &rarr; resolves 2 chaos findings</td>
+    </tr>
+    <tr>
+      <td><strong>DB-before-file deletion order</strong><br>DB record deleted first, file orphaned on crash</td>
+      <td>CHAOS-025, SEC-028 (partial)</td>
+      <td>Reverse deletion order (file first, then DB) &rarr; resolves orphan issue</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 9: P1 FINDINGS                       -->
+<!-- ============================================ -->
+<h2>9. P1 Findings</h2>
+
+<div class="card card-p1">
+  <h4><span class="badge badge-p1">P1</span> <span class="badge badge-new">NEW</span> SEC-021: MIME Type Filter Bypassed via Content-Type Spoofing</h4>
+  <p><strong>Category:</strong> OWASP A03 — Injection / Unrestricted File Upload</p>
+  <p><strong>File:</strong> <span class="file">Source/Backend/src/middleware/upload.ts:30-36</span></p>
+  <p><strong>Description:</strong> The <code>fileFilter</code> checks <code>file.mimetype</code> which is the client-supplied Content-Type header. No magic-byte validation. Combined with preserved file extensions (SEC-022), attacker uploads arbitrary files (SVG with scripts, PHP shells) that pass the filter.</p>
+  <p><strong>Exploit:</strong> Upload <code>shell.svg</code> with Content-Type <code>image/jpeg</code> &rarr; stored as <code>&lt;uuid&gt;.svg</code> &rarr; served via <code>/uploads/</code> &rarr; browser executes inline JavaScript &rarr; stored XSS on any visitor.</p>
+  <p><strong>Recommendation:</strong> Add magic-byte validation using <code>file-type</code> library. Force stored extensions from a safe whitelist derived from validated magic bytes, never from <code>originalname</code>.</p>
+</div>
+
+<div class="card card-p1">
+  <h4><span class="badge badge-p1">P1</span> <span class="badge badge-new">NEW</span> SEC-023: All Image Endpoints Completely Unauthenticated</h4>
+  <p><strong>Category:</strong> OWASP A01 — Broken Access Control / A07 — Auth Failures</p>
+  <p><strong>Files:</strong> <span class="file">Source/Backend/src/routes/bugs.ts:142-208</span>, <span class="file">Source/Backend/src/routes/featureRequests.ts:222-289</span></p>
+  <p><strong>Description:</strong> POST/GET/DELETE image endpoints have zero authentication. Any network-accessible caller can upload files to disk, enumerate images, or delete all images.</p>
+  <p><strong>Exploit:</strong> Anonymous user sends unlimited upload requests &rarr; fills disk. Anonymous user enumerates and deletes all images via sequential IDs.</p>
+  <p><strong>Recommendation:</strong> Add JWT/session auth middleware globally to all <code>/api/*</code> routes.</p>
+</div>
+
+<div class="card card-p1">
+  <h4><span class="badge badge-p1">P1</span> <span class="badge badge-new">NEW</span> PERF-023: N+1 ID Generation with Lexicographic Overflow Bug</h4>
+  <p><strong>Category:</strong> Performance / Data Integrity</p>
+  <p><strong>File:</strong> <span class="file">Source/Backend/src/services/imageService.ts:42-50</span></p>
+  <p><strong>Description:</strong> <code>generateImageId()</code> runs a SELECT per file in a multi-file upload (up to 5 queries). IDs use <code>IMG-NNNN</code> text format with <code>ORDER BY id DESC</code> string sort &mdash; <code>IMG-10000</code> sorts before <code>IMG-9999</code>, causing ID collisions after 9999 images.</p>
+  <p><strong>Recommendation:</strong> Replace with UUID-based IDs. The <code>uuid</code> package is already a project dependency.</p>
+</div>
+
+<div class="card card-p1">
+  <h4><span class="badge badge-p1">P1</span> <span class="badge badge-new">NEW</span> CHAOS-021: Non-Atomic Create+Upload Leaves Orphaned Entities</h4>
+  <p><strong>Category:</strong> State Invariant / Partial Write</p>
+  <p><strong>Files:</strong> <span class="file">Source/Frontend/src/pages/BugReportsPage.tsx:45-52</span>, <span class="file">Source/Frontend/src/pages/FeatureRequestsPage.tsx:46-53</span></p>
+  <p><strong>Description:</strong> Entity creation and image upload are two sequential API calls. If upload fails after entity creation, the entity persists but user sees an error and retries, creating duplicates. No rollback mechanism.</p>
+  <p><strong>Recommendation:</strong> Show partial-success message ("Bug created, image upload failed — add images from detail view") or decouple upload from create flow.</p>
+</div>
+
+<div class="card card-p1">
+  <h4><span class="badge badge-p1">P1</span> <span class="badge badge-new">NEW</span> CHAOS-023: Sequential ID String-Sort Collision Under Concurrency</h4>
+  <p><strong>Category:</strong> Data Integrity</p>
+  <p><strong>File:</strong> <span class="file">Source/Backend/src/services/imageService.ts:42-50, 80-95</span></p>
+  <p><strong>Description:</strong> <code>generateImageId()</code> uses string-ordered <code>ORDER BY id DESC LIMIT 1</code> which breaks at 5-digit numbers. Concurrent requests may generate duplicate IDs. Same root cause as PERF-023 and SEC-027.</p>
+  <p><strong>Recommendation:</strong> Use <code>uuidv4()</code> for image IDs.</p>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 10: RISK MATRIX                      -->
+<!-- ============================================ -->
+<h2>10. Risk Matrix</h2>
+<div class="card">
+<table>
+  <thead>
+    <tr><th>Severity \ Exploitability</th><th>Zero-precondition</th><th>Authenticated</th><th>Privileged</th><th>Admin</th><th>Physical</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="badge badge-p1">P1</span></td>
+      <td style="background:#7f1d1d">SEC-021, SEC-023, CHAOS-021</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-p2">P2</span></td>
+      <td style="background:#78350f">SEC-022, SEC-024, SEC-025</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-p3">P3</span></td>
+      <td style="background:#78350f">SEC-026, SEC-028, SEC-030</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-p4">P4</span></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<p><em>Note: All security findings are zero-precondition because the entire API lacks authentication. PERF and CHAOS findings are excluded from security risk matrix (they are reliability/availability, not confidentiality/integrity).</em></p>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 11: SPEC COVERAGE                    -->
+<!-- ============================================ -->
+<h2>11. Spec Coverage</h2>
+<div class="card">
+  <p><strong>Image Upload Feature Requirements:</strong> 18 / 20 formally traced = <strong>90%</strong></p>
+  <div style="background:#334155; border-radius:3px; height:24px; width:100%; margin:0.5rem 0;">
+    <div style="background:var(--green); height:100%; border-radius:3px; width:90%;"></div>
+  </div>
+  <h4>Uncovered Requirements (Top 10)</h4>
+  <table>
+    <thead><tr><th>Requirement</th><th>Issue</th></tr></thead>
+    <tbody>
+      <tr><td>FR-070</td><td>Section comment label only — missing <code>// Verifies: FR-070</code> annotation (QO-010)</td></tr>
+      <tr><td>FR-071</td><td>Section comment label only — missing <code>// Verifies: FR-071</code> annotation (QO-010)</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Enforcer note:</strong> The traceability enforcer only scans FR-001–FR-032. Image upload FRs (FR-070–FR-089) are invisible to the enforcer (QO-013).</p>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 12: LATENCY BASELINES                -->
+<!-- ============================================ -->
+<h2>12. Latency Baselines</h2>
+<div class="card">
+  <p><strong>Mode:</strong> Static only — backend was not running, no latency measurements collected.</p>
+  <table>
+    <thead><tr><th>Endpoint</th><th>p50</th><th>p95</th><th>p99</th><th>Budget (p95)</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>POST /api/bugs/:id/images</td><td>—</td><td>—</td><td>—</td><td>500ms</td><td>Not measured</td></tr>
+      <tr><td>GET /api/bugs/:id/images</td><td>—</td><td>—</td><td>—</td><td>500ms</td><td>Not measured</td></tr>
+      <tr><td>DELETE /api/bugs/:id/images/:imageId</td><td>—</td><td>—</td><td>—</td><td>500ms</td><td>Not measured</td></tr>
+      <tr><td>POST /api/feature-requests/:id/images</td><td>—</td><td>—</td><td>—</td><td>500ms</td><td>Not measured</td></tr>
+      <tr><td>GET /api/feature-requests/:id/images</td><td>—</td><td>—</td><td>—</td><td>500ms</td><td>Not measured</td></tr>
+      <tr><td>DELETE /api/feature-requests/:id/images/:imageId</td><td>—</td><td>—</td><td>—</td><td>500ms</td><td>Not measured</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Static risks identified:</strong> PERF-026 (full entity lookup before upload), PERF-027 (no Cache-Control on static files), PERF-030 (serial image download for orchestrator). These are predicted p95 budget breaches pending dynamic verification.</p>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 13: P2 FINDINGS                      -->
+<!-- ============================================ -->
+<h2>13. P2 Findings</h2>
+<table>
+  <thead><tr><th>ID</th><th>Category</th><th>Title</th><th>File</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>SEC-022</td><td>Injection</td><td>File extension preserved from client-controlled filename</td><td class="file">upload.ts:24-27</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>SEC-024</td><td>IDOR</td><td>Image delete does not verify entity ownership</td><td class="file">bugs.ts:200-208</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>SEC-025</td><td>DoS</td><td>No aggregate upload size limit enables disk exhaustion</td><td class="file">upload.ts:38-42</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>QO-011</td><td>Architecture</td><td>Sequential IMG-ID generation unsafe under concurrency</td><td class="file">imageService.ts:42-50</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>QO-013</td><td>Tooling</td><td>Traceability enforcer excludes image-upload FRs</td><td class="file">traceability-enforcer.py</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>PERF-024</td><td>Perf</td><td>Synchronous fs at module import blocks event loop</td><td class="file">upload.ts:16-18</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>PERF-025</td><td>Perf</td><td>Synchronous unlinkSync in DELETE handler</td><td class="file">imageService.ts:134-138</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>PERF-026</td><td>Perf</td><td>Full entity lookup before upload adds latency</td><td class="file">bugs.ts, featureRequests.ts</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>PERF-027</td><td>Perf</td><td>No Cache-Control on static /uploads</td><td class="file">index.ts:56</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>CHAOS-020</td><td>Resilience</td><td>Upload dir mkdirSync crashes backend on permission error</td><td class="file">upload.ts:16-18</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>CHAOS-022</td><td>Resilience</td><td>Disk full — partial file not cleaned up</td><td class="file">upload.ts</td><td><span class="badge badge-new">NEW</span></td></tr>
+    <tr><td>CHAOS-025</td><td>Resilience</td><td>DB record deleted before file — orphaned files on crash</td><td class="file">imageService.ts:119-144</td><td><span class="badge badge-new">NEW</span></td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================ -->
+<!-- SECTION 14: FIXED FINDINGS                   -->
+<!-- ============================================ -->
+<h2>14. Fixed Findings</h2>
+<div class="card card-fixed">
+  <p>None — this is the first audit of the image upload feature. No prior findings to verify as fixed.</p>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 15: RECOMMENDATIONS                  -->
+<!-- ============================================ -->
+<h2>15. Recommendations</h2>
+<div class="card">
+  <h3 style="color:var(--red)">Block Deployment</h3>
+  <ol>
+    <li><strong>Add magic-byte file validation</strong> — Install <code>file-type</code>, validate uploaded file content against actual magic bytes, force safe extensions. Resolves SEC-021, SEC-022, DEP-014.</li>
+    <li><strong>Add authentication middleware</strong> — Gate all <code>/api/*</code> routes behind JWT/session auth. Resolves SEC-023, SEC-024, SEC-025, SEC-028 and reduces exploitability of all other findings.</li>
+    <li><strong>Replace sequential IMG IDs with UUIDs</strong> — Use <code>uuidv4()</code> (already a dependency) for image IDs. Resolves PERF-023, SEC-027, SEC-029, QO-011, CHAOS-023 (5 findings, 4 specialists).</li>
+    <li><strong>Add entity ownership check on image delete</strong> — Verify <code>image.entity_id === requested entity</code> before deleting. Resolves SEC-024.</li>
+  </ol>
+
+  <h3 style="color:var(--orange)">This Sprint</h3>
+  <ol>
+    <li><strong>Reverse file deletion order</strong> — Delete file first, then DB record. Resolves CHAOS-025.</li>
+    <li><strong>Add partial-success handling for create+upload</strong> — Show specific message when entity created but upload failed. Resolves CHAOS-021.</li>
+    <li><strong>Switch to async filesystem ops</strong> — Replace <code>fs.existsSync</code>/<code>fs.unlinkSync</code> with async equivalents. Resolves PERF-024, PERF-025, CHAOS-020.</li>
+    <li><strong>Add rate limiting to upload endpoints</strong> — Install <code>express-rate-limit</code>, configure per-IP limits. Resolves SEC-025.</li>
+    <li><strong>Add Cache-Control headers to /uploads static serving</strong> — Resolves PERF-027.</li>
+    <li><strong>Add X-Content-Type-Options: nosniff to uploaded files</strong> — Resolves SEC-028 (partial).</li>
+  </ol>
+
+  <h3 style="color:var(--yellow)">Next Sprint</h3>
+  <ol>
+    <li><strong>Extend traceability enforcer to scan all Plans/*/requirements.md</strong> — Resolves QO-013.</li>
+    <li><strong>Add OTel spans to image upload/delete operations</strong> — Resolves QO-014.</li>
+    <li><strong>Import shared response types in routes and client</strong> — Resolves QO-012.</li>
+    <li><strong>Add image compression/thumbnailing</strong> — Serve thumbnails instead of 5MB originals at 80px display. Resolves PERF-031.</li>
+    <li><strong>Add LIMIT to listImages query</strong> — Resolves PERF-032.</li>
+    <li><strong>Parallelize orchestrator image downloads</strong> — Resolves PERF-030.</li>
+  </ol>
+
+  <h3>Backlog</h3>
+  <ol>
+    <li>Add broken-image fallback in ImageThumbnails (CHAOS-024)</li>
+    <li>Add upload timeout with AbortController (CHAOS-026)</li>
+    <li>Show image fetch error indicator in detail views (CHAOS-027)</li>
+    <li>Sanitize original_name length and characters (SEC-026)</li>
+    <li>Add orchestrator proxy body size limit (SEC-030)</li>
+    <li>Upgrade multer to 2.x alongside Express 5 migration (DEP-015)</li>
+    <li>Add upload duration histogram metric (PERF-033)</li>
+    <li>Fix metrics label cardinality for static file paths (PERF-034)</li>
+  </ol>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 16: P3/P4 SUMMARY                    -->
+<!-- ============================================ -->
+<h2>16. P3/P4 Summary</h2>
+<table>
+  <thead><tr><th>ID</th><th>Sev</th><th>Specialist</th><th>Title</th><th>File</th></tr></thead>
+  <tbody>
+    <tr><td>SEC-026</td><td><span class="badge badge-p3">P3</span></td><td>Red-teamer</td><td>Stored filename displayed without sanitization</td><td class="file">imageService.ts:83, ImageThumbnails.tsx:27</td></tr>
+    <tr><td>SEC-027</td><td><span class="badge badge-p3">P3</span></td><td>Red-teamer</td><td>Sequential image IDs enable IDOR enumeration</td><td class="file">imageService.ts:42-50</td></tr>
+    <tr><td>SEC-028</td><td><span class="badge badge-p3">P3</span></td><td>Red-teamer</td><td>Uploads served without auth or CSP headers</td><td class="file">index.ts:56</td></tr>
+    <tr><td>SEC-030</td><td><span class="badge badge-p3">P3</span></td><td>Red-teamer</td><td>Orchestrator proxy buffers unlimited multipart body</td><td class="file">index.ts:71-139</td></tr>
+    <tr><td>QO-010</td><td><span class="badge badge-p3">P3</span></td><td>Quality</td><td>FR-070/FR-071 missing Verifies: annotation</td><td class="file">types.ts:125, api.ts:125</td></tr>
+    <tr><td>QO-012</td><td><span class="badge badge-p3">P3</span></td><td>Quality</td><td>Shared image response types defined but not imported</td><td class="file">api.ts:126-127</td></tr>
+    <tr><td>QO-014</td><td><span class="badge badge-p3">P3</span></td><td>Quality</td><td>OTel spans missing on image upload/delete (FR-079)</td><td class="file">imageService.ts</td></tr>
+    <tr><td>PERF-028</td><td><span class="badge badge-p3">P3</span></td><td>Perf</td><td>SELECT * in deleteImage when only 3 columns needed</td><td class="file">imageService.ts</td></tr>
+    <tr><td>PERF-029</td><td><span class="badge badge-p3">P3</span></td><td>Perf</td><td>Redundant GET after upload discards response body</td><td class="file">BugDetail.tsx, FeatureRequestDetail.tsx</td></tr>
+    <tr><td>PERF-030</td><td><span class="badge badge-p3">P3</span></td><td>Perf</td><td>Serial image download for orchestrator submit</td><td class="file">FeatureRequestDetail.tsx</td></tr>
+    <tr><td>PERF-031</td><td><span class="badge badge-p3">P3</span></td><td>Perf</td><td>No image compression — full 5MB served at 80px display</td><td class="file">ImageThumbnails.tsx</td></tr>
+    <tr><td>PERF-032</td><td><span class="badge badge-p3">P3</span></td><td>Perf</td><td>listImages query has no LIMIT</td><td class="file">imageService.ts</td></tr>
+    <tr><td>CHAOS-024</td><td><span class="badge badge-p3">P3</span></td><td>Chaos</td><td>Missing referenced files render as broken images</td><td class="file">ImageThumbnails.tsx:19-26</td></tr>
+    <tr><td>CHAOS-026</td><td><span class="badge badge-p3">P3</span></td><td>Chaos</td><td>No timeout on image upload — frontend hangs indefinitely</td><td class="file">client.ts:308-312</td></tr>
+    <tr><td>CHAOS-027</td><td><span class="badge badge-p3">P3</span></td><td>Chaos</td><td>Image fetch failure silently swallowed in detail views</td><td class="file">BugDetail.tsx:36-43</td></tr>
+    <tr><td>CHAOS-028</td><td><span class="badge badge-p3">P3</span></td><td>Chaos</td><td>Upload dir not verified on each request (only at startup)</td><td class="file">upload.ts:16-18</td></tr>
+    <tr><td>DEP-014</td><td><span class="badge badge-p3">P3</span></td><td>Deps</td><td>multer MIME-type-only validation (no magic bytes)</td><td class="file">upload.ts:31</td></tr>
+    <tr><td>DEP-015</td><td><span class="badge badge-p3">P3</span></td><td>Deps</td><td>multer 1 major version behind (1.4 vs 2.1)</td><td class="file">package.json</td></tr>
+    <tr><td>SEC-029</td><td><span class="badge badge-p4">P4</span></td><td>Red-teamer</td><td>Race condition in image ID generation (mitigated by SQLite)</td><td class="file">imageService.ts:42-50</td></tr>
+    <tr><td>PERF-033</td><td><span class="badge badge-p4">P4</span></td><td>Perf</td><td>Upload metrics track count only, no bytes/duration</td><td class="file">metrics.ts</td></tr>
+    <tr><td>PERF-034</td><td><span class="badge badge-p4">P4</span></td><td>Perf</td><td>Metrics label cardinality unbounded for static file paths</td><td class="file">metrics.ts</td></tr>
+  </tbody>
+</table>
+
+<hr style="margin-top:3rem; border-color:var(--border);">
+<p style="color:var(--muted); text-align:center; margin-top:1rem;">Generated by TheInspector &middot; 2026-03-25 &middot; Static Mode &middot; 5 specialists</p>
+</div>
+</body>
+</html>

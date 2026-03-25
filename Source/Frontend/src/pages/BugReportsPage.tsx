@@ -5,7 +5,7 @@ import { BugList } from '../components/bugs/BugList'
 import { BugForm } from '../components/bugs/BugForm'
 import { BugDetail } from '../components/bugs/BugDetail'
 import { useApi } from '../hooks/useApi'
-import { bugs } from '../api/client'
+import { bugs, images } from '../api/client'
 import type { BugReport } from '../../../Shared/types'
 
 const STATUS_OPTIONS = [
@@ -41,8 +41,12 @@ export function BugReportsPage() {
 
   const { data, loading, error, refetch } = useApi(fetchFn, [statusFilter, severityFilter])
 
-  const handleCreate = async (input: Parameters<typeof bugs.create>[0]) => {
-    await bugs.create(input)
+  // Verifies: FR-083
+  const handleCreate = async (input: Parameters<typeof bugs.create>[0], imageFiles: File[]) => {
+    const created = await bugs.create(input)
+    if (imageFiles.length > 0) {
+      await images.upload('bugs', created.id, imageFiles)
+    }
     setShowForm(false)
     refetch()
   }

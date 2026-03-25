@@ -123,3 +123,61 @@
 - Test concurrent pipeline stage completions (two agents complete same stage simultaneously).
 - Test what happens if pipeline_runs table is manually corrupted (e.g., status set to invalid value).
 - Verify that the PipelineStepper frontend component handles edge states gracefully (failed pipeline, null stages).
+
+---
+
+## Audit Session: 2026-03-25 (Fourth Audit — Static Mode, Image Upload Feature)
+
+### Mode Selected: Static
+**Reason:** All services were DOWN at time of audit. Focused on new image upload feature added by TheATeam.
+
+### Files Analyzed
+- `Source/Backend/src/middleware/upload.ts` (NEW)
+- `Source/Backend/src/services/imageService.ts` (NEW)
+- `Source/Backend/src/routes/bugs.ts` (MODIFIED)
+- `Source/Backend/src/routes/featureRequests.ts` (MODIFIED)
+- `Source/Backend/src/index.ts` (MODIFIED)
+- `Source/Backend/src/database/schema.ts` (MODIFIED)
+- `Source/Frontend/src/api/client.ts` (MODIFIED)
+- `Source/Frontend/src/components/common/ImageUpload.tsx` (NEW)
+- `Source/Frontend/src/components/common/ImageThumbnails.tsx` (NEW)
+- `Source/Frontend/src/pages/BugReportsPage.tsx` (MODIFIED)
+- `Source/Frontend/src/pages/FeatureRequestsPage.tsx` (MODIFIED)
+- `Source/Frontend/src/components/bugs/BugDetail.tsx` (MODIFIED)
+- `Source/Frontend/src/components/bugs/BugForm.tsx` (MODIFIED)
+- `Source/Frontend/src/components/feature-requests/FeatureRequestForm.tsx` (MODIFIED)
+
+### Key Findings Summary
+
+#### New Findings: 8 findings (CHAOS-020 through CHAOS-027)
+- **CHAOS-020 (P2)**: Upload dir creation at module load time — if `fs.mkdirSync` throws (permissions), entire module fails to import and backend crashes on startup with no recoverable path.
+- **CHAOS-021 (P1)**: Entity created but image upload failure leaves entity in inconsistent state — no rollback, no cleanup, no user feedback about which images failed.
+- **CHAOS-022 (P2)**: Disk-full scenario — multer writes to disk and only then returns error; partial files are NOT cleaned up on ENOSPC errors or mid-stream write failures.
+- **CHAOS-023 (P2)**: `generateImageId()` inside transaction re-uses the same sequential ID for all files in a multi-file upload batch — the SELECT runs before any INSERT commits, so all files in a batch could get the same ID, causing a PRIMARY KEY constraint violation.
+- **CHAOS-024 (P3)**: Missing uploads directory at file-serve time — `/uploads` static handler silently returns 404; frontend `<img>` shows broken images with no error state or fallback.
+- **CHAOS-025 (P2)**: `deleteImage` deletes DB record FIRST then file — if the process is killed between the two operations, the file is orphaned forever (no cleanup mechanism).
+- **CHAOS-026 (P3)**: No request timeout on `images.upload()` in frontend client — large file uploads on slow networks cause indefinite loading state. Consistent with pre-existing CHAOS-011.
+- **CHAOS-027 (P3)**: `BugDetail` and `FeatureRequestDetail` silently swallow image-list fetch failures — `catch {}` with no error state means user sees empty image section with no indication of failure.
+
+### Robust Patterns Observed in Image Upload Feature
+- `uploadImagesService` wraps all DB inserts in `db.transaction()` — correct for atomicity of the metadata side.
+- Multer is configured with `MAX_FILE_SIZE` (5MB), `MAX_FILES` (5), and MIME type allowlist — good resource bounding.
+- `deleteImage` catches file-system errors and logs them without failing the HTTP response — avoids cascading failures on partial deletion.
+- Frontend `ImageUpload` component validates MIME type and size client-side BEFORE upload — reduces unnecessary server round-trips.
+- Route handlers check entity existence BEFORE calling multer — avoids writing files for non-existent entities.
+- `imageUploadsCounter` metric is incremented per upload — good observability.
+- Image table has `idx_image_attachments_entity` composite index — efficient list queries.
+- `entity_type` column has CHECK constraint — prevents invalid entity type strings at DB level.
+
+### Pattern: Two-Phase Create with No Rollback
+- Both `BugReportsPage.handleCreate` and `FeatureRequestsPage.handleCreate` do: (1) create entity, (2) upload images. If step 2 fails, the entity exists but has no images. The error propagates to the form's catch block and shows a generic error — but the entity was already persisted. This is a P1 because the user sees an error but the data was partially saved; retrying creates a duplicate entity.
+
+### Pattern: ID Generation Inside Transaction is a Double-edged Sword
+- `generateImageId` does a `SELECT ... ORDER BY id DESC LIMIT 1` inside the `db.transaction()` in `uploadImagesService`. Since `better-sqlite3` is synchronous, this is safe against cross-request races. However, the ID is generated per-file within a loop, and the SELECT runs against committed rows only — the first file in the loop generates IMG-0001, the second also sees IMG-0001 as the max (because the first INSERT hasn't committed yet), so ALL files in a single-request batch would attempt to use IMG-0001, IMG-0001, IMG-0001 ... causing a PRIMARY KEY constraint violation on the second insert. This is a P1-level data-loss bug for multi-file uploads.
+
+### Recommendations for Next Audit (Dynamic Mode)
+- Upload 2+ files simultaneously to a single bug/FR to confirm CHAOS-023 (duplicate ID generation crash).
+- Fill disk, attempt upload, verify partial file cleanup behavior.
+- Kill process between bug creation and image upload to confirm orphaned entity behavior.
+- Confirm `/uploads/nonexistent.jpg` returns 404 (expected) and verify frontend shows broken image fallback.
+- Delete a DB record manually, observe GET /api/bugs/:id/images still returns empty list (OK), but thumbnail renders broken image (CHAOS-024 confirmed).

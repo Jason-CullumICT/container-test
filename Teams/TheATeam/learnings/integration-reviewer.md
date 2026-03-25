@@ -60,3 +60,29 @@ pkill -f "node dist/Source/Backend/src/index.js"
 - [ ] Test delete operations and confirm 204 response
 - [ ] Confirm side effects of POST /complete (Learning + Feature records created)
 - [ ] Check ID generation survives delete operations
+
+## Run: 2026-03-25 (Image Upload Feature)
+
+### Key Findings
+
+11. **DELETE endpoint entity ownership check**: Image DELETE routes (`/api/feature-requests/:id/images/:imageId`) only verify the imageId exists — they do NOT verify the image belongs to the specified entity. Any image can be deleted via any entity's URL. Minor for internal tools but breaks RESTful resource hierarchy. Always verify entity ownership on nested resource operations.
+
+12. **Two-step upload pattern works cleanly**: Creating the entity first (JSON), then uploading images (multipart) avoids rewriting existing create endpoints. The frontend handles the two-step flow transparently. This pattern is preferable to combined multipart endpoints for retrofitting existing APIs.
+
+13. **Multipart proxy buffering**: The orchestrator proxy reads the entire multipart body into memory before forwarding. For the 5×5MB max this means up to 25MB per request. Acceptable for internal tools but should use streaming for production-grade services.
+
+14. **Pre-existing Layout.test.tsx failures**: 3 tests fail because the Approvals page was removed (commit `81d126a`) but the layout tests still expect it. These are pre-existing and unrelated to image upload. Tests referencing removed features need cleanup.
+
+15. **Image service tests use real SQLite with :memory:**: The image tests properly use in-memory SQLite instances instead of mocks, catching real SQL issues. This is the right pattern for service-level tests.
+
+### Image Upload Checklist
+- [ ] Verify multer rejects non-image MIME types with 400
+- [ ] Verify multer rejects files >5MB with 400
+- [ ] Test upload to non-existent entity returns 404
+- [ ] Verify image deletion removes file from disk
+- [ ] Verify static serving at GET /uploads/:filename
+- [ ] Test orchestrator proxy forwards multipart requests correctly
+- [ ] Check vite config proxies /uploads to backend
+- [ ] Verify frontend ImageUpload component drag-and-drop + click
+- [ ] Verify ImageThumbnails renders and supports delete
+- [ ] Verify two-step flow: create entity then upload images
