@@ -1,8 +1,12 @@
 // Verifies: FR-025
-import React, { useState } from 'react'
-import type { FeatureRequest } from '../../../../Shared/types'
+// Verifies: FR-084
+// Verifies: FR-087
+import React, { useState, useEffect, useCallback } from 'react'
+import type { FeatureRequest, ImageAttachment } from '../../../../Shared/types'
 import { VoteResults } from './VoteResults'
-import { featureRequests } from '../../api/client'
+import { featureRequests, images, orchestrator } from '../../api/client'
+import { ImageThumbnails } from '../common/ImageThumbnails'
+import { ImageUpload } from '../common/ImageUpload'
 
 interface FeatureRequestDetailProps {
   fr: FeatureRequest
@@ -24,6 +28,65 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
   const [denyComment, setDenyComment] = useState('')
   const [showDenyForm, setShowDenyForm] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [attachedImages, setAttachedImages] = useState<ImageAttachment[]>([])
+  const [submittingToOrch, setSubmittingToOrch] = useState(false)
+
+  // FR-084: Fetch images on mount and when FR changes
+  const fetchImages = useCallback(async () => {
+    try {
+      const result = await images.list('feature-requests', fr.id)
+      setAttachedImages(result.data)
+    } catch {
+      // Image fetch failure is non-blocking
+    }
+  }, [fr.id])
+
+  useEffect(() => {
+    fetchImages()
+  }, [fetchImages])
+
+  // FR-084: Handle image upload from detail view
+  const handleImageUpload = async (files: File[]) => {
+    if (files.length === 0) return
+    try {
+      await images.upload('feature-requests', fr.id, files)
+      fetchImages()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to upload images')
+    }
+  }
+
+  // FR-084: Handle image deletion
+  const handleImageDelete = async (imageId: string) => {
+    try {
+      await images.delete('feature-requests', fr.id, imageId)
+      setAttachedImages((prev) => prev.filter((img) => img.id !== imageId))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete image')
+    }
+  }
+
+  // FR-087: Submit to orchestrator with images
+  const handleSubmitToOrchestrator = async () => {
+    setSubmittingToOrch(true)
+    setError(null)
+    try {
+      const imageFiles: File[] = []
+      for (const img of attachedImages) {
+        const res = await fetch(`/uploads/${img.filename}`)
+        const blob = await res.blob()
+        imageFiles.push(new File([blob], img.original_name, { type: img.mime_type }))
+      }
+      await orchestrator.submitWork(
+        `Implement feature: ${fr.title}\n\n${fr.description}`,
+        { images: imageFiles.length > 0 ? imageFiles : undefined }
+      )
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to submit to orchestrator')
+    } finally {
+      setSubmittingToOrch(false)
+    }
+  }
 
   const handleVote = async () => {
     setLoading(true)
@@ -137,6 +200,21 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
         </div>
       )}
 
+      {/* FR-084: Image Attachments */}
+      <div>
+        <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+          Attachments ({attachedImages.length})
+        </h4>
+        <ImageThumbnails
+          images={attachedImages}
+          allowDelete
+          onDelete={handleImageDelete}
+        />
+        <div className="mt-2">
+          <ImageUpload onFilesSelected={handleImageUpload} />
+        </div>
+      </div>
+
       {/* Vote Results */}
       <div>
         <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
@@ -178,6 +256,16 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
             className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
           >
             Deny
+          </button>
+        )}
+        {/* FR-087: Submit approved FR to orchestrator with images */}
+        {fr.status === 'approved' && (
+          <button
+            onClick={handleSubmitToOrchestrator}
+            disabled={submittingToOrch}
+            className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50"
+          >
+            {submittingToOrch ? 'Submitting...' : 'Submit to Orchestrator'}
           </button>
         )}
       </div>

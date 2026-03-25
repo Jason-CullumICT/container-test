@@ -63,3 +63,28 @@
 - `CycleFeedback` client functions are in `cycleFeedback` namespace (not under `cycles`)
 - Mock `cycleFeedback` alongside `cycles` when testing CycleView integration
 - New test file: `tests/Traceability.test.tsx` — covers all traceability components (29 tests)
+
+## Session: 2026-03-25
+
+### Image Upload Feature (FR-080, FR-081, FR-086, FR-089)
+- New `common/` component directory at `src/components/common/` for shared UI components
+- `ImageUpload` and `ImageThumbnails` use named exports (linter converts default → named)
+- Import path from `src/components/common/` to Shared is `../../../../Shared/types` (4 levels up)
+- `images` API client namespace uses raw `fetch` with `FormData` for uploads — NOT `apiFetch` (which sets JSON Content-Type)
+- `handleResponse` helper extracted for reuse by both `images.upload` and `orchestrator.submitWork` multipart path
+- Vite config needs `/uploads` proxy alongside `/api` for static file serving in dev
+- `URL.createObjectURL` / `URL.revokeObjectURL` must be mocked in jsdom tests for file preview testing
+- When mocking `createObjectURL` to return same string, React warns about duplicate keys in preview grid — non-blocking
+- Pre-existing Layout.test.tsx failures (3 tests) are due to Sidebar prop changes unrelated to image upload work
+- Pre-existing TS errors in BugReports, DevelopmentCycle, FeatureBrowser, PipelineStepper tests due to missing optional fields from FR-050/FR-051 type additions
+- Test file: `tests/ImageComponents.test.tsx` — 23 tests covering ImageUpload, ImageThumbnails, and API client
+
+### Image Upload — Form & Detail Integration (FR-082 through FR-089, frontend-coder-2)
+- Two-step upload pattern (DD-IMG-01): form creates entity first, then uploads images as second step
+- `FeatureRequestForm.onSubmit` signature changed to `(input, imageFiles: File[])` — page handler does the two-step
+- `FeatureRequestDetail` and `BugDetail` fetch images on mount via `useEffect` + `useCallback` for stable ref
+- Detail views allow additional uploads and deletion from the detail view itself
+- Orchestrator submit (FR-087): downloads image blobs from `/uploads/{filename}`, converts to File objects, sends via `orchestrator.submitWork(..., { images })`. Only shown for `approved` status FRs
+- When testing components that call `images.list()` on mount, mock must return `{ data: [...] }` not just `[...]`
+- `screen.getByAlt` does not exist — use `screen.getByAltText` (RTL naming)
+- Test file: `tests/ImageUpload.test.tsx` — 27 tests covering form integration, detail views, orchestrator submit

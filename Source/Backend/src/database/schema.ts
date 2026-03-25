@@ -186,5 +186,24 @@ export function runMigrations(db: Database.Database): void {
     db.exec(`ALTER TABLE features ADD COLUMN traceability_report TEXT`);
   }
 
+  // --- Image attachments table (FR-072) ---
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS image_attachments (
+      id TEXT PRIMARY KEY,
+      entity_id TEXT NOT NULL,
+      entity_type TEXT NOT NULL CHECK(entity_type IN ('feature_request', 'bug')),
+      filename TEXT NOT NULL,
+      original_name TEXT NOT NULL,
+      mime_type TEXT NOT NULL,
+      size_bytes INTEGER NOT NULL,
+      created_at TEXT NOT NULL
+    );
+  `);
+
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_image_attachments_entity
+      ON image_attachments(entity_id, entity_type);
+  `);
+
   logger.info('Database migrations complete');
 }

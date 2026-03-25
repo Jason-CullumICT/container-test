@@ -3,6 +3,7 @@
 
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 import { initTracing } from './lib/tracing';
 import { requestLoggingMiddleware } from './middleware/logging';
 import { metricsMiddleware, metricsHandler } from './middleware/metrics';
@@ -51,6 +52,9 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Static file serving for uploaded images (FR-077, DD-IMG-03)
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 // API routes
 app.use('/api/feature-requests', featureRequestsRouter);
 app.use('/api/bugs', bugsRouter);
@@ -62,18 +66,45 @@ app.use('/api/pipeline-runs', pipelineRunsRouter);
 
 // Orchestrator proxy — forwards requests to the claude-ai-OS orchestrator
 // Allows the feature portal to submit work and monitor cycles
-const ORCHESTRATOR_URL = process.env.ORCHESTRATOR_URL || 'http://localhost:9800';
-
+// Verifies: FR-078
+// Orchestrator proxy — supports both JSON and multipart form-data (DD-IMG-06)
 app.use('/api/orchestrator', async (req, res) => {
-  const targetUrl = `${ORCHESTRATOR_URL}${req.url}`;
+  const orchestratorUrl = process.env.ORCHESTRATOR_URL || 'http://localhost:9800';
+  const targetUrl = `${orchestratorUrl}${req.url}`;
   try {
-    const fetchOpts: RequestInit = {
-      method: req.method,
-      headers: { 'Content-Type': 'application/json' },
-    };
-    if (req.method !== 'GET' && req.method !== 'HEAD') {
-      fetchOpts.body = JSON.stringify(req.body);
+    const incomingContentType = req.headers['content-type'] || '';
+    const isMultipart = incomingContentType.includes('multipart/form-data');
+
+    let fetchOpts: RequestInit;
+
+    if (req.method === 'GET' || req.method === 'HEAD') {
+      fetchOpts = { method: req.method };
+    } else if (isMultipart) {
+      // FR-078: Stream multipart requests to the orchestrator
+      // Pipe the raw request body with its original content-type (preserving boundary)
+      const chunks: Buffer[] = [];
+      for await (const chunk of req) {
+        chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+      }
+      const body = Buffer.concat(chunks);
+
+      fetchOpts = {
+        method: req.method,
+        headers: { 'Content-Type': incomingContentType },
+        body,
+      };
+      logger.info('Orchestrator proxy forwarding multipart request', {
+        url: targetUrl,
+        contentLength: body.length,
+      });
+    } else {
+      fetchOpts = {
+        method: req.method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(req.body),
+      };
     }
+
     const response = await fetch(targetUrl, fetchOpts);
     const contentType = response.headers.get('content-type') || '';
 
@@ -102,7 +133,8 @@ app.use('/api/orchestrator', async (req, res) => {
     res.status(response.status).type(contentType).send(data);
   } catch (err) {
     logger.error('Orchestrator proxy error', { url: targetUrl, error: (err as Error).message });
-    res.status(502).json({ error: `Orchestrator unreachable at ${ORCHESTRATOR_URL}` });
+    const orchUrl = process.env.ORCHESTRATOR_URL || 'http://localhost:9800';
+    res.status(502).json({ error: `Orchestrator unreachable at ${orchUrl}` });
   }
 });
 

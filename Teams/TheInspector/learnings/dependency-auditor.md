@@ -90,3 +90,32 @@ Same 4 moderate per project (esbuild CSRF). No new CVEs.
 
 ### All Prior Findings Still Open
 DEP-001 through DEP-010 remain STILL OPEN.
+
+## Fourth Audit: 2026-03-25
+
+### Image Upload Feature Dependencies
+- **New prod dep**: multer@1.4.5-lts.1 (MIT, no new CVEs)
+- **New dev dep**: @types/multer@1.4.11 (MIT)
+- Backend transitive deps now: **565** (up from ~549)
+- Frontend: no changes
+
+### New Findings
+- DEP-014 (P3): multer fileFilter validates only `file.mimetype` (attacker-controlled header). No magic-byte/file-signature check. [CROSS-REF: red-teamer]
+- DEP-015 (P3): multer 1 major behind (1.4.5-lts.1 vs 2.1.1). Note: 1.x-lts IS the maintained track for Express 4; patch `1.4.5-lts.2` available via `npm update`.
+
+### CVE Status
+Same 4 moderate per backend project (esbuild CSRF). No new CVEs. multer is clean.
+
+### All Prior Findings Still Open
+DEP-001 through DEP-013 remain STILL OPEN.
+
+## Key Notes on multer
+- `^1.4.5-lts.1` is the semver range used — picks up 1.x-lts patches only, will not auto-upgrade to v2
+- `1.x-lts` branch is under `expressjs` org, actively maintained for Express 4
+- Plan multer@2.x upgrade alongside Express 5 upgrade (DEP-010)
+- multer@1.x carries legacy transitive deps: mkdirp@0.5, concat-stream@1.x, xtend, object-assign — all functional but old; all dropped in multer@2.x
+- `@types/multer@2.x` corresponds to multer@2.x API — do NOT upgrade types without upgrading runtime
+
+## Watch List Additions
+- **multer**: File upload library — high-value CVE target. Track advisories for GHSA entries. Upgrade to 2.x with Express 5.
+- **MIME validation pattern**: `file.mimetype` in multer is not authoritative — always pair with magic-byte validation for security-sensitive uploads

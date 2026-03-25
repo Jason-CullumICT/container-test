@@ -5,7 +5,7 @@ import { FeatureRequestList } from '../components/feature-requests/FeatureReques
 import { FeatureRequestForm } from '../components/feature-requests/FeatureRequestForm'
 import { FeatureRequestDetail } from '../components/feature-requests/FeatureRequestDetail'
 import { useApi } from '../hooks/useApi'
-import { featureRequests } from '../api/client'
+import { featureRequests, images } from '../api/client'
 import type { FeatureRequest } from '../../../Shared/types'
 
 const STATUS_OPTIONS = [
@@ -42,8 +42,12 @@ export function FeatureRequestsPage() {
 
   const { data, loading, error, refetch } = useApi(fetchFn, [statusFilter, sourceFilter])
 
-  const handleCreate = async (input: Parameters<typeof featureRequests.create>[0]) => {
-    await featureRequests.create(input)
+  // Verifies: FR-082
+  const handleCreate = async (input: Parameters<typeof featureRequests.create>[0], imageFiles: File[]) => {
+    const created = await featureRequests.create(input)
+    if (imageFiles.length > 0) {
+      await images.upload('feature-requests', created.id, imageFiles)
+    }
     setShowForm(false)
     refetch()
   }

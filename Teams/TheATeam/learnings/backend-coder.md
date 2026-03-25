@@ -148,3 +148,51 @@ FR-050 through FR-062: Full traceability for development cycles — linking bugs
 - Traceability: 47/47 implemented FRs covered (PASS)
 - New test file: `feedback.test.ts` (53 tests covering FR-050 through FR-062)
 
+## Run 2026-03-25 (Backend Coder 1 — Image Upload)
+
+### What Was Implemented
+FR-070 through FR-079 + FR-088: Image upload support for feature requests and bug reports.
+
+### Key Files
+- `Source/Backend/src/middleware/upload.ts` (NEW) — multer config with UUID filenames, 5MB limit, MIME whitelist
+- `Source/Backend/src/services/imageService.ts` (NEW) — uploadImagesService, listImages, deleteImage
+- `Source/Backend/src/routes/featureRequests.ts` — added POST/GET/DELETE `:id/images` sub-routes
+- `Source/Backend/src/routes/bugs.ts` — added POST/GET/DELETE `:id/images` sub-routes
+- `Source/Backend/src/index.ts` — added `express.static` for `/uploads/` serving
+- `Source/Backend/src/middleware/metrics.ts` — added `image_uploads_total` Prometheus counter
+- `Source/Backend/src/database/schema.ts` — added `image_attachments` table + index
+- `Source/Shared/types.ts` — added `ImageAttachment`, `ImageEntityType`
+- `Source/Shared/api.ts` — added `ImageAttachmentListResponse`, `ImageUploadResponse`
+
+### Patterns
+- **Two-step upload** (DD-IMG-01): entity created first (JSON), then images uploaded via multipart POST
+- **Multer callback pattern**: upload middleware called inside route handler (not as Express middleware), allowing entity validation before file upload
+- **File cleanup on delete** (DD-IMG-05): `deleteImage` removes both DB record and disk file
+- **ID generation**: `IMG-XXXX` sequential IDs, same pattern as other entities
+- **MulterFile interface**: exported from imageService for test use, avoids importing Express.Multer.File in tests
+- **Minimal PNG for tests**: `createMinimalPng()` helper generates a valid 1x1 pixel PNG buffer for supertest uploads
+
+### Test Baseline
+- 12 test files: 442 tests passing, 0 failing (up from 403)
+- Traceability: all assigned FRs (FR-072 through FR-079, FR-088) covered
+- New test file: `images.test.ts` (29 tests covering FR-072 through FR-079, FR-088)
+
+## Run 2026-03-25 (Backend Coder 2 — Image Upload: Orchestrator Proxy + Tests)
+
+### What Was Implemented
+FR-078 (orchestrator proxy multipart forwarding) + FR-088 (comprehensive backend tests).
+
+### Key Changes
+- **Orchestrator proxy (FR-078)**: Modified `index.ts` proxy to detect `multipart/form-data` content-type. Multipart requests are streamed by collecting raw request body chunks and forwarding with original Content-Type header (preserving boundary). JSON and GET requests continue working unchanged.
+- **Dynamic env read**: Changed `ORCHESTRATOR_URL` from module-level const to request-time `process.env` read so tests can override it per test case.
+- **Test files**: `imageService.test.ts` (14 tests), `imageRoutes.test.ts` (14 tests), `orchestratorProxy.test.ts` (7 tests)
+
+### Patterns
+- **Mock orchestrator for proxy tests**: `createMockOrchestrator()` spins up an `http.createServer` on port 0 (OS-assigned), echoes request metadata. Set `process.env.ORCHESTRATOR_URL` in beforeEach to point at mock.
+- **Multipart forwarding**: Collect request body as `Buffer[]`, concat, send as `fetch` body with original Content-Type. This preserves the multipart boundary without re-parsing.
+- **Image route test cleanup**: After supertest uploads, delete the actual file from `UPLOAD_DIR` to prevent test pollution.
+
+### Test Baseline
+- 14 test files: 465 tests passing, 0 failing (up from 442)
+- Traceability: all backend FRs covered. 4 frontend FRs (FR-082, FR-083, FR-084, FR-087) pending frontend-coder tests.
+

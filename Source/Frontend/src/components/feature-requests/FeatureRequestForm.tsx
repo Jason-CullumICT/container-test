@@ -1,9 +1,11 @@
 // Verifies: FR-025
+// Verifies: FR-082
 import React, { useState } from 'react'
 import type { CreateFeatureRequestInput } from '../../../../Shared/api'
+import { ImageUpload } from '../common/ImageUpload'
 
 interface FeatureRequestFormProps {
-  onSubmit: (input: CreateFeatureRequestInput) => Promise<void>
+  onSubmit: (input: CreateFeatureRequestInput, imageFiles: File[]) => Promise<void>
   onCancel: () => void
 }
 
@@ -12,6 +14,7 @@ export function FeatureRequestForm({ onSubmit, onCancel }: FeatureRequestFormPro
   const [description, setDescription] = useState('')
   const [source, setSource] = useState('manual')
   const [priority, setPriority] = useState('medium')
+  const [imageFiles, setImageFiles] = useState<File[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -24,7 +27,7 @@ export function FeatureRequestForm({ onSubmit, onCancel }: FeatureRequestFormPro
     setSubmitting(true)
     setError(null)
     try {
-      await onSubmit({ title: title.trim(), description: description.trim(), source, priority })
+      await onSubmit({ title: title.trim(), description: description.trim(), source, priority }, imageFiles)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create feature request')
       setSubmitting(false)
@@ -86,6 +89,13 @@ export function FeatureRequestForm({ onSubmit, onCancel }: FeatureRequestFormPro
             <option value="critical">Critical</option>
           </select>
         </div>
+      </div>
+      {/* FR-082: Image upload for feature requests */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Attachments
+        </label>
+        <ImageUpload onFilesSelected={setImageFiles} disabled={submitting} />
       </div>
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm">

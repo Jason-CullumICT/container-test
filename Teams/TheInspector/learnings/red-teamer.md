@@ -115,3 +115,53 @@ This codebase has solid fundamentals in SQL injection prevention and enum valida
 
 ### All Prior Findings Still Open
 All 14 prior findings remain STILL OPEN. Zero remediation since first audit.
+
+## Fourth Audit: 2026-03-25 (Image Upload Feature)
+
+### Image Upload Security Analysis
+
+New attack surface introduced by multer-based image upload feature. Prior P1 (no auth) still the root cause enabling most new findings.
+
+**Critical new findings:**
+
+- **SEC-021 (P1): MIME type check trivially bypassed** — `upload.ts:31` checks `file.mimetype` which comes from the HTTP Content-Type header, not file magic bytes. Any attacker can send a PHP/JSP/exe with `Content-Type: image/jpeg` and it will be accepted and stored on disk with the original file extension (because `path.extname(file.originalname)` preserves the extension). Combined with the static file server at `/uploads`, this enables stored XSS and potential RCE if the server ever executes PHP/etc.
+
+- **SEC-022 (P2): File extension not validated** — `upload.ts:25-26` uses `path.extname(file.originalname)` verbatim as the stored extension. An attacker submits `evil.php` with `Content-Type: image/jpeg`; stored as `<uuid>.php`. Static server serves it back. If server runs PHP, this is RCE.
+
+- **SEC-023 (P1): Unauthenticated image upload/delete** — All 4 new image endpoints (`POST/GET/DELETE /:id/images`) have zero authentication, consistent with the rest of the API. Anyone can upload files to disk or delete existing images.
+
+- **SEC-024 (P2): Cross-entity image deletion (IDOR)** — `DELETE /api/bugs/:id/images/:imageId` at `bugs.ts:200-208` extracts only `imageId` and calls `deleteImage(getDb(), imageId)` with no check that the image belongs to the bug identified in `:id`. An attacker can enumerate IMG-XXXX IDs and delete images belonging to any entity. Same pattern in `featureRequests.ts:281-289`.
+
+- **SEC-025 (P2): No aggregate file upload size cap** — 5 files × 5MB = 25MB possible per request, plus multer buffers to disk. Combined with no rate limiting or authentication, enables disk exhaustion DoS.
+
+- **SEC-026 (P3): `original_name` stored and displayed without sanitization** — `imageService.ts:83` stores `file.originalname` raw from the multipart form. `ImageThumbnails.tsx:30` renders it as `{img.original_name}` (React escapes, so stored XSS in JSX is mitigated). But `alt={img.original_name}` at line 27 and the `aria-label` at line 36 inject the raw name into DOM attributes — potential DOM XSS if a browser mishandles attribute escaping in edge cases (low risk in modern browsers, but worth noting).
+
+- **SEC-027 (P3): Sequential image IDs enable IDOR enumeration** — `imageService.ts:42-50` generates IDs as IMG-0001, IMG-0002... same sequential pattern as all other entities. Attacker can iterate IMG-XXXX to delete or list images across all entities.
+
+- **SEC-028 (P3): `/uploads` directory served without any access control** — `index.ts:56` registers `express.static` for the entire uploads directory with no authentication. Any file in the directory is publicly accessible by filename. No directory listing by default (express.static), but direct file access is open.
+
+- **SEC-029 (P4): Race condition between DB delete and file delete** — `imageService.ts:129-139`: DB record deleted first, then file deletion attempted. If file deletion fails, the file remains on disk but is orphaned (no DB record). With no auth and sequential IDs, attackers can cause this state intentionally or an error leaves unreachable files accumulating.
+
+**Properly defended in image feature:**
+- File size limit: 5MB per file, max 5 files — hardcoded limits in multer config
+- UUID-based stored filenames prevent path traversal in the storage path itself (but extension is preserved)
+- SQL queries in imageService all parameterized — no SQL injection
+- `entity_type` constrained by DB CHECK constraint to 'feature_request' | 'bug'
+- React's JSX rendering escapes `{img.original_name}` text nodes — no stored XSS via text rendering
+
+### Key Patterns for Image Upload Audits
+- Always check: does MIME filter use magic bytes or Content-Type header? (Header = bypassable)
+- Always check: is file extension derived from original filename or forced to a safe set?
+- Always check: does delete endpoint verify the deleted item belongs to the requesting entity?
+- Static file serving: is there directory listing? Is auth required?
+- ID generation: sequential = IDOR risk across all entities
+
+### Updated File Paths
+| File | What to Check |
+|------|--------------|
+| `/workspace/Source/Backend/src/middleware/upload.ts:30-36` | MIME check — header-based, bypassable |
+| `/workspace/Source/Backend/src/middleware/upload.ts:24-27` | Extension from originalname — preserved verbatim |
+| `/workspace/Source/Backend/src/services/imageService.ts:42-50` | Sequential ID generation |
+| `/workspace/Source/Backend/src/routes/bugs.ts:200-208` | Delete image — no ownership check |
+| `/workspace/Source/Backend/src/routes/featureRequests.ts:281-289` | Delete image — no ownership check |
+| `/workspace/Source/Backend/src/index.ts:56` | Static file serving for uploads — no auth |

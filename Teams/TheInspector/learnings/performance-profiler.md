@@ -119,6 +119,7 @@ The frontend API client (`client.ts`) is a thin fetch wrapper with no caching, d
 | 2026-03-23 (first) | Static | 8 | 3 | 2 | 2 | 1 | N/A |
 | 2026-03-23 (second) | Static | 15 | 4 | 3 | 5 | 3 | 1 (COUNT(*) ID gen) |
 | 2026-03-24 (third) | Hybrid | 22 | 1 | 3 | 3 | 1 | 0 |
+| 2026-03-25 (fourth) | Static | 12 | 1 | 4 | 5 | 2 | 0 |
 
 ## Third Audit: 2026-03-24
 
@@ -135,3 +136,25 @@ The frontend API client (`client.ts`) is a thin fetch wrapper with no caching, d
 All pipeline endpoints pass budgets. Stage-5 cascade ~3.8ms (includes completeCycle chain).
 
 All 15 prior findings STILL OPEN (1 compounded: PERF-015 now stacks with pipeline stage-5 cascade).
+
+## Fourth Audit: 2026-03-25 (Image Upload Feature)
+
+### New Image-Feature-Specific Findings
+- PERF-023 (P1): N+1 ID generation — `generateImageId()` called once per file inside transaction loop in `imageService.ts:80-95`. Also uses lexicographic ORDER BY on `IMG-NNNN` TEXT IDs which corrupts under concurrent inserts.
+- PERF-024 (P2): Sync `fs.existsSync`+`fs.mkdirSync` at module load in `upload.ts:16-18`. Second `UPLOAD_DIR` constant in `imageService.ts:14` duplicates the path.
+- PERF-025 (P2): Sync `fs.existsSync`+`fs.unlinkSync` in request handler path (`imageService.ts:134-138`). Blocks event loop on every DELETE image request. Fix: use `fs.promises.unlink`.
+- PERF-026 (P2): Double DB read on image upload POST — existence check fires full `getBugById`/`getFeatureRequestById` before multer streams files. FR variant fires votes sub-query too.
+- PERF-027 (P2): `express.static('/uploads')` has no `maxAge` or `immutable` headers. Every image re-validates per request. Fix: `{ maxAge: '7d', immutable: true }`.
+- PERF-028 (P3): `SELECT *` in `deleteImage` fetches full row when only filename+entity fields needed.
+- PERF-029 (P3): Frontend `BugDetail`/`FeatureRequestDetail` re-fetch image list after upload instead of using the response body directly.
+- PERF-030 (P3): `handleSubmitToOrchestrator` downloads all attached images serially in a `for...of` loop before POSTing. Use `Promise.all` for parallel fetches.
+- PERF-031 (P3): No image compression/resize post-processing. Full-resolution files served at thumbnail display sizes. No `sharp` or equivalent in deps.
+- PERF-032 (P3): `listImages` has no LIMIT — unbounded result set despite having the composite index.
+- PERF-033 (P4): `imageUploadsCounter` tracks count only, not bytes or duration. No upload size/latency histogram.
+- PERF-034 (P4): `metricsMiddleware` uses raw `req.path` for static file routes → unbounded label cardinality for `/uploads/:filename`.
+
+### Key Pattern Notes
+- The `image_attachments` composite index `(entity_id, entity_type)` is correctly created — good.
+- All 22 prior findings remain STILL OPEN going into this audit.
+- The upload feature correctly uses `multer.diskStorage` (not memory storage) — avoids RAM exhaustion.
+- File size limit (5 MB) and file count limit (5) are correctly set in multer config.
