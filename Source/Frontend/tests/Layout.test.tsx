@@ -83,14 +83,14 @@ describe('Layout and Sidebar (FR-022)', () => {
     expect(screen.getByText('Dev Workflow')).toBeInTheDocument()
   })
 
-  it('renders all 7 navigation links', () => {
+  it('renders all navigation links', () => {
     // Verifies: FR-022
+    // Verifies: FR-076
     renderLayout()
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
     expect(screen.getByText('Feature Requests')).toBeInTheDocument()
     expect(screen.getByText('Bug Reports')).toBeInTheDocument()
-    expect(screen.getByText('Dev Cycle')).toBeInTheDocument()
-    expect(screen.getByText('Approvals')).toBeInTheDocument()
+    expect(screen.getByText('Orchestrator')).toBeInTheDocument()
     expect(screen.getByText('Feature Browser')).toBeInTheDocument()
     expect(screen.getByText('Learnings')).toBeInTheDocument()
   })
@@ -107,7 +107,6 @@ describe('Layout and Sidebar (FR-022)', () => {
     await waitFor(() => {
       expect(dashboard.getSummary).toHaveBeenCalled()
     })
-    expect(featureRequests.list).toHaveBeenCalledWith({ status: 'voting' })
   })
 
   it('shows active bug count badge when bugs exist', async () => {
@@ -131,15 +130,14 @@ describe('Layout and Sidebar (FR-022)', () => {
 })
 
 describe('Sidebar component', () => {
-  it('renders badge for pending approvals', () => {
+  it('renders badges for active bugs and pending FRs', () => {
     // Verifies: FR-022
     render(
       <MemoryRouter>
-        <Sidebar pendingApprovals={5} activeBugs={3} pendingFRs={8} />
+        <Sidebar activeBugs={3} pendingFRs={8} />
       </MemoryRouter>
     )
     // Badges should appear
-    expect(screen.getByText('5')).toBeInTheDocument()
     expect(screen.getByText('3')).toBeInTheDocument()
     expect(screen.getByText('8')).toBeInTheDocument()
   })
@@ -148,7 +146,7 @@ describe('Sidebar component', () => {
     // Verifies: FR-022
     render(
       <MemoryRouter>
-        <Sidebar pendingApprovals={0} activeBugs={0} pendingFRs={0} />
+        <Sidebar activeBugs={0} pendingFRs={0} />
       </MemoryRouter>
     )
     // No badge numbers should appear

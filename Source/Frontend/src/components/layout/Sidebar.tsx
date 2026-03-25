@@ -19,7 +19,7 @@ export function Sidebar({ activeBugs, pendingFRs }: SidebarProps) {
     { path: '/', label: 'Dashboard', icon: '🏠' },
     { path: '/feature-requests', label: 'Feature Requests', icon: '✨', badge: pendingFRs },
     { path: '/bugs', label: 'Bug Reports', icon: '🐛', badge: activeBugs },
-    { path: '/cycle', label: 'Dev Cycle', icon: '🔄' },
+    { path: '/cycle', label: 'Orchestrator', icon: '⚡' }, // Verifies: FR-076
     { path: '/features', label: 'Feature Browser', icon: '📦' },
     { path: '/learnings', label: 'Learnings', icon: '📚' },
   ]

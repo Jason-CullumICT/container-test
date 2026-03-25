@@ -104,3 +104,34 @@ Adversarial invariant testing — targeted verification of Run 3 fixes (DD-9, DD
 cd Source/Backend && npm test              # 295 tests, 0 failures
 python3 tools/traceability-enforcer.py    # PASS — all 32 FRs covered
 ```
+
+---
+
+## Orchestrator Cycle Dashboard Review (2026-03-25)
+
+### Role
+Adversarial chaos testing — review-only (no Source/ edits) for the orchestrator cycle dashboard feature (FR-070–FR-076).
+
+### What Was Reviewed
+Frontend-only feature replacing DevelopmentCyclePage with OrchestratorCyclesPage. Components: OrchestratorCyclesPage, CycleCard, CycleLogStream, CompletedCyclesSection. Uses existing `orchestrator.listCycles()` API client + SSE for logs.
+
+### Key Findings
+
+1. **Port link URL not validated**: `CycleCard.tsx` interpolates `port` into `http://localhost:${port}` without runtime number check. TypeScript types say `number` but API returns `any`. MEDIUM severity — mitigated by `http://localhost:` prefix preventing `javascript:` protocol.
+
+2. **Unbounded SSE log accumulation**: `CycleLogStream.tsx` appends logs indefinitely. No max buffer. LOW severity — mitigated by logs clearing on expand/collapse toggle.
+
+3. **Stop button "stopping" state never resets on failure**: `CycleCard.tsx` sets `stopping=true` but never resets it. Relies on parent re-render from next 5s poll. INFO severity.
+
+### Patterns for Frontend Chaos Testing
+- Mock `EventSource` globally with `vi.stubGlobal('EventSource', ...)` for SSE tests
+- Test both connection error states: error before logs vs error after logs
+- Test `encodeURIComponent` in SSE URLs with special characters
+- Use `vi.useFakeTimers({ shouldAdvanceTime: true })` for polling tests
+- Verify cleanup in `useEffect` return functions (interval clear, EventSource close)
+
+### Verification Gates
+```bash
+cd Source/Frontend && npx vitest run       # 189 tests, 0 failures
+python3 tools/traceability-enforcer.py    # PASS — all implemented FRs covered
+```

@@ -63,3 +63,20 @@
 - `CycleFeedback` client functions are in `cycleFeedback` namespace (not under `cycles`)
 - Mock `cycleFeedback` alongside `cycles` when testing CycleView integration
 - New test file: `tests/Traceability.test.tsx` — covers all traceability components (29 tests)
+
+## Session: 2026-03-25
+
+### Orchestrator Cycle Dashboard (FR-070 through FR-076)
+- Orchestrator types are LOCAL to `src/components/orchestrator/types.ts` — not shared types (external service schema)
+- `orchestrator` API client functions are in `orchestrator` namespace in `src/api/client.ts`
+- When parallel coders create a fallback (CycleCardFallback) and real component (CycleCard), wire up the real component and remove the fallback
+- CycleCard has its own `window.confirm` for stop — remove any duplicate confirm from the page-level handler to avoid double prompts
+- SSE log stream uses native `EventSource` API — mock with `vi.stubGlobal('EventSource', MockEventSource)` in tests
+- Layout.test.tsx had stale assertions: `pendingApprovals` prop doesn't exist on Sidebar (only `activeBugs` + `pendingFRs`), and Layout doesn't call `featureRequests.list` directly
+- Sidebar label changed from "Dev Cycle" to "Orchestrator" with ⚡ icon — update all test assertions referencing old label
+- Pre-existing TS errors in `ConsideredFixesList.tsx` and `FeedbackLog.tsx` (import path `../../../../../Shared/types` not found) — not related to orchestrator work
+- Test file `tests/OrchestratorCycles.test.tsx` covers FR-070 through FR-076 (23 tests)
+- Additional test file `tests/OrchestratorCycleCard.test.tsx` covers FR-071, FR-072, FR-073 card/log stream unit tests (27 tests)
+- When CycleCard contains CycleLogStream, CycleCard tests also need the EventSource stub even if not testing logs directly
+- `vi.useFakeTimers({ shouldAdvanceTime: true })` works well for testing elapsed time updates in CycleCard
+- `encodeURIComponent` used for cycleId in SSE URL to prevent injection
