@@ -162,6 +162,42 @@ New attack surface introduced by multer-based image upload feature. Prior P1 (no
 | `/workspace/Source/Backend/src/middleware/upload.ts:30-36` | MIME check — header-based, bypassable |
 | `/workspace/Source/Backend/src/middleware/upload.ts:24-27` | Extension from originalname — preserved verbatim |
 | `/workspace/Source/Backend/src/services/imageService.ts:42-50` | Sequential ID generation |
+
+## Fifth Audit: 2026-03-25 (Runs Dashboard — Not Implemented)
+
+### Key Finding: Implementation Not Delivered
+The Runs Dashboard feature (FR-090–FR-098) was NOT implemented. Plans and E2E test specs exist but zero source code was written.
+
+### Orchestrator Proxy Security Analysis
+- SEC-RED-001 (P1): Unauthenticated orchestrator proxy — full SSRF gateway. 5th audit, STILL OPEN.
+- SEC-RED-002 (P1): Unauthenticated stop-cycle enables DoS. STILL OPEN.
+- SEC-RED-003 (P2): Open proxy path traversal via string concatenation (`${orchestratorUrl}${req.url}`)
+- SEC-RED-004 (P2): Internal orchestrator URL leaked in 502 error response
+- SEC-RED-005 (P2): Untyped `any` returns in orchestrator client enable data injection
+- SEC-RED-006 (P2): Port links in CycleCard vulnerable to JavaScript URI injection
+- SEC-RED-007 (P3): SSE log stream has no size or rate limit — memory exhaustion vector
+- SEC-RED-008 (P3): No CSRF protection on state-changing proxy requests
+- SEC-RED-010 (P3): Planned cleanup endpoint could delete active resources
+- SEC-RED-011 (P3): Cycle ID rendered without truncation — UI spoofing
+- SEC-RED-012 (P4): Error message from orchestrator rendered unsanitized
+
+### Planned Design Security Concerns
+- SEC-RED-009 (P2): Retry endpoint needs idempotency key and rate limiting
+- Retry-of-retry chains need depth guard
+- Cleanup needs confirmation dialog and status guard
+
+### Updated File Paths
+| File | What to Check |
+|------|--------------|
+| `/workspace/Source/Backend/src/index.ts:71-139` | Orchestrator proxy — no auth, SSRF, info leak |
+| `/workspace/Source/Backend/src/index.ts:73` | URL concatenation — path traversal risk |
+| `/workspace/Source/Backend/src/index.ts:137` | Internal URL leaked in error response |
+| `/workspace/Source/Frontend/src/api/client.ts:327-356` | `any` types on orchestrator methods |
+| `/workspace/Source/Frontend/src/components/orchestrator/CycleCard.tsx:126-134` | Port links — JS URI injection |
+| `/workspace/Source/Frontend/src/components/orchestrator/CycleLogStream.tsx:41-47` | Unbounded SSE log accumulation |
+
+### All Prior Findings Still Open
+All findings from audits 1-4 remain STILL OPEN. Zero remediation across 5 audits.
 | `/workspace/Source/Backend/src/routes/bugs.ts:200-208` | Delete image — no ownership check |
 | `/workspace/Source/Backend/src/routes/featureRequests.ts:281-289` | Delete image — no ownership check |
 | `/workspace/Source/Backend/src/index.ts:56` | Static file serving for uploads — no auth |
