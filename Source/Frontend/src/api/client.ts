@@ -292,10 +292,10 @@ export const orchestrator = {
     return apiFetch('/api/orchestrator/api/health')
   },
 
-  submitWork(task: string, team?: string): Promise<{ id: string; status: string; statusUrl: string; ports: any; branch: string }> {
+  submitWork(task: string, opts?: { team?: string; repo?: string; repoBranch?: string }): Promise<{ id: string; status: string; statusUrl: string; ports: any; branch: string }> {
     return apiFetch('/api/orchestrator/api/work', {
       method: 'POST',
-      body: JSON.stringify({ task, team }),
+      body: JSON.stringify({ task, ...opts }),
     })
   },
 
