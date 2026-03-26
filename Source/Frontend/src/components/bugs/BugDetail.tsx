@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import type { BugReport, ImageAttachment } from '../../../../Shared/types'
-import { images, orchestrator, repos } from '../../api/client'
+import { bugs, images, orchestrator, repos } from '../../api/client'
 import { ImageThumbnails } from '../common/ImageThumbnails'
 import { ImageUpload } from '../common/ImageUpload'
 
@@ -105,6 +105,9 @@ ${bug.description}
 Severity: ${bug.severity}`,
         { repo: selectedRepo, images: imageFiles.length > 0 ? imageFiles : undefined, claudeSessionToken: sessionToken || undefined, tokenLabel: tokenLabel || undefined }
       )
+      // Update bug status to in_development
+      const updated = await bugs.update(bug.id, { status: "in_development" })
+      onUpdate(updated)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to submit to orchestrator")
     } finally {
