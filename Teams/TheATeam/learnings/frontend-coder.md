@@ -93,18 +93,6 @@
 - Pre-existing TS errors in BugReports, DevelopmentCycle, FeatureBrowser, PipelineStepper tests due to missing optional fields from FR-050/FR-051 type additions
 - Test file: `tests/ImageComponents.test.tsx` — 23 tests covering ImageUpload, ImageThumbnails, and API client
 
-### Runs Dashboard (FR-090 through FR-095)
-- RunsTab uses div-based grid layout (not `<table>`) — RunDetailRow must also use `<div>` not `<tr>/<td>`
-- Polling only runs when the active tab matches (cycles tab stops polling when runs tab is active, and vice versa) — use `activeTab` in useEffect dependency array
-- Optimistic cleanup pattern: remove from local state immediately, re-fetch on API error to restore
-- Notification auto-dismiss: use a separate `useRef` for the timeout and clean it up in a useEffect return
-- `encodeURIComponent` used in retryRun/cleanupRun URLs to prevent injection via run IDs
-- frontend-coder-2 may create RunDetailRow.tsx before frontend-coder-1 — check if it exists and reconcile HTML structure (div vs tr/td)
-- RunDetailRow uses `\u2713` (checkmark), `\u2717` (X), `\u2014` (em dash) for phase status icons — test with those exact unicode chars via `within(phase).getByText('\u2713')`
-- Test file: `tests/OrchestratorRuns.test.tsx` — 61 tests covering FR-090 through FR-095 (API client, RunsTab, RunDetailRow, retry, cleanup, real-time indicators)
-- Tab bar on OrchestratorCyclesPage uses `data-testid="tab-cycles"` and `data-testid="tab-runs"` for tab buttons
-- RunsTab uses `data-testid="notification-banner"` for retry success/error notifications (not "runs-notification")
-
 ### Image Upload — Form & Detail Integration (FR-082 through FR-089, frontend-coder-2)
 - Two-step upload pattern (DD-IMG-01): form creates entity first, then uploads images as second step
 - `FeatureRequestForm.onSubmit` signature changed to `(input, imageFiles: File[])` — page handler does the two-step
@@ -114,3 +102,14 @@
 - When testing components that call `images.list()` on mount, mock must return `{ data: [...] }` not just `[...]`
 - `screen.getByAlt` does not exist — use `screen.getByAltText` (RTL naming)
 - Test file: `tests/ImageUpload.test.tsx` — 27 tests covering form integration, detail views, orchestrator submit
+
+## Session: 2026-03-26
+
+### UX Consistency Polish (frontend-coder-3)
+- When converting from form-submit to debounced-onChange filter pattern, tests that clicked the "Filter" button need updating to use `vi.useFakeTimers` + `vi.advanceTimersByTime(350)` instead
+- Other coders may modify files in parallel — always re-read before editing if a file was modified since your last read
+- BugDetail/BugForm "Screenshots" label was renamed to "Attachments" — tests referencing the old label need updating
+- Card consistency pattern: `bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-all` with `text-base font-semibold` for titles
+- Active filter indicator pattern: conditional className `${filterValue ? 'border-blue-500 ring-1 ring-blue-500' : 'border-gray-300'}` on select/input elements
+- Accessibility: `text-green-300` (not `text-green-400`) for better contrast on `bg-gray-900` backgrounds
+- ImageThumbnails grid should be responsive: `grid-cols-2 md:grid-cols-3 lg:grid-cols-4`
