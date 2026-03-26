@@ -53,7 +53,17 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
   }, [fetchImages])
 
   useEffect(() => {
-    repos.list().then((r) => setKnownRepos(r.data)).catch(() => {})
+    repos.list().then((r) => {
+      let repoList = r.data;
+      // Ensure the saved target_repo is in the list so the dropdown preserves it
+      const saved = fr.target_repo;
+      if (saved && !repoList.some((repo) => repo.url === saved)) {
+        const name = saved.split("/").pop() || saved;
+        const fullName = saved.replace("https://github.com/", "");
+        repoList = [{ name, fullName, url: saved }, ...repoList];
+      }
+      setKnownRepos(repoList);
+    }).catch(() => {})
   }, [])
 
   // FR-084: Handle image upload from detail view
