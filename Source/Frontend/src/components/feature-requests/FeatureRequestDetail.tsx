@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import type { FeatureRequest, ImageAttachment } from '../../../../Shared/types'
 import { VoteResults } from './VoteResults'
-import { featureRequests, images, orchestrator } from '../../api/client'
+import { featureRequests, images, orchestrator, repos } from '../../api/client'
 import { ImageThumbnails } from '../common/ImageThumbnails'
 import { ImageUpload } from '../common/ImageUpload'
 
