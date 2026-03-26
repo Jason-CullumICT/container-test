@@ -81,7 +81,7 @@ export function CycleCard({ cycle, onStop, onRefresh }: CycleCardProps) {
         <div className="flex items-center gap-2">
           <span className="font-mono text-sm text-gray-900">{cycle.id}</span>
           {cycle.team && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium" data-testid="team-badge">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium" data-testid="team-badge">
               {cycle.team}
             </span>
           )}
@@ -138,6 +138,7 @@ export function CycleCard({ cycle, onStop, onRefresh }: CycleCardProps) {
           <button
             onClick={() => setShowLogs(!showLogs)}
             className="text-xs px-2 py-1 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+            aria-label="Toggle logs"
             data-testid="toggle-logs"
           >
             {showLogs ? 'Hide Logs' : 'View Logs'}
@@ -147,6 +148,7 @@ export function CycleCard({ cycle, onStop, onRefresh }: CycleCardProps) {
               onClick={handleStop}
               disabled={stopping}
               className="text-xs px-2 py-1 text-red-600 border border-red-300 rounded hover:bg-red-50 disabled:opacity-50"
+              aria-label="Stop cycle"
               data-testid="stop-button"
             >
               {stopping ? 'Stopping...' : 'Stop'}

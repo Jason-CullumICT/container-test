@@ -17,8 +17,9 @@ function formatTimestamp(isoString: string): string {
   }
 }
 
+// Verifies: FR-030 (accessibility: green-300 for better contrast on gray-900)
 const LEVEL_COLORS: Record<string, string> = {
-  info: 'text-green-400',
+  info: 'text-green-300',
   warn: 'text-yellow-400',
   error: 'text-red-400',
 }
@@ -69,7 +70,7 @@ export function CycleLogStream({ cycleId, expanded }: CycleLogStreamProps) {
     <div
       ref={containerRef}
       data-testid="cycle-log-stream"
-      className="bg-gray-900 text-green-400 font-mono text-xs rounded-lg p-3 max-h-64 overflow-y-auto mt-3"
+      className="bg-gray-900 text-green-300 font-mono text-xs rounded-lg p-3 max-h-64 overflow-y-auto mt-3"
     >
       {connectionError && logs.length === 0 && (
         <div className="text-gray-500 italic">Logs unavailable — connection error</div>
@@ -78,7 +79,7 @@ export function CycleLogStream({ cycleId, expanded }: CycleLogStreamProps) {
         <div className="text-gray-500 italic">Waiting for log events...</div>
       )}
       {logs.map((entry, index) => (
-        <div key={index} className={`py-0.5 ${LEVEL_COLORS[entry.level ?? 'info'] ?? 'text-green-400'}`}>
+        <div key={index} className={`py-0.5 ${LEVEL_COLORS[entry.level ?? 'info'] ?? 'text-green-300'}`}>
           <span className="text-gray-500">[{formatTimestamp(entry.timestamp)}]</span>
           {entry.agent && (
             <span className="text-blue-400 ml-1">[{entry.agent}]</span>

@@ -12,7 +12,7 @@ export function ImageThumbnails({ images, allowDelete = false, onDelete }: Image
   if (images.length === 0) return null
 
   return (
-    <div className="grid grid-cols-4 gap-2" data-testid="image-thumbnails">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" data-testid="image-thumbnails">
       {images.map((img) => (
         <div key={img.id} className="relative group">
           <a

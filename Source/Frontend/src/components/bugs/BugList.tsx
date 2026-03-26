@@ -9,15 +9,15 @@ interface BugListProps {
 
 const SEVERITY_COLORS: Record<string, string> = {
   low: 'bg-green-100 text-green-700',
-  medium: 'bg-yellow-100 text-yellow-700',
-  high: 'bg-orange-100 text-orange-700',
+  medium: 'bg-gray-100 text-gray-500',
+  high: 'bg-amber-100 text-amber-700',
   critical: 'bg-red-100 text-red-700',
 }
 
 const STATUS_COLORS: Record<string, string> = {
   reported: 'bg-gray-100 text-gray-700',
   triaged: 'bg-blue-100 text-blue-700',
-  in_development: 'bg-yellow-100 text-yellow-700',
+  in_development: 'bg-amber-100 text-amber-700',
   resolved: 'bg-green-100 text-green-700',
   closed: 'bg-gray-100 text-gray-500',
 }
@@ -25,9 +25,12 @@ const STATUS_COLORS: Record<string, string> = {
 export function BugList({ items, onSelect }: BugListProps) {
   if (items.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-400">
-        <p className="text-lg">No bug reports found</p>
-        <p className="text-sm mt-1">All clear!</p>
+      <div className="text-center py-12">
+        <svg className="mx-auto h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01M12 3a9 9 0 100 18 9 9 0 000-18z" />
+        </svg>
+        <h3 className="mt-3 text-base font-medium text-gray-600">No bug reports found</h3>
+        <p className="mt-1 text-sm text-gray-400">All clear!</p>
       </div>
     )
   }
@@ -38,12 +41,12 @@ export function BugList({ items, onSelect }: BugListProps) {
         <button
           key={bug.id}
           onClick={() => onSelect(bug)}
-          className="w-full text-left bg-white rounded-lg border border-gray-200 p-4 hover:border-blue-300 hover:shadow-sm transition-all"
+          className="w-full text-left bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-all"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <span className="text-xs font-mono text-gray-400">{bug.id}</span>
-              <h4 className="font-medium text-gray-900 truncate mt-0.5">{bug.title}</h4>
+              <h4 className="text-base font-semibold text-gray-900 truncate mt-0.5">{bug.title}</h4>
               <p className="text-sm text-gray-500 mt-0.5 truncate">{bug.description}</p>
             </div>
             <div className="flex flex-col items-end gap-1.5 flex-shrink-0">

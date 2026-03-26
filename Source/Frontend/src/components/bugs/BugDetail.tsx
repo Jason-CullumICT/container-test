@@ -15,15 +15,15 @@ interface BugDetailProps {
 
 const SEVERITY_COLORS: Record<string, string> = {
   low: 'bg-green-100 text-green-700 border-green-200',
-  medium: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  high: 'bg-orange-100 text-orange-700 border-orange-200',
+  medium: 'bg-gray-100 text-gray-500 border-gray-200',
+  high: 'bg-amber-100 text-amber-700 border-amber-200',
   critical: 'bg-red-100 text-red-700 border-red-200',
 }
 
 const STATUS_COLORS: Record<string, string> = {
   reported: 'bg-gray-100 text-gray-700',
   triaged: 'bg-blue-100 text-blue-700',
-  in_development: 'bg-yellow-100 text-yellow-700',
+  in_development: 'bg-amber-100 text-amber-700',
   resolved: 'bg-green-100 text-green-700',
   closed: 'bg-gray-100 text-gray-500',
 }
@@ -83,6 +83,7 @@ export function BugDetail({ bug, onClose }: BugDetailProps) {
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+            aria-label="Close"
           >
             ×
           </button>
@@ -134,7 +135,7 @@ export function BugDetail({ bug, onClose }: BugDetailProps) {
       {/* FR-085: Image Attachments */}
       <div>
         <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-          Screenshots ({attachedImages.length})
+          Attachments ({attachedImages.length})
         </h4>
         <ImageThumbnails
           images={attachedImages}

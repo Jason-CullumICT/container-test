@@ -17,11 +17,11 @@ const CYCLE_PHASE_LABELS: Record<string, string> = {
 }
 
 const CYCLE_PHASE_COLORS: Record<string, string> = {
-  spec_changes: 'bg-purple-100 text-purple-800',
+  spec_changes: 'bg-blue-100 text-blue-800',
   ticket_breakdown: 'bg-blue-100 text-blue-800',
-  implementation: 'bg-yellow-100 text-yellow-800',
-  review: 'bg-orange-100 text-orange-800',
-  smoke_test: 'bg-pink-100 text-pink-800',
+  implementation: 'bg-amber-100 text-amber-800',
+  review: 'bg-amber-100 text-amber-800',
+  smoke_test: 'bg-gray-100 text-gray-800',
   complete: 'bg-green-100 text-green-800',
 }
 
@@ -130,8 +130,8 @@ export function SummaryWidgets({ summary }: SummaryWidgetsProps) {
         <div className="space-y-2">
           {[
             { key: 'critical', color: 'bg-red-500' },
-            { key: 'high', color: 'bg-orange-500' },
-            { key: 'medium', color: 'bg-yellow-500' },
+            { key: 'high', color: 'bg-amber-500' },
+            { key: 'medium', color: 'bg-gray-400' },
             { key: 'low', color: 'bg-green-500' },
           ].map(({ key, color }) => {
             const count = bugsBySeverity[key as keyof typeof bugsBySeverity] ?? 0
