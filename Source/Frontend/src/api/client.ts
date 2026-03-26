@@ -367,4 +367,19 @@ export const orchestrator = {
   stopCycle(id: string): Promise<{ stopped: boolean }> {
     return apiFetch(`/api/orchestrator/api/cycles/${id}/stop`, { method: 'POST' })
   },
+
+  // Verifies: FR-090
+  retryRun(id: string, opts?: { team?: string }): Promise<{ id: string; status: string }> {
+    return apiFetch('/api/orchestrator/api/runs/' + encodeURIComponent(id) + '/retry', {
+      method: 'POST',
+      body: opts ? JSON.stringify(opts) : undefined,
+    })
+  },
+
+  // Verifies: FR-090
+  cleanupRun(id: string): Promise<void> {
+    return apiFetch(`/api/orchestrator/api/cycles/${encodeURIComponent(id)}/cleanup`, {
+      method: 'POST',
+    })
+  },
 }

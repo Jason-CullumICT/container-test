@@ -22,3 +22,52 @@ export interface CycleLogEntry {
   message: string
   level?: 'info' | 'warn' | 'error'
 }
+
+// Verifies: FR-090
+export type OrchestratorRunStatus =
+  | 'planning'
+  | 'implementing'
+  | 'qa_running'
+  | 'validating'
+  | 'complete'
+  | 'failed'
+
+// Verifies: FR-090
+export interface RunPhaseResult {
+  phase: string
+  status: string
+  message?: string
+}
+
+// Verifies: FR-090
+export interface RunTestResults {
+  total: number
+  passed: number
+  failed: number
+}
+
+// Verifies: FR-090
+export interface RunPRInfo {
+  number: number
+  url: string
+  aiReviewVerdict?: string
+  mergeStatus?: string
+}
+
+// Verifies: FR-090
+export interface OrchestratorRun {
+  id: string
+  status: OrchestratorRunStatus
+  team?: string
+  task?: string
+  riskLevel?: 'low' | 'medium' | 'high'
+  phases?: RunPhaseResult[]
+  testResults?: RunTestResults
+  pr?: RunPRInfo
+  retryOf?: string
+  feedbackLoops?: number
+  cycleId?: string
+  startedAt?: string
+  completedAt?: string
+  error?: string
+}
