@@ -68,34 +68,28 @@ export function BugReportsPage() {
     if (selectedBugs.length === 0) return
     setBatchSubmitting(true)
     try {
-      // Group by target_repo
-      const groups = new Map<string, BugReport[]>()
+      const groups = new Map<string, typeof selectedBugs>()
       for (const bug of selectedBugs) {
         const repo = bug.target_repo || "https://github.com/Jason-CullumICT/container-test"
         if (!groups.has(repo)) groups.set(repo, [])
         groups.get(repo)!.push(bug)
       }
-
-      // Submit one task per repo group
       for (const [repo, bugGroup] of groups) {
-        const taskLines = bugGroup.map((b) =>
-          `- [${b.id}] ${b.title} (severity: ${b.severity})
-  ${b.description}`
-        ).join("
-
-")
-        const task = bugGroup.length === 1
-          ? `Fix bug: ${bugGroup[0].title}
-
-${bugGroup[0].description}
-
-Severity: ${bugGroup[0].severity}`
-          : `Fix ${bugGroup.length} bugs:
-
-${taskLines}`
+        const nl = String.fromCharCode(10)
+        let task: string
+        if (bugGroup.length === 1) {
+          const b = bugGroup[0]
+          task = "Fix bug: " + b.title + nl + nl + b.description + nl + nl + "Severity: " + b.severity
+        } else {
+          const lines = bugGroup.map((b: any) =>
+            "- [" + b.id + "] " + b.title + " (severity: " + b.severity + ")" + nl + "  " + b.description
+          ).join(nl + nl)
+          task = "Fix " + bugGroup.length + " bugs:" + nl + nl + lines
+        }
         await orchestrator.submitWork(task, { repo })
       }
-      setSelectedIds(new Set())
+
+            setSelectedIds(new Set())
     } catch (err) {
       alert(err instanceof Error ? err.message : "Failed to submit bugs")
     } finally {

@@ -55,34 +55,35 @@ export function BugList({ items, onSelect, selectable, selectedIds, onToggleSele
             onClick={() => onSelect(bug)}
             className={`flex-1 text-left bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-all ${selectable && selectedIds?.has(bug.id) ? "border-blue-500 ring-1 ring-blue-500" : "border-gray-200"}`}
           >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <span className="text-xs font-mono text-gray-400">{bug.id}</span>
-              <h4 className="text-base font-semibold text-gray-900 truncate mt-0.5">{bug.title}</h4>
-              <p className="text-sm text-gray-500 mt-0.5 truncate">{bug.description}</p>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <span className="text-xs font-mono text-gray-400">{bug.id}</span>
+                <h4 className="text-base font-semibold text-gray-900 truncate mt-0.5">{bug.title}</h4>
+                <p className="text-sm text-gray-500 mt-0.5 truncate">{bug.description}</p>
+              </div>
+              <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                    SEVERITY_COLORS[bug.severity] ?? "bg-gray-100 text-gray-600"
+                  }`}
+                >
+                  {bug.severity}
+                </span>
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full ${
+                    STATUS_COLORS[bug.status] ?? "bg-gray-100 text-gray-600"
+                  }`}
+                >
+                  {bug.status.replace("_", " ")}
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                  SEVERITY_COLORS[bug.severity] ?? 'bg-gray-100 text-gray-600'
-                }`}
-              >
-                {bug.severity}
-              </span>
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full ${
-                  STATUS_COLORS[bug.status] ?? 'bg-gray-100 text-gray-600'
-                }`}
-              >
-                {bug.status.replace('_', ' ')}
-              </span>
+            <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+              {bug.source_system && <span>{bug.source_system}</span>}
+              <span>{new Date(bug.created_at).toLocaleDateString()}</span>
             </div>
-          </div>
-          <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
-            {bug.source_system && <span>{bug.source_system}</span>}
-            <span>{new Date(bug.created_at).toLocaleDateString()}</span>
-          </div>
-        </button>
+          </button>
+        </div>
       ))}
     </div>
   )
