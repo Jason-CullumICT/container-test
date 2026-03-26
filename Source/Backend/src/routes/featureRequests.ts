@@ -47,7 +47,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     await withSpan('featureRequests.create', async (span) => {
-      const { title, description, source, priority } = req.body;
+      const { title, description, source, priority, target_repo } = req.body;
 
       if (!title || typeof title !== 'string' || title.trim() === '') {
         throw new AppError(400, 'title is required');
@@ -59,7 +59,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
       span.setAttribute('fr.source', source || 'manual');
 
       const db = getDb();
-      const fr = createFeatureRequest(db, { title: title.trim(), description: description.trim(), source, priority });
+      const fr = createFeatureRequest(db, { title: title.trim(), description: description.trim(), source, priority, target_repo });
       logger.info('Created feature request', { id: fr.id, title: fr.title, duplicate_warning: fr.duplicate_warning });
       res.status(201).json(fr);
     });

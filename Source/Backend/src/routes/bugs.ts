@@ -43,7 +43,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     await withSpan('bugs.create', async (span) => {
-      const { title, description, severity, source_system, related_work_item_id, related_work_item_type, related_cycle_id } = req.body;
+      const { title, description, severity, source_system, related_work_item_id, related_work_item_type, related_cycle_id, target_repo } = req.body;
 
       if (!title || typeof title !== 'string' || title.trim() === '') {
         throw new AppError(400, 'title is required');
@@ -67,7 +67,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
         related_work_item_id,
         related_work_item_type,
         related_cycle_id,
-      });
+      , target_repo });
       logger.info('Created bug report', { id: bug.id, title: bug.title, severity: bug.severity });
       res.status(201).json(bug);
     });
