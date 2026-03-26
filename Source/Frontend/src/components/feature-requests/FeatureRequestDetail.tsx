@@ -31,6 +31,8 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
   const [attachedImages, setAttachedImages] = useState<ImageAttachment[]>([])
   const [submittingToOrch, setSubmittingToOrch] = useState(false)
   const [selectedRepo, setSelectedRepo] = useState(fr.target_repo || "https://github.com/Jason-CullumICT/container-test")
+  const [sessionToken, setSessionToken] = useState("")
+  const [tokenLabel, setTokenLabel] = useState("")
   const [customRepo, setCustomRepo] = useState("")
   const [showCustomRepo, setShowCustomRepo] = useState(false)
   const [validatingRepo, setValidatingRepo] = useState(false)
@@ -88,7 +90,7 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
       }
       await orchestrator.submitWork(
         `Implement feature: ${fr.title}\n\n${fr.description}`,
-        { images: imageFiles.length > 0 ? imageFiles : undefined }
+        { images: imageFiles.length > 0 ? imageFiles : undefined, claudeSessionToken: sessionToken || undefined, tokenLabel: tokenLabel || undefined }
       )
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit to orchestrator')
@@ -299,6 +301,28 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
                   className="text-sm border border-gray-300 rounded-lg px-2 py-1 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               )}
+            </div>
+            <div className="flex gap-2 items-end mt-2">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-gray-500">Session Token (optional)</label>
+                <input
+                  type="password"
+                  value={sessionToken}
+                  onChange={(e) => setSessionToken(e.target.value)}
+                  placeholder="sk-ant-oat01-..."
+                  className="text-xs font-mono border border-gray-300 rounded-lg px-2 py-1 w-48 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-gray-500">Token Label</label>
+                <input
+                  type="text"
+                  value={tokenLabel}
+                  onChange={(e) => setTokenLabel(e.target.value)}
+                  placeholder="e.g. jason's token"
+                  className="text-xs border border-gray-300 rounded-lg px-2 py-1 w-36 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
             </div>
             <button
               onClick={handleSubmitToOrchestrator}

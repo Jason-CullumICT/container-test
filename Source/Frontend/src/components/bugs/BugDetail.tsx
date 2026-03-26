@@ -33,6 +33,8 @@ export function BugDetail({ bug, onClose }: BugDetailProps) {
   const [error, setError] = useState<string | null>(null)
   const [submittingToOrch, setSubmittingToOrch] = useState(false)
   const [selectedRepo, setSelectedRepo] = useState(bug.target_repo || "https://github.com/Jason-CullumICT/container-test")
+  const [sessionToken, setSessionToken] = useState("")
+  const [tokenLabel, setTokenLabel] = useState("")
   const [knownRepos, setKnownRepos] = useState<{ name: string; url: string }[]>([
     { name: "container-test", url: "https://github.com/Jason-CullumICT/container-test" },
     { name: "claude-ai-OS", url: "https://github.com/Jason-CullumICT/claude-ai-OS" },
@@ -91,7 +93,7 @@ export function BugDetail({ bug, onClose }: BugDetailProps) {
 ${bug.description}
 
 Severity: ${bug.severity}`,
-        { repo: selectedRepo, images: imageFiles.length > 0 ? imageFiles : undefined }
+        { repo: selectedRepo, images: imageFiles.length > 0 ? imageFiles : undefined, claudeSessionToken: sessionToken || undefined, tokenLabel: tokenLabel || undefined }
       )
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to submit to orchestrator")
@@ -200,7 +202,29 @@ Severity: ${bug.severity}`,
               ))}
             </select>
           </div>
-          <button
+                      <div className="flex gap-2 items-end mt-2">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-gray-500">Session Token (optional)</label>
+                <input
+                  type="password"
+                  value={sessionToken}
+                  onChange={(e) => setSessionToken(e.target.value)}
+                  placeholder="sk-ant-oat01-..."
+                  className="text-xs font-mono border border-gray-300 rounded-lg px-2 py-1 w-48 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-gray-500">Token Label</label>
+                <input
+                  type="text"
+                  value={tokenLabel}
+                  onChange={(e) => setTokenLabel(e.target.value)}
+                  placeholder="e.g. jason's token"
+                  className="text-xs border border-gray-300 rounded-lg px-2 py-1 w-36 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+<button
             onClick={handleSubmitToOrchestrator}
             disabled={submittingToOrch}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"

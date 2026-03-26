@@ -329,7 +329,7 @@ export const orchestrator = {
   },
 
   // Verifies: FR-086
-  submitWork(task: string, opts?: { team?: string; repo?: string; repoBranch?: string; images?: File[] }): Promise<{ id: string; status: string; statusUrl: string; ports: any; branch: string }> {
+  submitWork(task: string, opts?: { team?: string; repo?: string; repoBranch?: string; images?: File[]; claudeSessionToken?: string; tokenLabel?: string }): Promise<{ id: string; status: string; statusUrl: string; ports: any; branch: string }> {
     if (opts?.images?.length) {
       const formData = new FormData()
       formData.append('task', task)
@@ -337,6 +337,8 @@ export const orchestrator = {
       if (opts.repo) formData.append('repo', opts.repo)
       if (opts.repoBranch) formData.append('repoBranch', opts.repoBranch)
       opts.images.forEach((f) => formData.append('images', f))
+      if (opts.claudeSessionToken) formData.append("claudeSessionToken", opts.claudeSessionToken)
+      if (opts.tokenLabel) formData.append("tokenLabel", opts.tokenLabel)
       return fetch('/api/orchestrator/api/work', {
         method: 'POST',
         body: formData,
