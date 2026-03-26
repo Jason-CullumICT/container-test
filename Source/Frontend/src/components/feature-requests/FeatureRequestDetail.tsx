@@ -102,6 +102,9 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
         `Implement feature: ${fr.title}\n\n${fr.description}`,
         { images: imageFiles.length > 0 ? imageFiles : undefined, claudeSessionToken: sessionToken || undefined, tokenLabel: tokenLabel || undefined }
       )
+      // Update feature request status to in_development
+      const updated = await featureRequests.update(fr.id, { status: "in_development" })
+      onUpdate(updated)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit to orchestrator')
     } finally {
