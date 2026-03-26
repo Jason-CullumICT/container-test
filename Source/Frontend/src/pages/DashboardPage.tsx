@@ -30,6 +30,7 @@ export function DashboardPage() {
           <button
             onClick={() => { refetchSummary(); refetchActivity() }}
             className="px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+            aria-label="Refresh dashboard"
           >
             ↻ Refresh
           </button>
@@ -37,8 +38,9 @@ export function DashboardPage() {
       />
 
       {summaryLoading ? (
-        <div className="flex items-center justify-center py-16">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+          <p className="mt-3 text-sm text-gray-500">Loading dashboard...</p>
         </div>
       ) : summaryError ? (
         <div className="m-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">

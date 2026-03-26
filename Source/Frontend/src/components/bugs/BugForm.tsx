@@ -97,7 +97,7 @@ export function BugForm({ onSubmit, onCancel }: BugFormProps) {
       {/* FR-083: Image upload for bug reports */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Screenshots
+          Attachments
         </label>
         <ImageUpload onFilesSelected={setImageFiles} disabled={submitting} />
       </div>

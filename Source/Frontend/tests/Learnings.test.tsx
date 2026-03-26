@@ -114,15 +114,16 @@ describe('LearningsPage', () => {
     })
   })
 
-  it('calls API with cycle filter when submitted', async () => {
+  it('calls API with cycle filter when typed (debounced)', async () => {
     // Verifies: FR-030
+    vi.useFakeTimers({ shouldAdvanceTime: true })
     renderPage()
 
     const cycleInput = screen.getByPlaceholderText('Filter by cycle ID...')
     fireEvent.change(cycleInput, { target: { value: 'CYCLE-0001' } })
 
-    const filterBtn = screen.getByText('Filter')
-    fireEvent.click(filterBtn)
+    // Advance past debounce delay
+    vi.advanceTimersByTime(350)
 
     await waitFor(() => {
       expect(learnings.list).toHaveBeenCalledWith({
@@ -130,6 +131,8 @@ describe('LearningsPage', () => {
         cycle_id: 'CYCLE-0001',
       })
     })
+
+    vi.useRealTimers()
   })
 
   it('shows empty state when no learnings found', async () => {
@@ -160,13 +163,15 @@ describe('LearningsPage', () => {
 
   it('clears cycle filter when × is clicked', async () => {
     // Verifies: FR-030
+    vi.useFakeTimers({ shouldAdvanceTime: true })
     renderPage()
     await waitFor(() => screen.getByPlaceholderText('Filter by cycle ID...'))
 
     const cycleInput = screen.getByPlaceholderText('Filter by cycle ID...')
     fireEvent.change(cycleInput, { target: { value: 'CYCLE-0001' } })
 
-    fireEvent.click(screen.getByText('Filter'))
+    // Advance past debounce delay to activate filter
+    vi.advanceTimersByTime(350)
 
     await waitFor(() => {
       expect(screen.getByText('×')).toBeInTheDocument()
@@ -180,5 +185,7 @@ describe('LearningsPage', () => {
         cycle_id: undefined,
       })
     })
+
+    vi.useRealTimers()
   })
 })

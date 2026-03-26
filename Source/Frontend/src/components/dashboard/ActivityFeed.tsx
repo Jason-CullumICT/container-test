@@ -18,10 +18,10 @@ const TYPE_ICONS: Record<string, string> = {
 const TYPE_COLORS: Record<string, string> = {
   feature_request: 'bg-blue-100 text-blue-700',
   bug: 'bg-red-100 text-red-700',
-  cycle: 'bg-purple-100 text-purple-700',
-  ticket: 'bg-yellow-100 text-yellow-700',
+  cycle: 'bg-blue-100 text-blue-700',
+  ticket: 'bg-gray-100 text-gray-600',
   learning: 'bg-green-100 text-green-700',
-  feature: 'bg-indigo-100 text-indigo-700',
+  feature: 'bg-blue-100 text-blue-700',
 }
 
 function formatTimeAgo(timestamp: string): string {
@@ -43,7 +43,13 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h3 className="text-base font-semibold text-gray-900 mb-4">Recent Activity</h3>
-        <p className="text-gray-400 text-sm">No recent activity</p>
+        <div className="text-center py-8">
+          <svg className="mx-auto h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h3 className="mt-3 text-base font-medium text-gray-600">No recent activity</h3>
+          <p className="mt-1 text-sm text-gray-400">Activity will appear here as changes are made</p>
+        </div>
       </div>
     )
   }

@@ -278,7 +278,7 @@ describe('BugForm with image upload', () => {
     // Verifies: FR-083
     const onSubmit = vi.fn()
     render(<BugForm onSubmit={onSubmit} onCancel={() => {}} />)
-    expect(screen.getByText('Screenshots')).toBeInTheDocument()
+    expect(screen.getByText('Attachments')).toBeInTheDocument()
     expect(screen.getByTestId('image-upload')).toBeInTheDocument()
   })
 
@@ -460,7 +460,7 @@ describe('BugDetail with images', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText('Screenshots (2)')).toBeInTheDocument()
+      expect(screen.getByText('Attachments (2)')).toBeInTheDocument()
     })
   })
 
@@ -484,7 +484,7 @@ describe('BugDetail with images', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByText('Screenshots (2)')).toBeInTheDocument()
+      expect(screen.getByText('Attachments (2)')).toBeInTheDocument()
     })
 
     fireEvent.click(screen.getByTestId('delete-image-IMG-0001'))
