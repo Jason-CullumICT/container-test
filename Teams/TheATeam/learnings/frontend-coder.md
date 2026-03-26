@@ -93,6 +93,18 @@
 - Pre-existing TS errors in BugReports, DevelopmentCycle, FeatureBrowser, PipelineStepper tests due to missing optional fields from FR-050/FR-051 type additions
 - Test file: `tests/ImageComponents.test.tsx` — 23 tests covering ImageUpload, ImageThumbnails, and API client
 
+### Runs Dashboard (FR-090 through FR-095)
+- RunsTab uses div-based grid layout (not `<table>`) — RunDetailRow must also use `<div>` not `<tr>/<td>`
+- Polling only runs when the active tab matches (cycles tab stops polling when runs tab is active, and vice versa) — use `activeTab` in useEffect dependency array
+- Optimistic cleanup pattern: remove from local state immediately, re-fetch on API error to restore
+- Notification auto-dismiss: use a separate `useRef` for the timeout and clean it up in a useEffect return
+- `encodeURIComponent` used in retryRun/cleanupRun URLs to prevent injection via run IDs
+- frontend-coder-2 may create RunDetailRow.tsx before frontend-coder-1 — check if it exists and reconcile HTML structure (div vs tr/td)
+- RunDetailRow uses `\u2713` (checkmark), `\u2717` (X), `\u2014` (em dash) for phase status icons — test with those exact unicode chars via `within(phase).getByText('\u2713')`
+- Test file: `tests/OrchestratorRuns.test.tsx` — 61 tests covering FR-090 through FR-095 (API client, RunsTab, RunDetailRow, retry, cleanup, real-time indicators)
+- Tab bar on OrchestratorCyclesPage uses `data-testid="tab-cycles"` and `data-testid="tab-runs"` for tab buttons
+- RunsTab uses `data-testid="notification-banner"` for retry success/error notifications (not "runs-notification")
+
 ### Image Upload — Form & Detail Integration (FR-082 through FR-089, frontend-coder-2)
 - Two-step upload pattern (DD-IMG-01): form creates entity first, then uploads images as second step
 - `FeatureRequestForm.onSubmit` signature changed to `(input, imageFiles: File[])` — page handler does the two-step
