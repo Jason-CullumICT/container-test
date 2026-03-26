@@ -42,12 +42,8 @@ function formatTimeAgo(dateStr?: string): string {
   return `${days}d ago`
 }
 
-interface RunsTabProps {
-  onSwitchToCycles?: (cycleId?: string) => void
-}
-
 // Verifies: FR-091
-export function RunsTab({ onSwitchToCycles }: RunsTabProps) {
+export function RunsTab() {
   const [runs, setRuns] = useState<OrchestratorRun[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -268,16 +264,6 @@ export function RunsTab({ onSwitchToCycles }: RunsTabProps) {
                       data-testid="cleanup-button"
                     >
                       ✕
-                    </button>
-                  )}
-                  {/* Verifies: FR-095 — cycle link for active runs */}
-                  {run.cycleId && isActive(run.status) && onSwitchToCycles && (
-                    <button
-                      onClick={() => onSwitchToCycles(run.cycleId)}
-                      className="text-xs px-2 py-1 text-indigo-600 border border-indigo-300 rounded hover:bg-indigo-50"
-                      data-testid="cycle-link"
-                    >
-                      Cycle
                     </button>
                   )}
                 </span>

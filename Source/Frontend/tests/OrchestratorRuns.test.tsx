@@ -751,56 +751,13 @@ describe('RunsTab — real-time indicators', () => {
     expect(indicators[0].className).toContain('bg-blue-500')
   })
 
-  // Verifies: FR-095
-  it('shows cycle link for active runs with cycleId', async () => {
-    const onSwitch = vi.fn()
-    render(<RunsTab onSwitchToCycles={onSwitch} />)
-    await waitFor(() => {
-      expect(screen.getByTestId('runs-table')).toBeTruthy()
-    })
-    // Only mockImplementingRun has cycleId
-    const cycleLinks = screen.getAllByTestId('cycle-link')
-    expect(cycleLinks).toHaveLength(1)
-  })
-
-  // Verifies: FR-095
-  it('calls onSwitchToCycles when cycle link is clicked', async () => {
-    const onSwitch = vi.fn()
-    render(<RunsTab onSwitchToCycles={onSwitch} />)
-    await waitFor(() => {
-      expect(screen.getByTestId('runs-table')).toBeTruthy()
-    })
-    fireEvent.click(screen.getByTestId('cycle-link'))
-    expect(onSwitch).toHaveBeenCalledWith('cycle-123')
-  })
-
-  // Verifies: FR-095
-  it('does not show cycle link for active runs without cycleId', async () => {
-    vi.mocked(orchestrator.listRuns).mockResolvedValue({ data: [mockPlanningRun] })
-    const onSwitch = vi.fn()
-    render(<RunsTab onSwitchToCycles={onSwitch} />)
-    await waitFor(() => {
-      expect(screen.getByTestId('runs-table')).toBeTruthy()
-    })
-    expect(screen.queryByTestId('cycle-link')).toBeNull()
-  })
 })
 
-// --- FR-091: Tab Integration Tests ---
+// --- FR-091: Module Export Tests ---
 
-describe('OrchestratorCyclesPage — tab bar', () => {
-  beforeEach(() => {
-    vi.useFakeTimers({ shouldAdvanceTime: true })
-    vi.mocked(orchestrator.listRuns).mockResolvedValue({ data: [] })
-  })
-
-  afterEach(() => {
-    vi.useRealTimers()
-    vi.restoreAllMocks()
-  })
-
+describe('Orchestrator module exports', () => {
   // Verifies: FR-091
-  it('tab-bar, tab-cycles, and tab-runs exist as exports', async () => {
+  it('OrchestratorCyclesPage is a valid export', async () => {
     const mod = await import('../src/pages/OrchestratorCyclesPage')
     expect(mod.OrchestratorCyclesPage).toBeDefined()
   })
