@@ -67,7 +67,8 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
         related_work_item_id,
         related_work_item_type,
         related_cycle_id,
-      , target_repo });
+        target_repo,
+      });
       logger.info('Created bug report', { id: bug.id, title: bug.title, severity: bug.severity });
       res.status(201).json(bug);
     });
