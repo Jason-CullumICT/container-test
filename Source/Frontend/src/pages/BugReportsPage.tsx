@@ -5,7 +5,7 @@ import { BugList } from '../components/bugs/BugList'
 import { BugForm } from '../components/bugs/BugForm'
 import { BugDetail } from '../components/bugs/BugDetail'
 import { useApi } from '../hooks/useApi'
-import { bugs, images } from '../api/client'
+import { bugs, images, orchestrator } from '../api/client'
 import type { BugReport } from '../../../Shared/types'
 
 const STATUS_OPTIONS = [
@@ -30,6 +30,8 @@ export function BugReportsPage() {
   const [severityFilter, setSeverityFilter] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [selectedBug, setSelectedBug] = useState<BugReport | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [batchSubmitting, setBatchSubmitting] = useState(false)
 
   const fetchFn = useCallback(
     () => bugs.list({
@@ -51,18 +53,79 @@ export function BugReportsPage() {
     refetch()
   }
 
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const selectedBugs = (data?.data ?? []).filter((b) => selectedIds.has(b.id))
+
+  const handleBatchSubmit = async () => {
+    if (selectedBugs.length === 0) return
+    setBatchSubmitting(true)
+    try {
+      // Group by target_repo
+      const groups = new Map<string, BugReport[]>()
+      for (const bug of selectedBugs) {
+        const repo = bug.target_repo || "https://github.com/Jason-CullumICT/container-test"
+        if (!groups.has(repo)) groups.set(repo, [])
+        groups.get(repo)!.push(bug)
+      }
+
+      // Submit one task per repo group
+      for (const [repo, bugGroup] of groups) {
+        const taskLines = bugGroup.map((b) =>
+          `- [${b.id}] ${b.title} (severity: ${b.severity})
+  ${b.description}`
+        ).join("
+
+")
+        const task = bugGroup.length === 1
+          ? `Fix bug: ${bugGroup[0].title}
+
+${bugGroup[0].description}
+
+Severity: ${bugGroup[0].severity}`
+          : `Fix ${bugGroup.length} bugs:
+
+${taskLines}`
+        await orchestrator.submitWork(task, { repo })
+      }
+      setSelectedIds(new Set())
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to submit bugs")
+    } finally {
+      setBatchSubmitting(false)
+    }
+  }
+
   return (
     <div>
       <Header
         title="Bug Reports"
         subtitle="Track and manage bug reports"
         actions={
-          <button
-            onClick={() => { setShowForm(true); setSelectedBug(null) }}
-            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700"
-          >
-            + Report Bug
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSelectedIds((prev) => {
+                if (prev.size > 0) return new Set()
+                return new Set((data?.data ?? []).filter((b) => b.status === "reported" || b.status === "triaged").map((b) => b.id))
+              })}
+              className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              {selectedIds.size > 0 ? "Deselect All" : "Select Bugs"}
+            </button>
+            <button
+              onClick={() => { setShowForm(true); setSelectedBug(null) }}
+              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700"
+            >
+              + Report Bug
+            </button>
+          </div>
         }
       />
 
@@ -108,6 +171,26 @@ export function BugReportsPage() {
           />
         )}
 
+        {/* Batch action bar */}
+        {selectedIds.size > 0 && (
+          <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+            <span className="text-sm text-blue-700 font-medium">
+              {selectedIds.size} bug{selectedIds.size > 1 ? "s" : ""} selected
+              {(() => {
+                const repos = new Set(selectedBugs.map((b) => b.target_repo || "container-test"))
+                return repos.size > 1 ? ` across ${repos.size} repos` : ""
+              })()}
+            </span>
+            <button
+              onClick={handleBatchSubmit}
+              disabled={batchSubmitting}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {batchSubmitting ? "Submitting..." : `Submit ${selectedIds.size} to Orchestrator`}
+            </button>
+          </div>
+        )}
+
         {/* List */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-12">
@@ -122,6 +205,9 @@ export function BugReportsPage() {
           <BugList
             items={data?.data ?? []}
             onSelect={(bug) => { setSelectedBug(bug); setShowForm(false) }}
+            selectable={selectedIds.size > 0}
+            selectedIds={selectedIds}
+            onToggleSelect={toggleSelect}
           />
         )}
       </div>

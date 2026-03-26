@@ -5,6 +5,9 @@ import type { BugReport } from '../../../../Shared/types'
 interface BugListProps {
   items: BugReport[]
   onSelect: (bug: BugReport) => void
+  selectable?: boolean
+  selectedIds?: Set<string>
+  onToggleSelect?: (id: string) => void
 }
 
 const SEVERITY_COLORS: Record<string, string> = {
@@ -22,7 +25,7 @@ const STATUS_COLORS: Record<string, string> = {
   closed: 'bg-gray-100 text-gray-500',
 }
 
-export function BugList({ items, onSelect }: BugListProps) {
+export function BugList({ items, onSelect, selectable, selectedIds, onToggleSelect }: BugListProps) {
   if (items.length === 0) {
     return (
       <div className="text-center py-12">
@@ -38,11 +41,20 @@ export function BugList({ items, onSelect }: BugListProps) {
   return (
     <div className="space-y-2">
       {items.map((bug) => (
-        <button
-          key={bug.id}
-          onClick={() => onSelect(bug)}
-          className="w-full text-left bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-all"
-        >
+        <div key={bug.id} className="flex items-start gap-2">
+          {selectable && (
+            <input
+              type="checkbox"
+              checked={selectedIds?.has(bug.id) || false}
+              onChange={(e) => { e.stopPropagation(); onToggleSelect?.(bug.id) }}
+              className="mt-5 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer flex-shrink-0"
+              aria-label={`Select ${bug.title}`}
+            />
+          )}
+          <button
+            onClick={() => onSelect(bug)}
+            className={`flex-1 text-left bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-all ${selectable && selectedIds?.has(bug.id) ? "border-blue-500 ring-1 ring-blue-500" : "border-gray-200"}`}
+          >
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <span className="text-xs font-mono text-gray-400">{bug.id}</span>

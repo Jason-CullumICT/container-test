@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import type { BugReport, ImageAttachment } from '../../../../Shared/types'
-import { images } from '../../api/client'
+import { images, orchestrator, repos } from '../../api/client'
 import { ImageThumbnails } from '../common/ImageThumbnails'
 import { ImageUpload } from '../common/ImageUpload'
 
@@ -31,6 +31,12 @@ const STATUS_COLORS: Record<string, string> = {
 export function BugDetail({ bug, onClose }: BugDetailProps) {
   const [attachedImages, setAttachedImages] = useState<ImageAttachment[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [submittingToOrch, setSubmittingToOrch] = useState(false)
+  const [selectedRepo, setSelectedRepo] = useState(bug.target_repo || "https://github.com/Jason-CullumICT/container-test")
+  const [knownRepos, setKnownRepos] = useState<{ name: string; url: string }[]>([
+    { name: "container-test", url: "https://github.com/Jason-CullumICT/container-test" },
+    { name: "claude-ai-OS", url: "https://github.com/Jason-CullumICT/claude-ai-OS" },
+  ])
 
   // FR-085: Fetch images on mount
   const fetchImages = useCallback(async () => {
@@ -45,6 +51,10 @@ export function BugDetail({ bug, onClose }: BugDetailProps) {
   useEffect(() => {
     fetchImages()
   }, [fetchImages])
+
+  useEffect(() => {
+    repos.list().then((r) => setKnownRepos(r.data)).catch(() => {})
+  }, [])
 
   const handleImageUpload = async (files: File[]) => {
     if (files.length === 0) return
@@ -62,6 +72,31 @@ export function BugDetail({ bug, onClose }: BugDetailProps) {
       setAttachedImages((prev) => prev.filter((img) => img.id !== imageId))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete image')
+    }
+  }
+
+  const handleSubmitToOrchestrator = async () => {
+    setSubmittingToOrch(true)
+    setError(null)
+    try {
+      const imageFiles: File[] = []
+      for (const img of attachedImages) {
+        const res = await fetch(`/uploads/${img.filename}`)
+        const blob = await res.blob()
+        imageFiles.push(new File([blob], img.original_name, { type: img.mime_type }))
+      }
+      await orchestrator.submitWork(
+        `Fix bug: ${bug.title}
+
+${bug.description}
+
+Severity: ${bug.severity}`,
+        { repo: selectedRepo, images: imageFiles.length > 0 ? imageFiles : undefined }
+      )
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to submit to orchestrator")
+    } finally {
+      setSubmittingToOrch(false)
     }
   }
 
@@ -149,6 +184,31 @@ export function BugDetail({ bug, onClose }: BugDetailProps) {
           <p className="text-xs text-red-600 mt-1">{error}</p>
         )}
       </div>
+
+      {/* Submit to orchestrator */}
+      {(bug.status === "reported" || bug.status === "triaged") && (
+        <div className="border-t border-gray-100 pt-4 space-y-2">
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-medium text-gray-500">Target repo:</label>
+            <select
+              value={selectedRepo}
+              onChange={(e) => setSelectedRepo(e.target.value)}
+              className="text-sm border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {knownRepos.map((r) => (
+                <option key={r.url} value={r.url}>{r.name}</option>
+              ))}
+            </select>
+          </div>
+          <button
+            onClick={handleSubmitToOrchestrator}
+            disabled={submittingToOrch}
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          >
+            {submittingToOrch ? "Submitting..." : "Submit to Orchestrator"}
+          </button>
+        </div>
+      )}
 
       {/* FR-068: Related work item and cycle links */}
       {(bug.related_work_item_id || bug.related_cycle_id) && (
