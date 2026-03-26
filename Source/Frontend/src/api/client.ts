@@ -379,9 +379,9 @@ export const orchestrator = {
   },
 
   // Verifies: FR-090
-  cleanupRun(id: string): Promise<void> {
-    return apiFetch(`/api/orchestrator/api/cycles/${encodeURIComponent(id)}/cleanup`, {
-      method: 'POST',
+  cleanupRun(id: string): Promise<{ deleted: boolean }> {
+    return apiFetch(`/api/orchestrator/api/runs/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
     })
   },
 }
