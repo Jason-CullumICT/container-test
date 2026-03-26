@@ -26,6 +26,7 @@ export interface CreateFeatureRequestInput {
   description: string;
   source?: string;        // defaults to 'manual'
   priority?: string;      // defaults to 'medium'
+  target_repo?: string;   // Target GitHub repo URL
 }
 
 export interface UpdateFeatureRequestInput {
@@ -47,6 +48,7 @@ export interface CreateBugInput {
   description: string;
   severity: string;
   source_system?: string;
+  target_repo?: string;   // Target GitHub repo URL
   related_work_item_id?: string;             // FR-051
   related_work_item_type?: string;           // FR-051 — 'feature_request' | 'bug'
   related_cycle_id?: string;                 // FR-051

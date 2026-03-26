@@ -43,8 +43,8 @@ export function FeatureRequestsPage() {
   const { data, loading, error, refetch } = useApi(fetchFn, [statusFilter, sourceFilter])
 
   // Verifies: FR-082
-  const handleCreate = async (input: Parameters<typeof featureRequests.create>[0], imageFiles: File[], _targetRepo?: string) => {
-    const created = await featureRequests.create(input)
+  const handleCreate = async (input: Parameters<typeof featureRequests.create>[0], imageFiles: File[], targetRepo?: string) => {
+    const created = await featureRequests.create({ ...input, target_repo: targetRepo })
     if (imageFiles.length > 0) {
       await images.upload('feature-requests', created.id, imageFiles)
     }

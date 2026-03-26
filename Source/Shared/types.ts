@@ -28,6 +28,7 @@ export interface FeatureRequest {
   human_approval_approved_at: string | null;  // ISO timestamp or null — DD-2
   duplicate_warning: boolean;
   created_at: string;                  // ISO timestamp
+  target_repo: string | null;           // Target GitHub repo URL for orchestrator
   updated_at: string;                  // ISO timestamp
 }
 
@@ -50,6 +51,7 @@ export interface BugReport {
   related_work_item_id: string | null;       // FR-050 (DD-18) — parent FR/bug if raised during a cycle
   related_work_item_type: WorkItemType | null; // FR-050
   related_cycle_id: string | null;            // FR-050
+  target_repo: string | null;           // Target GitHub repo URL for orchestrator
   created_at: string;
   updated_at: string;
 }

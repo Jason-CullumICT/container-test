@@ -25,6 +25,7 @@ interface BugRow {
   related_work_item_id: string | null;
   related_work_item_type: string | null;
   related_cycle_id: string | null;
+  target_repo: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -40,6 +41,7 @@ function mapBugRow(row: BugRow): BugReport {
     related_work_item_id: row.related_work_item_id || null,       // FR-054
     related_work_item_type: (row.related_work_item_type as WorkItemType) || null, // FR-054
     related_cycle_id: row.related_cycle_id || null,                // FR-054
+    target_repo: row.target_repo || null,
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
@@ -89,6 +91,7 @@ export interface CreateBugInput {
   related_work_item_id?: string;             // FR-054
   related_work_item_type?: string;           // FR-054
   related_cycle_id?: string;                 // FR-054
+  target_repo?: string;
 }
 
 export function createBug(db: Database.Database, input: CreateBugInput): BugReport {
@@ -113,13 +116,14 @@ export function createBug(db: Database.Database, input: CreateBugInput): BugRepo
 
   // FR-054: Accept and persist related work item fields (DD-18: all nullable)
   db.prepare(`
-    INSERT INTO bugs (id, title, description, severity, status, source_system, related_work_item_id, related_work_item_type, related_cycle_id, created_at, updated_at)
-    VALUES (?, ?, ?, ?, 'reported', ?, ?, ?, ?, ?, ?)
+    INSERT INTO bugs (id, title, description, severity, status, source_system, related_work_item_id, related_work_item_type, related_cycle_id, target_repo, created_at, updated_at)
+    VALUES (?, ?, ?, ?, 'reported', ?, ?, ?, ?, ?, ?, ?)
   `).run(
     id, title, description, severity, source_system,
     input.related_work_item_id || null,
     input.related_work_item_type || null,
     input.related_cycle_id || null,
+    input.target_repo || null,
     now, now
   );
 

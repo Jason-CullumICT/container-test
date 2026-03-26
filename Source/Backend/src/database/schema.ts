@@ -205,5 +205,16 @@ export function runMigrations(db: Database.Database): void {
       ON image_attachments(entity_id, entity_type);
   `);
 
+
+  // --- Add target_repo to feature_requests and bugs ---
+  const frCols = db.prepare(`PRAGMA table_info(feature_requests)`).all() as Array<{ name: string }>;
+  if (!frCols.some((col) => col.name === "target_repo")) {
+    db.exec(`ALTER TABLE feature_requests ADD COLUMN target_repo TEXT`);
+  }
+  const bugCols2 = db.prepare(`PRAGMA table_info(bugs)`).all() as Array<{ name: string }>;
+  if (!bugCols2.some((col) => col.name === "target_repo")) {
+    db.exec(`ALTER TABLE bugs ADD COLUMN target_repo TEXT`);
+  }
+
   logger.info('Database migrations complete');
 }

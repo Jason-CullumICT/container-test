@@ -30,7 +30,7 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
   const [error, setError] = useState<string | null>(null)
   const [attachedImages, setAttachedImages] = useState<ImageAttachment[]>([])
   const [submittingToOrch, setSubmittingToOrch] = useState(false)
-  const [selectedRepo, setSelectedRepo] = useState("https://github.com/Jason-CullumICT/container-test")
+  const [selectedRepo, setSelectedRepo] = useState(fr.target_repo || "https://github.com/Jason-CullumICT/container-test")
   const [customRepo, setCustomRepo] = useState("")
   const [showCustomRepo, setShowCustomRepo] = useState(false)
   const [validatingRepo, setValidatingRepo] = useState(false)

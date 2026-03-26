@@ -83,6 +83,7 @@ interface FRRow {
   human_approval_approved_at: string | null;
   duplicate_warning: number;
   created_at: string;
+  target_repo: string | null;
   updated_at: string;
 }
 
@@ -107,6 +108,7 @@ function mapFRRow(row: FRRow, votes: Vote[]): FeatureRequest {
     human_approval_comment: row.human_approval_comment,
     human_approval_approved_at: row.human_approval_approved_at,
     duplicate_warning: row.duplicate_warning === 1,
+    target_repo: row.target_repo || null,
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
@@ -157,6 +159,7 @@ export interface CreateFeatureRequestInput {
   description: string;
   source?: string;
   priority?: string;
+  target_repo?: string;
 }
 
 export function createFeatureRequest(
@@ -199,9 +202,9 @@ export function createFeatureRequest(
   db.prepare(`
     INSERT INTO feature_requests
       (id, title, description, source, status, priority, human_approval_comment,
-       human_approval_approved_at, duplicate_warning, created_at, updated_at)
-    VALUES (?, ?, ?, ?, 'potential', ?, NULL, NULL, ?, ?, ?)
-  `).run(id, title, description, source, priority, duplicateWarning ? 1 : 0, now, now);
+       human_approval_approved_at, duplicate_warning, target_repo, created_at, updated_at)
+    VALUES (?, ?, ?, ?, 'potential', ?, NULL, NULL, ?, ?, ?, ?)
+  `).run(id, title, description, source, priority, duplicateWarning ? 1 : 0, input.target_repo || null, now, now);
 
   return getFeatureRequestById(db, id)!;
 }
