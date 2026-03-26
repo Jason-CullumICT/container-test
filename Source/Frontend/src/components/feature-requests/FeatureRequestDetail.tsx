@@ -30,6 +30,11 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
   const [error, setError] = useState<string | null>(null)
   const [attachedImages, setAttachedImages] = useState<ImageAttachment[]>([])
   const [submittingToOrch, setSubmittingToOrch] = useState(false)
+  const [selectedRepo, setSelectedRepo] = useState("https://github.com/Jason-CullumICT/container-test")
+  const [customRepo, setCustomRepo] = useState("")
+  const [showCustomRepo, setShowCustomRepo] = useState(false)
+  const [validatingRepo, setValidatingRepo] = useState(false)
+  const [knownRepos, setKnownRepos] = useState<{ name: string; fullName: string; url: string }[]>([])
 
   // FR-084: Fetch images on mount and when FR changes
   const fetchImages = useCallback(async () => {
@@ -44,6 +49,10 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
   useEffect(() => {
     fetchImages()
   }, [fetchImages])
+
+  useEffect(() => {
+    repos.list().then((r) => setKnownRepos(r.data)).catch(() => {})
+  }, [])
 
   // FR-084: Handle image upload from detail view
   const handleImageUpload = async (files: File[]) => {
@@ -259,15 +268,46 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
             Deny
           </button>
         )}
-        {/* FR-087: Submit approved FR to orchestrator with images */}
+        {/* FR-087: Submit approved FR to orchestrator with repo selection */}
         {fr.status === 'approved' && (
-          <button
-            onClick={handleSubmitToOrchestrator}
-            disabled={submittingToOrch}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-          >
-            {submittingToOrch ? 'Submitting...' : 'Submit to Orchestrator'}
-          </button>
+          <div className="flex flex-col gap-2 w-full">
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-medium text-gray-500">Target repo:</label>
+              <select
+                value={showCustomRepo ? "__custom__" : selectedRepo}
+                onChange={(e) => {
+                  if (e.target.value === "__custom__") {
+                    setShowCustomRepo(true)
+                  } else {
+                    setShowCustomRepo(false)
+                    setSelectedRepo(e.target.value)
+                  }
+                }}
+                className="text-sm border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {knownRepos.map((r) => (
+                  <option key={r.url} value={r.url}>{r.name}</option>
+                ))}
+                <option value="__custom__">+ New repo...</option>
+              </select>
+              {showCustomRepo && (
+                <input
+                  type="text"
+                  value={customRepo}
+                  onChange={(e) => setCustomRepo(e.target.value)}
+                  placeholder="owner/repo-name"
+                  className="text-sm border border-gray-300 rounded-lg px-2 py-1 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              )}
+            </div>
+            <button
+              onClick={handleSubmitToOrchestrator}
+              disabled={submittingToOrch || validatingRepo}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 self-start"
+            >
+              {validatingRepo ? 'Validating repo...' : submittingToOrch ? 'Submitting...' : 'Submit to Orchestrator'}
+            </button>
+          </div>
         )}
       </div>
 

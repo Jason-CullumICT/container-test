@@ -3,9 +3,10 @@
 import React, { useState } from 'react'
 import type { CreateFeatureRequestInput } from '../../../../Shared/api'
 import { ImageUpload } from '../common/ImageUpload'
+import { RepoSelector } from '../common/RepoSelector'
 
 interface FeatureRequestFormProps {
-  onSubmit: (input: CreateFeatureRequestInput, imageFiles: File[]) => Promise<void>
+  onSubmit: (input: CreateFeatureRequestInput, imageFiles: File[], targetRepo?: string) => Promise<void>
   onCancel: () => void
 }
 
@@ -15,6 +16,7 @@ export function FeatureRequestForm({ onSubmit, onCancel }: FeatureRequestFormPro
   const [source, setSource] = useState('manual')
   const [priority, setPriority] = useState('medium')
   const [imageFiles, setImageFiles] = useState<File[]>([])
+  const [targetRepo, setTargetRepo] = useState('https://github.com/Jason-CullumICT/container-test')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -27,7 +29,7 @@ export function FeatureRequestForm({ onSubmit, onCancel }: FeatureRequestFormPro
     setSubmitting(true)
     setError(null)
     try {
-      await onSubmit({ title: title.trim(), description: description.trim(), source, priority }, imageFiles)
+      await onSubmit({ title: title.trim(), description: description.trim(), source, priority }, imageFiles, targetRepo)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create feature request')
       setSubmitting(false)
@@ -90,6 +92,7 @@ export function FeatureRequestForm({ onSubmit, onCancel }: FeatureRequestFormPro
           </select>
         </div>
       </div>
+      <RepoSelector value={targetRepo} onChange={setTargetRepo} disabled={submitting} />
       {/* FR-082: Image upload for feature requests */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">

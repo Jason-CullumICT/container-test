@@ -383,3 +383,18 @@ export const orchestrator = {
     })
   },
 }
+
+// --- Repo Management ---
+
+export const repos = {
+  list(): Promise<{ data: { name: string; fullName: string; url: string }[] }> {
+    return apiFetch("/api/orchestrator/api/repos/list")
+  },
+
+  validate(repo: string): Promise<{ exists: boolean; created?: boolean; repo: string; fullName: string }> {
+    return apiFetch("/api/orchestrator/api/repos/validate", {
+      method: "POST",
+      body: JSON.stringify({ repo }),
+    })
+  },
+}

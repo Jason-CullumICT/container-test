@@ -3,9 +3,10 @@
 import React, { useState } from 'react'
 import type { CreateBugInput } from '../../../../Shared/api'
 import { ImageUpload } from '../common/ImageUpload'
+import { RepoSelector } from '../common/RepoSelector'
 
 interface BugFormProps {
-  onSubmit: (input: CreateBugInput, imageFiles: File[]) => Promise<void>
+  onSubmit: (input: CreateBugInput, imageFiles: File[], targetRepo?: string) => Promise<void>
   onCancel: () => void
 }
 
@@ -15,6 +16,7 @@ export function BugForm({ onSubmit, onCancel }: BugFormProps) {
   const [severity, setSeverity] = useState('medium')
   const [sourceSystem, setSourceSystem] = useState('')
   const [imageFiles, setImageFiles] = useState<File[]>([])
+  const [targetRepo, setTargetRepo] = useState('https://github.com/Jason-CullumICT/container-test')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -32,7 +34,7 @@ export function BugForm({ onSubmit, onCancel }: BugFormProps) {
         description: description.trim(),
         severity,
         source_system: sourceSystem.trim() || undefined,
-      }, imageFiles)
+      }, imageFiles, targetRepo)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create bug report')
       setSubmitting(false)
@@ -94,6 +96,7 @@ export function BugForm({ onSubmit, onCancel }: BugFormProps) {
           />
         </div>
       </div>
+      <RepoSelector value={targetRepo} onChange={setTargetRepo} disabled={submitting} />
       {/* FR-083: Image upload for bug reports */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
