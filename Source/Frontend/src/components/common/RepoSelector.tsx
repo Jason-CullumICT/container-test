@@ -8,7 +8,10 @@ interface RepoSelectorProps {
 }
 
 export function RepoSelector({ value, onChange, disabled }: RepoSelectorProps) {
-  const [knownRepos, setKnownRepos] = useState<{ name: string; fullName: string; url: string }[]>([])
+  const [knownRepos, setKnownRepos] = useState<{ name: string; fullName: string; url: string }[]>([
+    { name: "container-test", fullName: "Jason-CullumICT/container-test", url: "https://github.com/Jason-CullumICT/container-test" },
+    { name: "claude-ai-OS", fullName: "Jason-CullumICT/claude-ai-OS", url: "https://github.com/Jason-CullumICT/claude-ai-OS" },
+  ])
   const [showCustom, setShowCustom] = useState(false)
   const [customRepo, setCustomRepo] = useState("")
   const [validating, setValidating] = useState(false)

@@ -124,7 +124,7 @@ export function CycleCard({ cycle, onStop, onRefresh }: CycleCardProps) {
           {cycle.ports && Object.entries(cycle.ports).map(([name, port]) => (
             <a
               key={name}
-              href={`http://localhost:${port}`}
+              href={`http://${window.location.hostname}:${port}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs px-2 py-1 rounded bg-gray-100 text-blue-600 hover:bg-blue-50 hover:text-blue-800 font-mono"

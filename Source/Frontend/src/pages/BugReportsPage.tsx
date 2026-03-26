@@ -42,7 +42,7 @@ export function BugReportsPage() {
   const { data, loading, error, refetch } = useApi(fetchFn, [statusFilter, severityFilter])
 
   // Verifies: FR-083
-  const handleCreate = async (input: Parameters<typeof bugs.create>[0], imageFiles: File[]) => {
+  const handleCreate = async (input: Parameters<typeof bugs.create>[0], imageFiles: File[], _targetRepo?: string) => {
     const created = await bugs.create(input)
     if (imageFiles.length > 0) {
       await images.upload('bugs', created.id, imageFiles)
