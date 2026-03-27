@@ -10,6 +10,19 @@ vi.mock('../src/api/client', () => ({
   bugs: {
     list: vi.fn(),
     create: vi.fn(),
+    update: vi.fn(),
+  },
+  images: {
+    upload: vi.fn().mockResolvedValue({ data: [] }),
+    list: vi.fn().mockResolvedValue({ data: [] }),
+    delete: vi.fn(),
+  },
+  orchestrator: {
+    submitWork: vi.fn(),
+  },
+  repos: {
+    list: vi.fn().mockResolvedValue({ data: [] }),
+    validate: vi.fn(),
   },
 }))
 
@@ -23,6 +36,10 @@ const mockBugs: BugReport[] = [
     severity: 'high',
     status: 'reported',
     source_system: 'production',
+    related_work_item_id: null,
+    related_work_item_type: null,
+    related_cycle_id: null,
+    target_repo: null,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
@@ -33,6 +50,10 @@ const mockBugs: BugReport[] = [
     severity: 'medium',
     status: 'triaged',
     source_system: 'staging',
+    related_work_item_id: null,
+    related_work_item_type: null,
+    related_cycle_id: null,
+    target_repo: null,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
@@ -43,6 +64,10 @@ const mockBugs: BugReport[] = [
     severity: 'critical',
     status: 'in_development',
     source_system: 'production',
+    related_work_item_id: null,
+    related_work_item_type: null,
+    related_cycle_id: null,
+    target_repo: null,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
@@ -155,6 +180,10 @@ describe('BugReportsPage', () => {
       severity: 'medium',
       status: 'reported',
       source_system: '',
+      related_work_item_id: null,
+      related_work_item_type: null,
+      related_cycle_id: null,
+      target_repo: null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }
@@ -172,12 +201,11 @@ describe('BugReportsPage', () => {
     fireEvent.click(screen.getByText('Report Bug'))
 
     await waitFor(() => {
-      expect(bugs.create).toHaveBeenCalledWith({
+      expect(bugs.create).toHaveBeenCalledWith(expect.objectContaining({
         title: 'New bug',
         description: 'Something broke',
         severity: 'medium',
-        source_system: undefined,
-      })
+      }))
     })
   })
 

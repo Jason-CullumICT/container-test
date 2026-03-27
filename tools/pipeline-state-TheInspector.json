@@ -1,34 +1,29 @@
 {
-  "run_id": "run-1774321349-17477",
+  "run_id": "run-1774593837-5457",
   "team": "TheInspector",
   "status": "completed",
-  "started_at": "2026-03-24T03:02:29Z",
-  "task_title": "Post-Work Traceability & Process Audit",
+  "started_at": "2026-03-27T06:43:57Z",
+  "task_title": "Post-work audit: Fix Image Display",
   "agents": {
     "team_leader": {
       "name": "Team Leader",
       "model": "sonnet",
       "status": "completed",
-      "started_at": "2026-03-24T03:02:29Z",
-      "completed_at": "2026-03-24T03:16:25Z"
+      "started_at": "2026-03-27T06:43:57Z",
+      "completed_at": "2026-03-27T06:44:03Z"
     }
   },
   "metrics": {
-    "task_title": "Post-Work Traceability & Process Audit",
+    "task_title": "Post-work audit: Fix Image Display",
     "grade": "D",
-    "p1_total": 7,
-    "p2_total": 3,
-    "p3_total": 2,
-    "p4_total": 2,
-    "prior_still_open": 29,
-    "prior_regressed": 1,
-    "fixed": 0,
-    "remediation_rate": "0%",
-    "spec_coverage_source": "68.1%",
-    "spec_coverage_test": "100%",
-    "traceability_chain_integrity": "broken_at_4_of_9_links",
-    "root_cause": "stale_server_no_restart_after_FR050-069"
+    "p1_total": 6,
+    "p2_total": 10,
+    "p3_total": 8,
+    "p4_total": 4,
+    "new_findings": 23,
+    "still_open": 24,
+    "fixed": 0
   },
   "verdict": "passed",
-  "completed_at": "2026-03-24T03:16:25Z"
+  "completed_at": "2026-03-27T06:44:03Z"
 }

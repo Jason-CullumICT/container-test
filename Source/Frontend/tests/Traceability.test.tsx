@@ -236,6 +236,7 @@ const mockBugWithTraceability: BugReport = {
   related_work_item_id: 'FR-0005',
   related_work_item_type: 'feature_request',
   related_cycle_id: 'CYCLE-0003',
+  target_repo: 'https://github.com/Jason-CullumICT/container-test',
   created_at: '2026-03-24T12:00:00.000Z',
   updated_at: '2026-03-24T12:00:00.000Z',
 }
@@ -250,6 +251,7 @@ const mockBugWithoutTraceability: BugReport = {
   related_work_item_id: null,
   related_work_item_type: null,
   related_cycle_id: null,
+  target_repo: null,
   created_at: '2026-03-24T12:00:00.000Z',
   updated_at: '2026-03-24T12:00:00.000Z',
 }
@@ -259,7 +261,7 @@ describe('BugDetail Traceability', () => {
     // Verifies: FR-068
     render(
       <MemoryRouter>
-        <BugDetail bug={mockBugWithTraceability} onClose={vi.fn()} />
+        <BugDetail bug={mockBugWithTraceability} onUpdate={vi.fn()} onClose={vi.fn()} />
       </MemoryRouter>
     )
     expect(screen.getByTestId('bug-traceability')).toBeInTheDocument()
@@ -272,7 +274,7 @@ describe('BugDetail Traceability', () => {
     // Verifies: FR-068
     render(
       <MemoryRouter>
-        <BugDetail bug={mockBugWithTraceability} onClose={vi.fn()} />
+        <BugDetail bug={mockBugWithTraceability} onUpdate={vi.fn()} onClose={vi.fn()} />
       </MemoryRouter>
     )
     expect(screen.getByTestId('related-cycle-link')).toBeInTheDocument()
@@ -283,7 +285,7 @@ describe('BugDetail Traceability', () => {
     // Verifies: FR-068
     render(
       <MemoryRouter>
-        <BugDetail bug={mockBugWithoutTraceability} onClose={vi.fn()} />
+        <BugDetail bug={mockBugWithoutTraceability} onUpdate={vi.fn()} onClose={vi.fn()} />
       </MemoryRouter>
     )
     expect(screen.queryByTestId('bug-traceability')).not.toBeInTheDocument()
@@ -298,7 +300,7 @@ describe('BugDetail Traceability', () => {
     }
     render(
       <MemoryRouter>
-        <BugDetail bug={bugWithBugRef} onClose={vi.fn()} />
+        <BugDetail bug={bugWithBugRef} onUpdate={vi.fn()} onClose={vi.fn()} />
       </MemoryRouter>
     )
     expect(screen.getByText('(Bug)')).toBeInTheDocument()
@@ -322,6 +324,21 @@ vi.mock('../src/api/client', () => ({
   cycleFeedback: {
     list: vi.fn(),
     create: vi.fn(),
+  },
+  images: {
+    upload: vi.fn(),
+    list: vi.fn().mockResolvedValue({ data: [] }),
+    delete: vi.fn(),
+  },
+  repos: {
+    list: vi.fn().mockResolvedValue({ data: [] }),
+    validate: vi.fn(),
+  },
+  bugs: {
+    update: vi.fn(),
+  },
+  orchestrator: {
+    submitWork: vi.fn(),
   },
 }))
 

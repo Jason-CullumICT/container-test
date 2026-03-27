@@ -208,6 +208,7 @@ vi.mock('../src/api/client', () => ({
     list: vi.fn(),
     create: vi.fn(),
     getById: vi.fn(),
+    update: vi.fn(),
     vote: vi.fn(),
     approve: vi.fn(),
     deny: vi.fn(),
@@ -216,6 +217,7 @@ vi.mock('../src/api/client', () => ({
     list: vi.fn(),
     create: vi.fn(),
     getById: vi.fn(),
+    update: vi.fn(),
   },
   images: {
     upload: vi.fn(),
@@ -225,9 +227,17 @@ vi.mock('../src/api/client', () => ({
   orchestrator: {
     submitWork: vi.fn(),
   },
+  repos: {
+    list: vi.fn().mockResolvedValue({ data: [] }),
+    validate: vi.fn().mockResolvedValue({ exists: true, repo: 'test', fullName: 'test/repo' }),
+  },
+  dashboard: {
+    getSummary: vi.fn(),
+    getActivity: vi.fn(),
+  },
 }))
 
-import { featureRequests, bugs, images as imagesApi, orchestrator } from '../src/api/client'
+import { featureRequests, bugs, images as imagesApi, orchestrator, repos } from '../src/api/client'
 import { FeatureRequestForm } from '../src/components/feature-requests/FeatureRequestForm'
 import { BugForm } from '../src/components/bugs/BugForm'
 import { FeatureRequestDetail } from '../src/components/feature-requests/FeatureRequestDetail'
@@ -267,7 +277,8 @@ describe('FeatureRequestForm with image upload', () => {
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
         expect.objectContaining({ title: 'Test feature' }),
-        [file]
+        [file],
+        expect.any(String)
       )
     })
   })
@@ -303,7 +314,8 @@ describe('BugForm with image upload', () => {
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
         expect.objectContaining({ title: 'Test bug' }),
-        [file]
+        [file],
+        expect.any(String)
       )
     })
   })
@@ -322,6 +334,7 @@ const mockFR: FeatureRequest = {
   human_approval_comment: null,
   human_approval_approved_at: null,
   duplicate_warning: false,
+  target_repo: 'https://github.com/test/repo',
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
 }
@@ -435,6 +448,7 @@ const mockBug: BugReport = {
   related_work_item_id: null,
   related_work_item_type: null,
   related_cycle_id: null,
+  target_repo: 'https://github.com/test/repo',
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
 }
@@ -445,13 +459,15 @@ describe('BugDetail with images', () => {
     vi.mocked(imagesApi.list).mockResolvedValue({ data: mockImages })
     vi.mocked(imagesApi.upload).mockResolvedValue({ data: [] })
     vi.mocked(imagesApi.delete).mockResolvedValue(undefined)
+    // Re-mock repos.list after vi.restoreAllMocks() in FeatureRequestDetail tests
+    vi.mocked(repos.list).mockResolvedValue({ data: [] })
   })
 
   it('fetches and displays images for the bug report', async () => {
     // Verifies: FR-085
     render(
       <MemoryRouter>
-        <BugDetail bug={mockBug} onClose={() => {}} />
+        <BugDetail bug={mockBug} onUpdate={() => {}} onClose={() => {}} />
       </MemoryRouter>
     )
 
@@ -468,7 +484,7 @@ describe('BugDetail with images', () => {
     // Verifies: FR-085
     render(
       <MemoryRouter>
-        <BugDetail bug={mockBug} onClose={() => {}} />
+        <BugDetail bug={mockBug} onUpdate={() => {}} onClose={() => {}} />
       </MemoryRouter>
     )
 
@@ -479,7 +495,7 @@ describe('BugDetail with images', () => {
     // Verifies: FR-085
     render(
       <MemoryRouter>
-        <BugDetail bug={mockBug} onClose={() => {}} />
+        <BugDetail bug={mockBug} onUpdate={() => {}} onClose={() => {}} />
       </MemoryRouter>
     )
 

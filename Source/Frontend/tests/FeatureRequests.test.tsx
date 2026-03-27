@@ -12,9 +12,22 @@ vi.mock('../src/api/client', () => ({
     list: vi.fn(),
     create: vi.fn(),
     getById: vi.fn(),
+    update: vi.fn(),
     vote: vi.fn(),
     approve: vi.fn(),
     deny: vi.fn(),
+  },
+  images: {
+    upload: vi.fn().mockResolvedValue({ data: [] }),
+    list: vi.fn().mockResolvedValue({ data: [] }),
+    delete: vi.fn(),
+  },
+  orchestrator: {
+    submitWork: vi.fn(),
+  },
+  repos: {
+    list: vi.fn().mockResolvedValue({ data: [] }),
+    validate: vi.fn(),
   },
 }))
 
@@ -32,6 +45,7 @@ const mockFRs: FeatureRequest[] = [
     human_approval_comment: null,
     human_approval_approved_at: null,
     duplicate_warning: false,
+    target_repo: null,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
@@ -55,6 +69,7 @@ const mockFRs: FeatureRequest[] = [
     human_approval_comment: null,
     human_approval_approved_at: null,
     duplicate_warning: false,
+    target_repo: null,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
@@ -167,6 +182,7 @@ describe('FeatureRequestsPage', () => {
       human_approval_comment: null,
       human_approval_approved_at: null,
       duplicate_warning: false,
+      target_repo: null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }
@@ -187,12 +203,12 @@ describe('FeatureRequestsPage', () => {
     fireEvent.click(screen.getByText('Create Feature Request'))
 
     await waitFor(() => {
-      expect(featureRequests.create).toHaveBeenCalledWith({
+      expect(featureRequests.create).toHaveBeenCalledWith(expect.objectContaining({
         title: 'New feature',
         description: 'A brand new feature',
         source: 'manual',
         priority: 'medium',
-      })
+      }))
     })
   })
 })

@@ -29,6 +29,7 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
   const [showDenyForm, setShowDenyForm] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [attachedImages, setAttachedImages] = useState<ImageAttachment[]>([])
+  const [uploadKey, setUploadKey] = useState(0)
   const [submittingToOrch, setSubmittingToOrch] = useState(false)
   const [selectedRepo, setSelectedRepo] = useState(fr.target_repo || "https://github.com/Jason-CullumICT/container-test")
   const [sessionToken, setSessionToken] = useState("")
@@ -71,6 +72,7 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
     if (files.length === 0) return
     try {
       await images.upload('feature-requests', fr.id, files)
+      setUploadKey((k) => k + 1)
       fetchImages()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to upload images')
@@ -100,7 +102,7 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
       }
       await orchestrator.submitWork(
         `Implement feature: ${fr.title}\n\n${fr.description}`,
-        { images: imageFiles.length > 0 ? imageFiles : undefined, claudeSessionToken: sessionToken || undefined, tokenLabel: tokenLabel || undefined }
+        { repo: selectedRepo, images: imageFiles.length > 0 ? imageFiles : undefined, claudeSessionToken: sessionToken || undefined, tokenLabel: tokenLabel || undefined }
       )
       // Update feature request status to in_development
       const updated = await featureRequests.update(fr.id, { status: "in_development" })
@@ -236,7 +238,7 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
           onDelete={handleImageDelete}
         />
         <div className="mt-2">
-          <ImageUpload onFilesSelected={handleImageUpload} />
+          <ImageUpload key={uploadKey} onFilesSelected={handleImageUpload} />
         </div>
       </div>
 

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inspector Audit — 2026-03-27 — Fix Image Display</title>
+<style>
+  :root { --green: #16a34a; --blue: #2563eb; --yellow: #ca8a04; --orange: #ea580c; --red: #dc2626; --gray: #6b7280; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.6; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+  h1 { font-size: 1.75rem; margin-bottom: 8px; }
+  h2 { font-size: 1.35rem; margin: 32px 0 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; }
+  h3 { font-size: 1.1rem; margin: 20px 0 8px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.9rem; }
+  th, td { padding: 8px 12px; text-align: left; border: 1px solid #e2e8f0; }
+  th { background: #f1f5f9; font-weight: 600; }
+  .badge { display: inline-block; padding: 4px 14px; border-radius: 9999px; font-weight: 700; font-size: 1.1rem; }
+  .badge-a { background: #dcfce7; color: var(--green); }
+  .badge-b { background: #dbeafe; color: var(--blue); }
+  .badge-c { background: #fef9c3; color: var(--yellow); }
+  .badge-d { background: #ffedd5; color: var(--orange); }
+  .badge-f { background: #fee2e2; color: var(--red); }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 12px 0; }
+  .card-red { border-left: 4px solid var(--red); }
+  .card-orange { border-left: 4px solid var(--orange); }
+  .card-green { border-left: 4px solid var(--green); }
+  .card-yellow { border-left: 4px solid var(--yellow); }
+  .card-gray { border-left: 4px solid var(--gray); }
+  .pass { color: var(--green); font-weight: 600; }
+  .fail { color: var(--red); font-weight: 600; }
+  .partial { color: var(--yellow); font-weight: 600; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-right: 4px; }
+  .tag-p1 { background: #fee2e2; color: var(--red); }
+  .tag-p2 { background: #ffedd5; color: var(--orange); }
+  .tag-p3 { background: #fef9c3; color: var(--yellow); }
+  .tag-p4 { background: #f1f5f9; color: var(--gray); }
+  .tag-new { background: #dbeafe; color: var(--blue); }
+  .tag-still { background: #fef9c3; color: var(--yellow); }
+  .tag-fixed { background: #dcfce7; color: var(--green); }
+  .scorecards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 16px 0; }
+  .scorecard { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; text-align: center; }
+  .scorecard .num { font-size: 2rem; font-weight: 700; }
+  .scorecard .label { font-size: 0.8rem; color: var(--gray); }
+  .bar { height: 8px; border-radius: 4px; margin: 4px 0; }
+  code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; }
+  .matrix { font-size: 0.85rem; }
+  .matrix td.filled { background: #fef9c3; }
+  .matrix td.filled-red { background: #fee2e2; }
+  .checklist li { margin: 4px 0; }
+  ul.action-list { list-style: none; padding: 0; }
+  ul.action-list li { padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+  ul.action-list li::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+  ul.action-list li.block::before { background: var(--red); }
+  ul.action-list li.sprint::before { background: var(--orange); }
+  ul.action-list li.next::before { background: var(--yellow); }
+  ul.action-list li.backlog::before { background: var(--gray); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: HEADER -->
+<!-- ============================================================ -->
+<h1>Inspector Audit Report</h1>
+<p>
+  <span class="badge badge-d">D</span>
+  &nbsp; Branch: <code>cycle/run-1774591486777-b54d09ee</code>
+  &nbsp; Date: <strong>2026-03-27</strong>
+  &nbsp; Scope: <strong>Post-work audit — Fix Image Display (TheFixer)</strong>
+</p>
+<p style="margin-top:8px;color:var(--gray);">
+  Audit of uncommitted changes: 3 source files, 4 test files. All services DOWN — static analysis only.
+</p>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: SCORECARDS -->
+<!-- ============================================================ -->
+<h2>2. Scorecards</h2>
+<div class="scorecards">
+  <div class="scorecard"><div class="num" style="color:var(--red)">6</div><div class="label">P1 Findings</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--orange)">10</div><div class="label">P2 Findings</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--yellow)">8</div><div class="label">P3 Findings</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--gray)">4</div><div class="label">P4 Findings</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--green)">100%</div><div class="label">Spec Coverage</div></div>
+  <div class="scorecard"><div class="num">0/5</div><div class="label">Dynamic Modes</div></div>
+  <div class="scorecard"><div class="num" style="color:var(--gray)">0</div><div class="label">Fixed</div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: EXECUTIVE SUMMARY -->
+<!-- ============================================================ -->
+<h2>3. Executive Summary</h2>
+<div class="card card-red">
+<p>Top 5 findings an operator needs to know:</p>
+<ol style="margin:12px 0 0 20px;">
+  <li><strong>Orchestrator submit has no atomicity (CHAOS-028, P1):</strong> If the status-update API call fails after the orchestrator run is already dispatched, the user sees a generic error and may re-submit, spawning duplicate orchestrator runs. The work is running but the UI says it failed.</li>
+  <li><strong>Image re-download loop doesn't check HTTP status (CHAOS-029, P2):</strong> When submitting to orchestrator, images are re-fetched from <code>/uploads/</code>. If any image returns 404, a 0-byte corrupt file is silently sent to the orchestrator with no error shown.</li>
+  <li><strong>Custom repo input is broken (CHAOS-032, P2):</strong> In FeatureRequestDetail, the "+ New repo..." custom input collects text but never writes it to <code>selectedRepo</code>. Work is always submitted to the previously-selected repo regardless of what the user types.</li>
+  <li><strong>Unvalidated repo/filename fields flow to orchestrator (SEC-030-033, P2):</strong> The <code>repo</code>, <code>img.filename</code>, and <code>img.original_name</code> fields pass through to the orchestrator without sanitization. If the orchestrator uses these in shell commands (e.g., <code>git clone</code>), command injection is possible.</li>
+  <li><strong>Test gaps on the actual fix (QA-001/002, P2):</strong> The <code>repo</code> field added to orchestrator submit is never asserted in tests. The BugDetail orchestrator submit path (the primary fix) has zero test coverage.</li>
+</ol>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: SCOPE & ENVIRONMENT -->
+<!-- ============================================================ -->
+<h2>4. Scope &amp; Environment</h2>
+<table>
+  <tr><th>Item</th><th>Value</th></tr>
+  <tr><td>Audit type</td><td>Post-work audit after TheFixer completed image display fix</td></tr>
+  <tr><td>Branch</td><td><code>cycle/run-1774591486777-b54d09ee</code></td></tr>
+  <tr><td>Changed source files</td><td>BugDetail.tsx, FeatureRequestDetail.tsx, BugReportsPage.tsx</td></tr>
+  <tr><td>Changed test files</td><td>BugReports.test.tsx, FeatureRequests.test.tsx, ImageUpload.test.tsx, Traceability.test.tsx</td></tr>
+  <tr><td>Backend service</td><td>DOWN</td></tr>
+  <tr><td>Frontend service</td><td>DOWN</td></tr>
+  <tr><td>Specialist modes</td><td>All static (0/5 dynamic)</td></tr>
+  <tr><td>Data caveats</td><td>No live testing possible; all findings from code analysis only</td></tr>
+</table>
+<h3>Specialist Durations</h3>
+<table>
+  <tr><th>Specialist</th><th>Mode</th><th>Findings</th></tr>
+  <tr><td>red-teamer</td><td>Static</td><td>6 new (0 P1, 4 P2, 1 P3, 1 P4) + 5 P1 still open</td></tr>
+  <tr><td>quality-oracle</td><td>Static</td><td>5 new (0 P1, 2 P2, 3 P3)</td></tr>
+  <tr><td>performance-profiler</td><td>Static</td><td>4 new (0 P1, 0 P2, 2 P3, 2 P4) + 2 still open</td></tr>
+  <tr><td>chaos-monkey</td><td>Static</td><td>7 new (1 P1, 3 P2, 2 P3, 1 P4) + 2 still open</td></tr>
+  <tr><td>dependency-auditor</td><td>Static</td><td>1 new (0 P1, 1 P2) + 15 still open</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: TREND -->
+<!-- ============================================================ -->
+<h2>5. Trend</h2>
+<table>
+  <tr><th>Audit</th><th>Date</th><th>Grade</th><th>P1</th><th>P2</th><th>Spec Coverage</th></tr>
+  <tr><td>Prior (UX Polish)</td><td>2026-03-26</td><td><span class="badge badge-d">D</span></td><td>5</td><td>~20</td><td>100%</td></tr>
+  <tr><td><strong>Current (Image Fix)</strong></td><td>2026-03-27</td><td><span class="badge badge-d">D</span></td><td>6</td><td>10 new</td><td>100%</td></tr>
+</table>
+<p style="margin-top:8px;">Grade unchanged at <strong>D</strong>. +1 new P1 (CHAOS-028: orchestrator submit atomicity). The 5 prior P1s (all auth-related) remain unaddressed. Spec coverage stable at 100%.</p>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: SPECIALIST REPORTS -->
+<!-- ============================================================ -->
+<h2>6. Specialist Reports</h2>
+
+<div class="card">
+  <h3>Red Teamer</h3>
+  <p><strong>Mode:</strong> Static | <strong>Verdict:</strong> <span class="fail">FAIL</span> | <strong>New findings:</strong> 6 (4 P2, 1 P3, 1 P4) | <strong>Prior P1s still open:</strong> 5</p>
+  <p>The fix surfaces pre-existing injection surfaces: unvalidated <code>img.filename</code>, <code>img.original_name</code>, and <code>repo</code> fields all flow to the orchestrator without sanitization. The root cause remains zero authentication (SEC-001).</p>
+</div>
+
+<div class="card">
+  <h3>Quality Oracle</h3>
+  <p><strong>Mode:</strong> Static | <strong>Verdict:</strong> <span class="partial">PARTIAL</span> | <strong>New findings:</strong> 5 (2 P2, 3 P3)</p>
+  <p>Traceability enforcer passes. Spec coverage 100%. However, the primary fix (BugDetail orchestrator submit) has zero test coverage, and the <code>repo</code> field addition is never asserted in tests.</p>
+</div>
+
+<div class="card">
+  <h3>Performance Profiler</h3>
+  <p><strong>Mode:</strong> Static | <strong>Verdict:</strong> <span class="pass">PASS</span> | <strong>New findings:</strong> 4 (2 P3, 2 P4) | <strong>Prior still open:</strong> 2 P3</p>
+  <p>No P1/P2 performance issues introduced. Image payloads confirmed sent as multipart (not base64). Serial image download loop (prior PERF-030) now confirmed in both components. Minor: unnecessary full list refetch on single-item update.</p>
+</div>
+
+<div class="card">
+  <h3>Chaos Monkey</h3>
+  <p><strong>Mode:</strong> Static | <strong>Verdict:</strong> <span class="fail">FAIL</span> | <strong>New findings:</strong> 7 (1 P1, 3 P2, 2 P3, 1 P4) | <strong>Prior still open:</strong> 2</p>
+  <p>Critical: orchestrator submit + status update is a two-phase operation with no atomicity (CHAOS-028, P1). Image re-download doesn't check HTTP status (CHAOS-029, P2). Custom repo input is broken — never applied (CHAOS-032, P2).</p>
+</div>
+
+<div class="card">
+  <h3>Dependency Auditor</h3>
+  <p><strong>Mode:</strong> Static | <strong>Verdict:</strong> <span class="pass">PASS</span> | <strong>New findings:</strong> 1 P2 (picomatch ReDoS, not caused by this fix) | <strong>Prior still open:</strong> 15</p>
+  <p>No dependencies added or changed. One new HIGH advisory (picomatch ReDoS) surfaced in npm database since last audit — dev-toolchain only, not production-exposed.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: RE-VERIFICATION SUMMARY -->
+<!-- ============================================================ -->
+<h2>7. Re-Verification Summary</h2>
+<table>
+  <tr><th>Status</th><th>Count</th><th>IDs</th></tr>
+  <tr><td><span class="tag tag-fixed">FIXED</span></td><td>0</td><td>None</td></tr>
+  <tr><td><span class="tag tag-still">STILL OPEN</span></td><td>24</td><td>SEC-001,002,015,021,023; CHAOS-031,035; PERF-029,030; DEP-001–015</td></tr>
+  <tr><td><span class="tag tag-p1">REGRESSED</span></td><td>0</td><td>None</td></tr>
+  <tr><td><span class="tag tag-new">NEW</span></td><td>23</td><td>SEC-030–035; QA-001–005; PERF-035–040; CHAOS-028–030,032–034,036; DEP-016</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- SECTION 8: CROSS-REFERENCE MAP -->
+<!-- ============================================================ -->
+<h2>8. Cross-Reference Map</h2>
+<table>
+  <tr><th>Root Cause</th><th>Affected Findings</th><th>Fix Impact</th></tr>
+  <tr>
+    <td><strong>No input validation on orchestrator submit payload</strong></td>
+    <td>SEC-030, SEC-031, SEC-032, SEC-033, SEC-034, CHAOS-029</td>
+    <td>Add server-side validation middleware for orchestrator proxy — sanitize <code>repo</code>, <code>filename</code>, <code>original_name</code>, <code>sessionToken</code> before forwarding. Resolves 6 findings.</td>
+  </tr>
+  <tr>
+    <td><strong>Two-phase submit with no atomicity/compensation</strong></td>
+    <td>CHAOS-028, CHAOS-030, PERF-035</td>
+    <td>Restructure orchestrator submit: differentiate submit-failure from status-update-failure in catch block; move <code>onUpdate</code> outside try; use optimistic UI update. Resolves 3 findings.</td>
+  </tr>
+  <tr>
+    <td><strong>Zero authentication (systemic)</strong></td>
+    <td>SEC-001, SEC-002, SEC-015, SEC-021, SEC-023, SEC-030, SEC-031, SEC-032, SEC-033</td>
+    <td>Implement auth middleware. Resolves 5 P1s directly and reduces exploitability of 4 P2s from zero-precondition to authenticated.</td>
+  </tr>
+  <tr>
+    <td><strong>Missing test coverage for orchestrator submit flow</strong></td>
+    <td>QA-001, QA-002, QA-004, QA-005</td>
+    <td>Add tests that assert <code>orchestrator.submitWork</code> call arguments (including <code>repo</code>), <code>onUpdate</code> callback invocation, and status transition. Resolves 4 findings.</td>
+  </tr>
+  <tr>
+    <td><strong>Silent error swallowing in image/repo fetch</strong></td>
+    <td>CHAOS-029, CHAOS-031, CHAOS-033, CHAOS-035</td>
+    <td>Add <code>res.ok</code> checks on image fetch, error state for <code>fetchImages</code> failure, fallback for <code>repos.list</code> failure, <code>onerror</code> on <code>&lt;img&gt;</code> tags. Resolves 4 findings.</td>
+  </tr>
+  <tr>
+    <td><strong>Custom repo input never committed to state</strong></td>
+    <td>CHAOS-032, SEC-032</td>
+    <td>Wire <code>customRepo</code> to <code>setSelectedRepo</code> with format validation. Resolves 2 findings.</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- SECTION 9: P1 FINDINGS -->
+<!-- ============================================================ -->
+<h2>9. P1 Findings</h2>
+
+<div class="card card-red">
+  <h3><span class="tag tag-p1">P1</span> <span class="tag tag-new">NEW</span> CHAOS-028: Orchestrator Submit Has No Atomicity — Duplicate Runs on Partial Failure</h3>
+  <p><strong>File:</strong> <code>BugDetail.tsx:94–120</code>, <code>FeatureRequestDetail.tsx:93–115</code></p>
+  <p><strong>Exploit scenario:</strong> User clicks "Submit to Orchestrator." The orchestrator run is dispatched (step 1 succeeds). The subsequent <code>bugs.update()</code> status call fails (network error, backend restart, validation rejection). The catch block fires and displays "Failed to submit to orchestrator." The user believes submission failed and clicks again — spawning a second orchestrator run. The bug/FR status never updates to <code>in_development</code>.</p>
+  <p><strong>Impact:</strong> Duplicate orchestrator runs waste compute. Bug/FR status is inconsistent with actual orchestrator state. User trust in the UI is degraded.</p>
+  <p><strong>Recommendation:</strong> Separate the error handling: after <code>orchestrator.submitWork()</code> succeeds, status update failures should show a warning ("Submitted successfully but status update failed — please refresh") rather than a generic failure message. Never report a successful orchestrator dispatch as a failure.</p>
+</div>
+
+<div class="card card-red">
+  <h3><span class="tag tag-p1">P1</span> <span class="tag tag-still">STILL OPEN</span> SEC-001: Zero Authentication on All API Endpoints</h3>
+  <p><strong>File:</strong> <code>Source/Backend/src/index.ts</code> (no auth middleware)</p>
+  <p><strong>Impact:</strong> Every API endpoint is open to anonymous callers. No JWT, no sessions, no user concept. All other P2 injection findings are amplified by this — attackers need zero preconditions to poison data.</p>
+</div>
+
+<div class="card card-red">
+  <h3><span class="tag tag-p1">P1</span> <span class="tag tag-still">STILL OPEN</span> SEC-002: Unauthenticated Admin Operations (approve/deny)</h3>
+  <p><strong>File:</strong> <code>Source/Backend/src/routes/</code> (approve/deny routes)</p>
+</div>
+
+<div class="card card-red">
+  <h3><span class="tag tag-p1">P1</span> <span class="tag tag-still">STILL OPEN</span> SEC-015: Unauthenticated Pipeline Stage Manipulation</h3>
+  <p><strong>File:</strong> <code>Source/Backend/src/routes/</code> (pipeline routes)</p>
+</div>
+
+<div class="card card-red">
+  <h3><span class="tag tag-p1">P1</span> <span class="tag tag-still">STILL OPEN</span> SEC-021: MIME Type Check Bypassable on Upload</h3>
+  <p><strong>File:</strong> <code>Source/Backend/src/lib/upload.ts</code></p>
+</div>
+
+<div class="card card-red">
+  <h3><span class="tag tag-p1">P1</span> <span class="tag tag-still">STILL OPEN</span> SEC-023: Unauthenticated Image Upload/Delete</h3>
+  <p><strong>File:</strong> <code>Source/Backend/src/routes/</code> (image endpoints)</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 10: RISK MATRIX -->
+<!-- ============================================================ -->
+<h2>10. Risk Matrix</h2>
+<table class="matrix">
+  <tr>
+    <th></th>
+    <th>Zero-precondition</th>
+    <th>Authenticated</th>
+    <th>Privileged</th>
+    <th>Admin</th>
+    <th>Physical</th>
+  </tr>
+  <tr>
+    <td><strong>P1</strong></td>
+    <td class="filled-red">SEC-001, SEC-002, SEC-015, SEC-021, SEC-023, CHAOS-028</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><strong>P2</strong></td>
+    <td class="filled">SEC-030, SEC-031, SEC-032, SEC-033, CHAOS-029, CHAOS-030, CHAOS-032</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><strong>P3</strong></td>
+    <td class="filled">SEC-034, CHAOS-031, CHAOS-033, CHAOS-036, PERF-035, PERF-036</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><strong>P4</strong></td>
+    <td>SEC-035, CHAOS-034, PERF-038, PERF-040</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+<p style="margin-top:8px;color:var(--gray);">All findings are zero-precondition due to SEC-001 (no authentication). With auth implemented, most P2+ findings would shift right to Authenticated or Privileged.</p>
+
+<!-- ============================================================ -->
+<!-- SECTION 11: SPEC COVERAGE -->
+<!-- ============================================================ -->
+<h2>11. Spec Coverage</h2>
+<p><strong>Coverage: 100%</strong> (all FRs traced to source and tests)</p>
+<div style="background:#e2e8f0;border-radius:4px;height:24px;margin:8px 0;">
+  <div style="background:var(--green);height:24px;border-radius:4px;width:100%;text-align:center;color:white;font-size:0.8rem;line-height:24px;">100%</div>
+</div>
+<p>Traceability enforcer: <span class="pass">PASS</span></p>
+<p><strong>Top uncovered requirements:</strong> None — all FRs covered.</p>
+<p style="color:var(--gray);margin-top:8px;">Note: While traceability passes, the quality oracle found that tests for the new orchestrator submit flow lack assertion depth (QA-001, QA-002). The tests exist and have traceability comments but do not assert all changed behavior.</p>
+
+<!-- ============================================================ -->
+<!-- SECTION 12: LATENCY BASELINES -->
+<!-- ============================================================ -->
+<h2>12. Latency Baselines</h2>
+<p>No dynamic profiling possible — all services DOWN. No latency measurements collected.</p>
+<table>
+  <tr><th>Endpoint</th><th>p50</th><th>p95</th><th>p99</th><th>Budget (p95)</th><th>Status</th></tr>
+  <tr><td colspan="6" style="text-align:center;color:var(--gray);">No data — static mode only</td></tr>
+</table>
+<p style="color:var(--gray);">Static analysis notes: PERF-035 identified a sequential orchestrator-submit + status-PATCH chain that adds cumulative latency. PERF-030 (serial image download loop) remains unaddressed in both components.</p>
+
+<!-- ============================================================ -->
+<!-- SECTION 13: P2 FINDINGS -->
+<!-- ============================================================ -->
+<h2>13. P2 Findings</h2>
+<table>
+  <tr><th>ID</th><th>Category</th><th>Title</th><th>File</th><th>Status</th></tr>
+  <tr><td>SEC-030</td><td>Injection</td><td>Path traversal via <code>img.filename</code> in orchestrator fetch</td><td>BugDetail.tsx:100, FeatureRequestDetail.tsx:99</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>SEC-031</td><td>Injection</td><td>Malicious <code>original_name</code> forwarded to orchestrator as File name</td><td>BugDetail.tsx:102, FeatureRequestDetail.tsx:101</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>SEC-032</td><td>Injection</td><td><code>repo</code> field unvalidated in FR orchestrator submit</td><td>FeatureRequestDetail.tsx:105</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>SEC-033</td><td>Injection</td><td><code>repo</code> field unvalidated in bug orchestrator submit</td><td>BugDetail.tsx:110</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>QA-001</td><td>Untested</td><td>FR test does not assert <code>repo</code> field in orchestrator submit</td><td>ImageUpload.test.tsx:428–433</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>QA-002</td><td>Untested</td><td>BugDetail orchestrator submit path has zero test coverage</td><td>ImageUpload.test.tsx (missing)</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>CHAOS-029</td><td>Error handling</td><td>Image re-hydration 404 not checked — 0-byte files sent silently</td><td>BugDetail.tsx:99–102, FeatureRequestDetail.tsx:98–101</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>CHAOS-030</td><td>Error handling</td><td><code>onUpdate</code> inside try block — callback throw masquerades as submit failure</td><td>BugDetail.tsx:113–114, FeatureRequestDetail.tsx:108–109</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>CHAOS-032</td><td>Logic gap</td><td>Custom repo input never committed to <code>selectedRepo</code></td><td>FeatureRequestDetail.tsx:294–319</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>DEP-016</td><td>CVE</td><td>Picomatch ReDoS (HIGH) — dev-toolchain only</td><td>Frontend package-lock.json</td><td><span class="tag tag-new">NEW</span></td></tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- SECTION 14: FIXED FINDINGS -->
+<!-- ============================================================ -->
+<h2>14. Fixed Findings</h2>
+<p>None. No prior findings were resolved by this change set.</p>
+
+<!-- ============================================================ -->
+<!-- SECTION 15: RECOMMENDATIONS -->
+<!-- ============================================================ -->
+<h2>15. Recommendations</h2>
+
+<h3 style="color:var(--red);">Block Deployment</h3>
+<ul class="action-list">
+  <li class="block"><strong>CHAOS-028:</strong> Separate orchestrator submit error handling from status-update error handling. Do not report a successful orchestrator dispatch as a failure. This can cause duplicate runs.</li>
+  <li class="block"><strong>QA-002:</strong> Add tests for BugDetail orchestrator submit path before merging — this is the primary fix being delivered and it has zero test coverage.</li>
+</ul>
+
+<h3 style="color:var(--orange);">This Sprint</h3>
+<ul class="action-list">
+  <li class="sprint"><strong>CHAOS-029:</strong> Add <code>if (!res.ok)</code> check on image fetch in submit flow — prevents silent 0-byte files to orchestrator.</li>
+  <li class="sprint"><strong>CHAOS-032:</strong> Wire <code>customRepo</code> input to <code>setSelectedRepo</code> — currently the custom repo feature is broken.</li>
+  <li class="sprint"><strong>SEC-030/031:</strong> Sanitize <code>img.filename</code> and <code>img.original_name</code> before use in fetch URL and File constructor.</li>
+  <li class="sprint"><strong>SEC-032/033:</strong> Validate <code>repo</code> field format (owner/repo or URL) both client-side and in the orchestrator proxy.</li>
+  <li class="sprint"><strong>QA-001:</strong> Assert <code>repo</code> field in orchestrator submit test assertions.</li>
+  <li class="sprint"><strong>CHAOS-030:</strong> Move <code>onUpdate()</code> call outside the try/catch block.</li>
+</ul>
+
+<h3 style="color:var(--yellow);">Next Sprint</h3>
+<ul class="action-list">
+  <li class="next"><strong>SEC-001–023 (5 P1s):</strong> Implement authentication middleware — this remains the single highest-impact improvement and has been open since the first audit.</li>
+  <li class="next"><strong>PERF-030:</strong> Replace serial <code>for...of</code> image download with <code>Promise.all</code>.</li>
+  <li class="next"><strong>QA-003/004/005:</strong> Add tests for uploadKey reset, onUpdate callback verification, BugReportsPage refetch flow.</li>
+  <li class="next"><strong>CHAOS-036:</strong> Add status update to batch submit path to match single-submit behavior.</li>
+</ul>
+
+<h3 style="color:var(--gray);">Backlog</h3>
+<ul class="action-list">
+  <li class="backlog"><strong>PERF-035/036:</strong> Optimize sequential submit + optimistic UI update for single-item status changes.</li>
+  <li class="backlog"><strong>PERF-038/040:</strong> Consider ref-based ImageUpload reset; cache repos.list() in session context.</li>
+  <li class="backlog"><strong>CHAOS-031/033/035:</strong> Add user-facing error states for image fetch failures, repo list failures, broken image fallbacks.</li>
+  <li class="backlog"><strong>SEC-034/035:</strong> Validate sessionToken/tokenLabel lengths; make onUpdate optional with safe default.</li>
+  <li class="backlog"><strong>DEP-016:</strong> Run <code>npm audit fix</code> to update picomatch (dev-toolchain only).</li>
+</ul>
+
+<!-- ============================================================ -->
+<!-- SECTION 16: P3/P4 SUMMARY -->
+<!-- ============================================================ -->
+<h2>16. P3/P4 Summary</h2>
+<table>
+  <tr><th>ID</th><th>Severity</th><th>Category</th><th>Title</th><th>Status</th></tr>
+  <tr><td>SEC-034</td><td><span class="tag tag-p3">P3</span></td><td>Injection</td><td>sessionToken/tokenLabel unvalidated, no length limit</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>QA-003</td><td><span class="tag tag-p3">P3</span></td><td>Untested</td><td>uploadKey reset behavior not tested</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>QA-004</td><td><span class="tag tag-p3">P3</span></td><td>Untested</td><td>onUpdate callback not verified after FR submit</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>QA-005</td><td><span class="tag tag-p3">P3</span></td><td>Untested</td><td>BugReportsPage onUpdate/refetch flow untested</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>PERF-035</td><td><span class="tag tag-p3">P3</span></td><td>Latency</td><td>Sequential orchestrator submit + PATCH blocking UI</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>PERF-036</td><td><span class="tag tag-p3">P3</span></td><td>API efficiency</td><td>Full list refetch on single-item status update</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>CHAOS-031</td><td><span class="tag tag-p3">P3</span></td><td>Resilience</td><td>fetchImages catch swallows error — no user feedback</td><td><span class="tag tag-still">STILL OPEN</span></td></tr>
+  <tr><td>CHAOS-033</td><td><span class="tag tag-p3">P3</span></td><td>Resilience</td><td>repos.list() failure leaves FR dropdown empty</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>CHAOS-035</td><td><span class="tag tag-p3">P3</span></td><td>Resilience</td><td>No onerror on img — broken image browser default</td><td><span class="tag tag-still">STILL OPEN</span></td></tr>
+  <tr><td>CHAOS-036</td><td><span class="tag tag-p3">P3</span></td><td>Consistency</td><td>Batch submit doesn't update bug statuses</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>SEC-035</td><td><span class="tag tag-p4">P4</span></td><td>Design</td><td>onUpdate prop not optional — crash if omitted</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>PERF-038</td><td><span class="tag tag-p4">P4</span></td><td>Re-render</td><td>uploadKey forced remount on every upload</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>PERF-040</td><td><span class="tag tag-p4">P4</span></td><td>API efficiency</td><td>repos.list() fetched per component mount, no cache</td><td><span class="tag tag-new">NEW</span></td></tr>
+  <tr><td>CHAOS-034</td><td><span class="tag tag-p4">P4</span></td><td>Maintainability</td><td>onUpdate-inside-try is repeated fragile pattern</td><td><span class="tag tag-new">NEW</span></td></tr>
+</table>
+
+</div>
+</body>
+</html>

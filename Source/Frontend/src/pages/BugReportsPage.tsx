@@ -161,6 +161,7 @@ export function BugReportsPage() {
         {selectedBug && (
           <BugDetail
             bug={selectedBug}
+            onUpdate={(updated) => { setSelectedBug(updated); refetch() }}
             onClose={() => setSelectedBug(null)}
           />
         )}

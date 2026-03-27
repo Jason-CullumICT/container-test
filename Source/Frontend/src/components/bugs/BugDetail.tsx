@@ -8,8 +8,10 @@ import { bugs, images, orchestrator, repos } from '../../api/client'
 import { ImageThumbnails } from '../common/ImageThumbnails'
 import { ImageUpload } from '../common/ImageUpload'
 
+// Verifies: FR-085
 interface BugDetailProps {
   bug: BugReport
+  onUpdate: (updated: BugReport) => void
   onClose: () => void
 }
 
@@ -28,9 +30,10 @@ const STATUS_COLORS: Record<string, string> = {
   closed: 'bg-gray-100 text-gray-500',
 }
 
-export function BugDetail({ bug, onClose }: BugDetailProps) {
+export function BugDetail({ bug, onUpdate, onClose }: BugDetailProps) {
   const [attachedImages, setAttachedImages] = useState<ImageAttachment[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [uploadKey, setUploadKey] = useState(0)
   const [submittingToOrch, setSubmittingToOrch] = useState(false)
   const [selectedRepo, setSelectedRepo] = useState(bug.target_repo || "https://github.com/Jason-CullumICT/container-test")
   const [sessionToken, setSessionToken] = useState("")
@@ -72,6 +75,7 @@ export function BugDetail({ bug, onClose }: BugDetailProps) {
     if (files.length === 0) return
     try {
       await images.upload('bugs', bug.id, files)
+      setUploadKey((k) => k + 1)
       fetchImages()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to upload images')
@@ -193,7 +197,7 @@ Severity: ${bug.severity}`,
           onDelete={handleImageDelete}
         />
         <div className="mt-2">
-          <ImageUpload onFilesSelected={handleImageUpload} />
+          <ImageUpload key={uploadKey} onFilesSelected={handleImageUpload} />
         </div>
         {error && (
           <p className="text-xs text-red-600 mt-1">{error}</p>
