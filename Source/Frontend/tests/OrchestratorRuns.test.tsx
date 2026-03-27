@@ -259,7 +259,7 @@ describe('RunsTab', () => {
     })
     const riskBadges = screen.getAllByTestId('risk-badge')
     const mediumBadge = riskBadges.find((b) => b.textContent === 'medium')
-    expect(mediumBadge?.className).toContain('bg-yellow-100')
+    expect(mediumBadge?.className).toContain('bg-gray-100')
     const lowBadge = riskBadges.find((b) => b.textContent === 'low')
     expect(lowBadge?.className).toContain('bg-green-100')
     const highBadge = riskBadges.find((b) => b.textContent === 'high')
@@ -423,7 +423,7 @@ describe('RunDetailRow', () => {
     render(<RunDetailRow run={mockFailedRun} expanded={true} />)
     const verdict = screen.getByTestId('pr-verdict')
     expect(verdict.textContent).toBe('changes_requested')
-    expect(verdict.className).toContain('bg-yellow-100')
+    expect(verdict.className).toContain('bg-amber-100')
   })
 
   // Verifies: FR-092
@@ -443,11 +443,11 @@ describe('RunDetailRow', () => {
   })
 
   // Verifies: FR-092
-  it('shows merged status in purple', () => {
+  it('shows merged status in blue', () => {
     render(<RunDetailRow run={mockCompleteRun} expanded={true} />)
     const mergeStatus = screen.getByTestId('pr-merge-status')
     expect(mergeStatus.textContent).toBe('merged')
-    expect(mergeStatus.className).toContain('bg-purple-100')
+    expect(mergeStatus.className).toContain('bg-blue-100')
   })
 
   // Verifies: FR-092

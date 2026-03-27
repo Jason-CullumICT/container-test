@@ -1,0 +1,16 @@
+{
+  "run_id": "run-1774593637-33533",
+  "team": "TheFixer",
+  "status": "running",
+  "started_at": "2026-03-27T06:40:37Z",
+  "task_title": "chaos-test-status-sync",
+  "agents": {
+    "chaos-tester": {
+      "name": "Chaos Tester",
+      "model": "opus",
+      "status": "running",
+      "started_at": "2026-03-27T06:40:37Z"
+    }
+  },
+  "metrics": {"task_title": "chaos-test-status-sync", "status": "complete"}
+}

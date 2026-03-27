@@ -87,9 +87,16 @@ export function BugReportsPage() {
           task = "Fix " + bugGroup.length + " bugs:" + nl + nl + lines
         }
         await orchestrator.submitWork(task, { repo })
+        // Verifies: FR-UX-001 — update bug statuses to in_development after orchestrator submit
+        for (const b of bugGroup) {
+          try {
+            await bugs.update(b.id, { status: 'in_development' })
+          } catch { /* status update failure is non-blocking */ }
+        }
       }
 
-            setSelectedIds(new Set())
+      setSelectedIds(new Set())
+      refetch()
     } catch (err) {
       alert(err instanceof Error ? err.message : "Failed to submit bugs")
     } finally {
@@ -162,6 +169,7 @@ export function BugReportsPage() {
           <BugDetail
             bug={selectedBug}
             onClose={() => setSelectedBug(null)}
+            onUpdate={(updated) => { setSelectedBug(updated); refetch() }}
           />
         )}
 

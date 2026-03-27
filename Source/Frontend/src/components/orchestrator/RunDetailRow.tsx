@@ -21,11 +21,12 @@ const PHASE_NAMES = ['leader', 'implementation', 'qa', 'smoketest', 'inspector']
 
 const VERDICT_COLORS: Record<string, string> = {
   approved: 'bg-green-100 text-green-700',
-  changes_requested: 'bg-yellow-100 text-yellow-700',
+  changes_requested: 'bg-amber-100 text-amber-700',
 }
 
+// Verifies: FR-UX-001 — unified color system
 const MERGE_COLORS: Record<string, string> = {
-  merged: 'bg-purple-100 text-purple-700',
+  merged: 'bg-blue-100 text-blue-700',
   open: 'bg-blue-100 text-blue-700',
   closed: 'bg-gray-100 text-gray-600',
 }

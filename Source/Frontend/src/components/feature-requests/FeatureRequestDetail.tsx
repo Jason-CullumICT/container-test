@@ -1,10 +1,11 @@
 // Verifies: FR-025
 // Verifies: FR-084
 // Verifies: FR-087
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import type { FeatureRequest, ImageAttachment } from '../../../../Shared/types'
 import { VoteResults } from './VoteResults'
 import { featureRequests, images, orchestrator, repos } from '../../api/client'
+import type { OrchestratorRun } from '../orchestrator/types'
 import { ImageThumbnails } from '../common/ImageThumbnails'
 import { ImageUpload } from '../common/ImageUpload'
 
@@ -37,6 +38,9 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
   const [showCustomRepo, setShowCustomRepo] = useState(false)
   const [validatingRepo, setValidatingRepo] = useState(false)
   const [knownRepos, setKnownRepos] = useState<{ name: string; fullName: string; url: string }[]>([])
+  // Verifies: FR-UX-001 — track associated orchestrator run for status sync
+  const [linkedRun, setLinkedRun] = useState<OrchestratorRun | null>(null)
+  const runPollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // FR-084: Fetch images on mount and when FR changes
   const fetchImages = useCallback(async () => {
@@ -65,6 +69,40 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
       setKnownRepos(repoList);
     }).catch(() => {})
   }, [])
+
+  // Verifies: FR-UX-001 — poll orchestrator runs to sync status with feature request
+  useEffect(() => {
+    if (fr.status !== 'in_development' && fr.status !== 'completed') {
+      setLinkedRun(null)
+      return
+    }
+    const taskPrefix = `Implement feature: ${fr.title}`
+    const fetchLinkedRun = async () => {
+      try {
+        const result = await orchestrator.listRuns()
+        const runs = (result.data ?? []) as OrchestratorRun[]
+        const match = runs.find((r) => r.task?.startsWith(taskPrefix))
+        if (match) {
+          setLinkedRun(match)
+          // Verifies: FR-UX-001 — auto-sync: if run completed, update feature to completed
+          if (fr.status === 'in_development' && match.status === 'complete') {
+            try {
+              const updated = await featureRequests.update(fr.id, { status: 'completed' })
+              onUpdate(updated)
+            } catch { /* status update failure is non-blocking */ }
+          }
+        }
+      } catch { /* run fetch failure is non-blocking */ }
+    }
+    fetchLinkedRun()
+    // Only poll actively for in-progress items
+    if (fr.status === 'in_development') {
+      runPollRef.current = setInterval(fetchLinkedRun, 15000)
+    }
+    return () => {
+      if (runPollRef.current) clearInterval(runPollRef.current)
+    }
+  }, [fr.id, fr.status, fr.title, onUpdate])
 
   // FR-084: Handle image upload from detail view
   const handleImageUpload = async (files: File[]) => {
@@ -98,9 +136,10 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
         const blob = await res.blob()
         imageFiles.push(new File([blob], img.original_name, { type: img.mime_type }))
       }
+      // Verifies: FR-087 — submit with repo selection and images
       await orchestrator.submitWork(
         `Implement feature: ${fr.title}\n\n${fr.description}`,
-        { images: imageFiles.length > 0 ? imageFiles : undefined, claudeSessionToken: sessionToken || undefined, tokenLabel: tokenLabel || undefined }
+        { repo: selectedRepo, images: imageFiles.length > 0 ? imageFiles : undefined, claudeSessionToken: sessionToken || undefined, tokenLabel: tokenLabel || undefined }
       )
       // Update feature request status to in_development
       const updated = await featureRequests.update(fr.id, { status: "in_development" })
@@ -222,6 +261,96 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
         <div className="bg-gray-50 rounded-lg p-3 text-sm">
           <span className="font-medium text-gray-600">Approval comment: </span>
           <span className="text-gray-700">{fr.human_approval_comment}</span>
+        </div>
+      )}
+
+      {/* Verifies: FR-UX-001 — Linked orchestrator run status and traceability */}
+      {(fr.status === 'in_development' || fr.status === 'completed') && linkedRun && (
+        <div className={`rounded-lg p-4 border ${linkedRun.status === 'complete' ? 'bg-green-50 border-green-200' : linkedRun.status === 'failed' ? 'bg-red-50 border-red-200' : 'bg-blue-50 border-blue-200'}`}>
+          <h4 className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-2">
+            Orchestrator Run
+          </h4>
+          <div className="flex items-center gap-3 text-sm">
+            <span className="font-mono text-gray-700">{linkedRun.id.slice(-8)}</span>
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+              linkedRun.status === 'complete' ? 'bg-green-100 text-green-700' :
+              linkedRun.status === 'failed' ? 'bg-red-100 text-red-700' :
+              'bg-blue-100 text-blue-700'
+            }`}>
+              {linkedRun.status}
+            </span>
+            {linkedRun.team && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">{linkedRun.team}</span>
+            )}
+            {(linkedRun.status === 'planning' || linkedRun.status === 'implementing' || linkedRun.status === 'qa_running' || linkedRun.status === 'validating') && (
+              <span className="inline-block w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+            )}
+          </div>
+          {linkedRun.testResults && (
+            <div className="mt-2 flex items-center gap-4 text-xs">
+              <span className="text-gray-600">Tests: <strong>{linkedRun.testResults.total}</strong></span>
+              <span className="text-green-700">Passed: <strong>{linkedRun.testResults.passed}</strong></span>
+              {linkedRun.testResults.failed > 0 && (
+                <span className="text-red-700">Failed: <strong>{linkedRun.testResults.failed}</strong></span>
+              )}
+            </div>
+          )}
+          {linkedRun.phases && linkedRun.phases.length > 0 && (
+            <div className="mt-2 flex items-center gap-2 text-xs">
+              {linkedRun.phases.map((p) => (
+                <span key={p.phase} className={`px-1.5 py-0.5 rounded ${p.status === 'passed' ? 'bg-green-100 text-green-700' : p.status === 'failed' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-500'}`}>
+                  {p.phase}
+                </span>
+              ))}
+            </div>
+          )}
+          {linkedRun.pr && (
+            <div className="mt-2 text-sm">
+              <a
+                href={linkedRun.pr.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 font-medium"
+              >
+                PR #{linkedRun.pr.number}
+              </a>
+              {linkedRun.pr.mergeStatus && (
+                <span className="ml-2 text-xs text-gray-500">({linkedRun.pr.mergeStatus})</span>
+              )}
+              {linkedRun.pr.aiReviewVerdict && (
+                <span className={`ml-2 text-xs px-1.5 py-0.5 rounded ${linkedRun.pr.aiReviewVerdict === 'approved' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                  {linkedRun.pr.aiReviewVerdict}
+                </span>
+              )}
+            </div>
+          )}
+          {/* Verifies: FR-UX-001 — sync status action when run completes */}
+          {fr.status === 'in_development' && linkedRun?.status === 'complete' && (
+            <button
+              onClick={async () => {
+                try {
+                  const updated = await featureRequests.update(fr.id, { status: 'completed' })
+                  onUpdate(updated)
+                } catch { /* handled by parent */ }
+              }}
+              className="mt-3 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
+            >
+              Mark as Completed
+            </button>
+          )}
+          {fr.status === 'in_development' && linkedRun?.status === 'failed' && (
+            <button
+              onClick={async () => {
+                try {
+                  const updated = await featureRequests.update(fr.id, { status: 'approved' })
+                  onUpdate(updated)
+                } catch { /* handled by parent */ }
+              }}
+              className="mt-3 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700"
+            >
+              Reset to Approved (Run Failed)
+            </button>
+          )}
         </div>
       )}
 

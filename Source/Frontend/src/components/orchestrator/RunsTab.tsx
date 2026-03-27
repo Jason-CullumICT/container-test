@@ -13,15 +13,15 @@ const RUN_STATUS_COLORS: Record<string, string> = {
   complete: 'bg-green-100 text-green-700',
   failed: 'bg-red-100 text-red-700',
   implementing: 'bg-blue-100 text-blue-700',
-  planning: 'bg-purple-100 text-purple-700',
-  qa_running: 'bg-yellow-100 text-yellow-700',
-  validating: 'bg-indigo-100 text-indigo-700',
+  planning: 'bg-blue-100 text-blue-700',
+  qa_running: 'bg-amber-100 text-amber-700',
+  validating: 'bg-blue-100 text-blue-700',
 }
 
 // Verifies: FR-091
 const RISK_COLORS: Record<string, string> = {
   low: 'bg-green-100 text-green-700',
-  medium: 'bg-yellow-100 text-yellow-700',
+  medium: 'bg-gray-100 text-gray-500',
   high: 'bg-red-100 text-red-700',
 }
 
@@ -50,13 +50,16 @@ export function RunsTab() {
   const [expandedRunId, setExpandedRunId] = useState<string | null>(null)
   const [retryingId, setRetryingId] = useState<string | null>(null)
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  const [secondsAgo, setSecondsAgo] = useState(0)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const notificationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const fetchRuns = useCallback(async () => {
     try {
       const result = await orchestrator.listRuns()
       setRuns((result.data ?? []) as OrchestratorRun[])
+      setSecondsAgo(0)
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch runs')
@@ -73,6 +76,14 @@ export function RunsTab() {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
   }, [fetchRuns])
+
+  // Verifies: FR-091 — polling indicator tick every second
+  useEffect(() => {
+    tickRef.current = setInterval(() => setSecondsAgo((s) => s + 1), 1000)
+    return () => {
+      if (tickRef.current) clearInterval(tickRef.current)
+    }
+  }, [])
 
   // Cleanup notification timer
   useEffect(() => {
@@ -143,15 +154,25 @@ export function RunsTab() {
         </div>
       )}
 
+      {/* Verifies: FR-091 — polling indicator */}
+      {!loading && runs.length > 0 && (
+        <div className="flex justify-end">
+          <span className="text-xs text-gray-400">Last updated: {secondsAgo}s ago</span>
+        </div>
+      )}
+
       {loading ? (
-        <div className="flex items-center justify-center py-16" data-testid="loading-spinner">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+        <div className="flex flex-col items-center justify-center py-16" data-testid="loading-spinner">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+          <p className="mt-3 text-sm text-gray-500">Loading runs...</p>
         </div>
       ) : runs.length === 0 ? (
         <div className="text-center py-16" data-testid="empty-state">
-          <p className="text-4xl mb-3">📋</p>
-          <p className="text-lg font-medium text-gray-600">No runs found</p>
-          <p className="text-sm text-gray-400 mt-1">
+          <svg className="mx-auto h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <h3 className="mt-3 text-base font-medium text-gray-600">No runs found</h3>
+          <p className="mt-1 text-sm text-gray-400">
             Submit work via the orchestrator to see run history here
           </p>
         </div>
@@ -206,7 +227,7 @@ export function RunsTab() {
                 <span>
                   {run.team ? (
                     <span
-                      className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium"
+                      className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium"
                       data-testid="team-badge"
                     >
                       {run.team}

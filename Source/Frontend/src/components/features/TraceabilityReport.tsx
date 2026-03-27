@@ -71,7 +71,7 @@ export function TraceabilityReport({ report }: TraceabilityReportProps) {
                         entry.status === 'covered' || entry.coverage === '100%'
                           ? 'bg-green-100 text-green-700'
                           : entry.status === 'partial'
-                          ? 'bg-yellow-100 text-yellow-700'
+                          ? 'bg-amber-100 text-amber-700'
                           : 'bg-gray-100 text-gray-600'
                       }`}>
                         {entry.status ?? '-'}
