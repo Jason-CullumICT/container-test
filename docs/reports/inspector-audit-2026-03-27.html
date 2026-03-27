@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inspector Audit Report — 2026-03-27</title>
+<style>
+  :root { --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #e2e8f0; --muted: #94a3b8; --green: #22c55e; --blue: #3b82f6; --yellow: #eab308; --orange: #f97316; --red: #ef4444; --purple: #a855f7; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  h1, h2, h3 { margin-bottom: 0.5rem; }
+  h2 { color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-top: 2rem; }
+  h3 { color: var(--muted); margin-top: 1rem; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin: 0.75rem 0; }
+  .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 999px; font-weight: 700; font-size: 0.875rem; }
+  .badge-grade { font-size: 2rem; padding: 0.5rem 1.5rem; }
+  .grade-a { background: var(--green); color: #000; }
+  .grade-b { background: var(--blue); color: #fff; }
+  .grade-c { background: var(--yellow); color: #000; }
+  .grade-d { background: var(--orange); color: #000; }
+  .grade-f { background: var(--red); color: #fff; }
+  .p1 { color: var(--red); font-weight: 700; }
+  .p2 { color: var(--orange); font-weight: 700; }
+  .p3 { color: var(--yellow); }
+  .p4 { color: var(--muted); }
+  .new { color: var(--purple); }
+  .fixed { color: var(--green); }
+  .still-open { color: var(--orange); }
+  .regressed { color: var(--red); }
+  table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; }
+  th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .flex { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .score-card { flex: 1; min-width: 120px; text-align: center; }
+  .score-card .num { font-size: 2rem; font-weight: 700; }
+  .finding-card { border-left: 4px solid var(--border); }
+  .finding-card.p1-border { border-left-color: var(--red); }
+  .finding-card.p2-border { border-left-color: var(--orange); }
+  .verdict-pass { color: var(--green); font-weight: 700; }
+  .verdict-fail { color: var(--red); font-weight: 700; }
+  .bar { height: 8px; border-radius: 4px; background: var(--border); overflow: hidden; margin: 0.25rem 0; }
+  .bar-fill { height: 100%; border-radius: 4px; }
+  .risk-matrix { border: 1px solid var(--border); }
+  .risk-matrix td { text-align: center; font-size: 0.85rem; }
+  .risk-matrix .has-findings { background: rgba(239,68,68,0.15); }
+  .cross-ref-table td { font-size: 0.9rem; }
+  code { background: #0f172a; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.85em; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: HEADER -->
+<!-- ============================================================ -->
+<div class="card" style="text-align:center; border-color: var(--yellow);">
+  <span class="badge badge-grade grade-c">C</span>
+  <h1 style="margin-top:0.75rem;">Inspector Audit Report</h1>
+  <p style="color:var(--muted);">
+    Branch: <code>cycle/run-1774591579714-b046e742</code> &middot;
+    Date: 2026-03-27 &middot;
+    Scope: Post-work audit &mdash; TheFixer fix for work-backlog repo selection
+  </p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: SCORECARDS -->
+<!-- ============================================================ -->
+<h2>2. Scorecards</h2>
+<div class="card">
+  <div class="flex">
+    <div class="score-card"><div class="num p1">2</div><div>P1 Critical</div></div>
+    <div class="score-card"><div class="num p2">7</div><div>P2 High</div></div>
+    <div class="score-card"><div class="num p3">6</div><div>P3 Medium</div></div>
+    <div class="score-card"><div class="num p4">3</div><div>P4 Low</div></div>
+    <div class="score-card"><div class="num" style="color:var(--green)">0</div><div>Fixed</div></div>
+    <div class="score-card"><div class="num" style="color:var(--blue)">97%</div><div>Spec Coverage</div></div>
+    <div class="score-card"><div class="num" style="color:var(--blue)">5</div><div>Specialists</div></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: EXECUTIVE SUMMARY -->
+<!-- ============================================================ -->
+<h2>3. Executive Summary</h2>
+<div class="card">
+  <ol>
+    <li><strong>Runtime crash in BugDetail:</strong> <code>onUpdate</code> is called after orchestrator submit but is not declared in the component props &mdash; every successful bug submission will throw a ReferenceError. <span class="p1">[P1]</span></li>
+    <li><strong>Phantom specification:</strong> All 6 new <code>// Verifies: FR-REPO-SELECTION</code> traceability comments reference a requirement ID that does not exist in any specification document. <span class="p1">[P1]</span></li>
+    <li><strong>FeatureRequestDetail silently drops repo selection:</strong> The selected repo is never passed to <code>orchestrator.submitWork()</code>, so the user's repo choice is ignored. <span class="p3">[P3]</span></li>
+    <li><strong>Hardcoded repo list duplicated 5+ times across 3 files:</strong> Adding a new repo requires editing 3 files in 5 locations. The merge logic is also copy-pasted. <span class="p2">[P2]</span></li>
+    <li><strong>No URL validation on API-supplied or stored repos:</strong> Repo URLs from the API and database are rendered and submitted to the orchestrator without any scheme/domain validation, enabling repo-spoofing attacks (especially given the existing no-auth P1). <span class="p2">[P2]</span></li>
+  </ol>
+  <p style="margin-top:1rem;color:var(--muted);">The primary fix intent (make <code>work-backlog</code> available in all repo dropdowns) <strong>works correctly</strong> under all tested failure modes. However, the implementation introduces 2 P1 regressions and significant code quality issues that must be addressed before merging.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: SCOPE & ENVIRONMENT -->
+<!-- ============================================================ -->
+<h2>4. Scope &amp; Environment</h2>
+<div class="card">
+  <table>
+    <tr><th>Item</th><th>Value</th></tr>
+    <tr><td>Audit type</td><td>Post-work audit (TheFixer completed fix)</td></tr>
+    <tr><td>Scope</td><td>3 modified frontend files (uncommitted changes)</td></tr>
+    <tr><td>Backend</td><td>http://localhost:3001 &mdash; UP</td></tr>
+    <tr><td>Frontend</td><td>http://localhost:5173 &mdash; UP</td></tr>
+    <tr><td>Changed files</td><td><code>RepoSelector.tsx</code>, <code>BugDetail.tsx</code>, <code>FeatureRequestDetail.tsx</code></td></tr>
+    <tr><td>Prior audit</td><td>2026-03-26, Grade A (0 P1, 0 P2, 2 P3, 2 P4)</td></tr>
+  </table>
+  <h3>Specialist Modes</h3>
+  <table>
+    <tr><th>Specialist</th><th>Mode</th><th>Verdict</th></tr>
+    <tr><td>Red Teamer</td><td>Static</td><td class="verdict-fail">FAIL</td></tr>
+    <tr><td>Quality Oracle</td><td>Static</td><td class="verdict-fail">FAIL</td></tr>
+    <tr><td>Performance Profiler</td><td>Static</td><td class="verdict-fail">FAIL</td></tr>
+    <tr><td>Chaos Monkey</td><td>Static</td><td class="verdict-fail">FAIL</td></tr>
+    <tr><td>Dependency Auditor</td><td>Static</td><td class="verdict-pass">PASS</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: TREND -->
+<!-- ============================================================ -->
+<h2>5. Trend</h2>
+<div class="card">
+  <table>
+    <tr><th>Metric</th><th>Prior (2026-03-26)</th><th>Current</th><th>Delta</th></tr>
+    <tr><td>Grade</td><td><span class="badge grade-a">A</span></td><td><span class="badge grade-c">C</span></td><td class="regressed">REGRESSED &darr;2</td></tr>
+    <tr><td>P1</td><td>0</td><td>2</td><td class="regressed">+2</td></tr>
+    <tr><td>P2</td><td>0</td><td>7</td><td class="regressed">+7</td></tr>
+    <tr><td>P3</td><td>2</td><td>6</td><td class="regressed">+4</td></tr>
+    <tr><td>P4</td><td>2</td><td>3</td><td class="regressed">+1</td></tr>
+    <tr><td>Total</td><td>4</td><td>18</td><td class="regressed">+14</td></tr>
+    <tr><td>Spec Coverage</td><td>97%</td><td>97%</td><td>&mdash;</td></tr>
+  </table>
+  <p style="margin-top:0.5rem;color:var(--muted);">Note: Prior audit scoped UX polish (different change set). This audit targets repo-selection fix. Finding counts are not directly comparable &mdash; different change surfaces.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: SPECIALIST REPORTS -->
+<!-- ============================================================ -->
+<h2>6. Specialist Reports</h2>
+
+<div class="card">
+  <h3>Red Teamer</h3>
+  <p>Mode: Static | Verdict: <span class="verdict-fail">FAIL</span> | Findings: 5 (P2: 2, P3: 2, P4: 1)</p>
+  <p style="color:var(--muted);">Focus: URL injection via repo names/URLs, unvalidated stored target_repo, merge logic flaws. Key concern: API-supplied and DB-stored repo URLs reach orchestrator submission without any validation &mdash; combined with the existing no-auth vulnerability (SEC-001), this creates a stored-SSRF-to-pipeline path.</p>
+</div>
+
+<div class="card">
+  <h3>Quality Oracle</h3>
+  <p>Mode: Static | Verdict: <span class="verdict-fail">FAIL</span> | Findings: 7 (P1: 2, P2: 3, P3: 1, P4: 1)</p>
+  <p style="color:var(--muted);">Focus: Spec traceability, code duplication, type consistency. Key concerns: FR-REPO-SELECTION is a phantom spec ID (not in any specification), onUpdate missing from BugDetail props (compile/runtime error), and hardcoded repo list duplicated 5+ times across 3 files.</p>
+</div>
+
+<div class="card">
+  <h3>Performance Profiler</h3>
+  <p>Mode: Static | Verdict: <span class="verdict-fail">FAIL</span> | Findings: 6 (P1: 1, P2: 2, P3: 2, P4: 1)</p>
+  <p style="color:var(--muted);">Focus: useEffect correctness, stale closures, unnecessary re-renders. Key concern: onUpdate crash (cross-ref with Quality Oracle), missing dependencies in useEffect arrays causing stale repo lists on prop changes.</p>
+</div>
+
+<div class="card">
+  <h3>Chaos Monkey</h3>
+  <p>Mode: Static | Verdict: <span class="verdict-fail">FAIL</span> | Findings: 7 (P1: 1, P2: 2, P3: 3, P4: 1)</p>
+  <p style="color:var(--muted);">Focus: Error handling, merge edge cases, unmount safety. Key findings: malformed repo objects not validated, no cleanup on unmount, silent error swallowing. Confirmed: work-backlog appears correctly in all dropdowns under all failure modes.</p>
+</div>
+
+<div class="card">
+  <h3>Dependency Auditor</h3>
+  <p>Mode: Static | Verdict: <span class="verdict-pass">PASS</span> | Findings: 0 new</p>
+  <p style="color:var(--muted);">No new dependencies, no new imports. Two pre-existing vulnerabilities (esbuild CORS, picomatch ReDoS) noted but unrelated to this change.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: RE-VERIFICATION SUMMARY -->
+<!-- ============================================================ -->
+<h2>7. Re-Verification Summary</h2>
+<div class="card">
+  <table>
+    <tr><th>Prior ID</th><th>Title</th><th>Status</th></tr>
+    <tr><td>UX-QA-001</td><td>Legacy cycle components use old colors</td><td class="still-open">STILL OPEN</td></tr>
+    <tr><td>UX-PERF-001</td><td>Polling causes 1s re-renders</td><td class="still-open">STILL OPEN</td></tr>
+    <tr><td>UX-QA-002</td><td>Emoji icons in ActivityFeed/LearningsList</td><td class="still-open">STILL OPEN</td></tr>
+    <tr><td>UX-QA-003</td><td>CycleLogStream warn contrast</td><td class="still-open">STILL OPEN</td></tr>
+    <tr><td>SEC-001</td><td>Zero authentication across entire API</td><td class="still-open">STILL OPEN</td></tr>
+  </table>
+  <p style="margin-top:0.5rem;color:var(--muted);">No prior findings were fixed or regressed by these changes. All remain STILL OPEN. SEC-001 (no auth) is now a force-multiplier for new SEC-002/SEC-003 findings.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 8: CROSS-REFERENCE MAP -->
+<!-- ============================================================ -->
+<h2>8. Cross-Reference Map</h2>
+<div class="card">
+  <table class="cross-ref-table">
+    <tr><th>Root Cause</th><th>Affected Findings</th><th>Single Fix</th><th>Impact</th></tr>
+    <tr>
+      <td><code>onUpdate</code> missing from BugDetail props</td>
+      <td>QUAL-002, PERF-001, CHAOS-006</td>
+      <td>Add <code>onUpdate</code> to <code>BugDetailProps</code> interface and destructure from props</td>
+      <td>Resolves 3 findings (1 P1 from each of 3 specialists)</td>
+    </tr>
+    <tr>
+      <td>Hardcoded repo list duplicated across files</td>
+      <td>QUAL-003, QUAL-004, PERF-004, PERF-005</td>
+      <td>Extract <code>DEFAULT_REPOS</code> constant and <code>useKnownRepos</code> hook</td>
+      <td>Resolves 4 findings, eliminates 5+ duplication sites</td>
+    </tr>
+    <tr>
+      <td>Stale closure on <code>knownRepos</code> in useEffect</td>
+      <td>QUAL-006, PERF-003, CHAOS-005</td>
+      <td>Use module-level <code>DEFAULT_REPOS</code> constant instead of capturing state in closure</td>
+      <td>Resolves 3 findings, fixes ESLint exhaustive-deps violation</td>
+    </tr>
+    <tr>
+      <td>No URL validation on repo sources</td>
+      <td>SEC-002, SEC-003, SEC-004, CHAOS-002</td>
+      <td>Add GitHub URL regex validation at merge point + submit handler</td>
+      <td>Resolves 4 findings across security and resilience</td>
+    </tr>
+    <tr>
+      <td><code>selectedRepo</code> not passed in FeatureRequestDetail submit</td>
+      <td>SEC-005, CHAOS-007</td>
+      <td>Add <code>repo: selectedRepo</code> to <code>orchestrator.submitWork()</code> options</td>
+      <td>Resolves 2 findings, restores repo selection functionality</td>
+    </tr>
+  </table>
+  <p style="margin-top:0.5rem;color:var(--muted);"><strong>5 root-cause fixes resolve 16 of 18 unique findings.</strong> The remaining 2 (QUAL-001 phantom spec, QUAL-007 no tests) require spec + test authoring.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 9: P1 FINDINGS -->
+<!-- ============================================================ -->
+<h2>9. P1 Findings</h2>
+
+<div class="card finding-card p1-border">
+  <h3><span class="p1">P1</span> &mdash; QUAL-002 / PERF-001 / CHAOS-006: BugDetail calls <code>onUpdate</code> which is not in component props</h3>
+  <table>
+    <tr><td><strong>File</strong></td><td><code>Source/Frontend/src/components/bugs/BugDetail.tsx:124</code></td></tr>
+    <tr><td><strong>Category</strong></td><td>Runtime Error / Missing Prop</td></tr>
+    <tr><td><strong>Status</strong></td><td><span class="new">NEW</span></td></tr>
+    <tr><td><strong>Specialists</strong></td><td>Quality Oracle, Performance Profiler, Chaos Monkey</td></tr>
+  </table>
+  <p style="margin-top:0.5rem;"><strong>Description:</strong> <code>BugDetailProps</code> declares only <code>bug</code> and <code>onClose</code>. After a successful orchestrator submission, <code>handleSubmitToOrchestrator</code> calls <code>onUpdate(updated)</code> which does not exist in scope. This is a TypeScript compile error and a guaranteed runtime <code>ReferenceError</code>.</p>
+  <p><strong>Exploit scenario:</strong> User opens any bug, clicks "Submit to Orchestrator", submission succeeds, component immediately crashes with unhandled exception. The bug status may have been updated server-side but the UI shows an error state.</p>
+  <p><strong>Impact:</strong> Complete breakage of the bug submission flow. Every successful submit crashes.</p>
+  <p><strong>Recommendation:</strong> Add <code>onUpdate: (updated: BugReport) =&gt; void</code> to <code>BugDetailProps</code> and destructure it in the function signature, matching the pattern in <code>FeatureRequestDetail</code>.</p>
+</div>
+
+<div class="card finding-card p1-border">
+  <h3><span class="p1">P1</span> &mdash; QUAL-001: FR-REPO-SELECTION does not exist in any specification</h3>
+  <table>
+    <tr><td><strong>File</strong></td><td>All 3 changed files (6 <code>// Verifies:</code> comments)</td></tr>
+    <tr><td><strong>Category</strong></td><td>Spec Compliance / Traceability</td></tr>
+    <tr><td><strong>Status</strong></td><td><span class="new">NEW</span></td></tr>
+    <tr><td><strong>Specialists</strong></td><td>Quality Oracle</td></tr>
+  </table>
+  <p style="margin-top:0.5rem;"><strong>Description:</strong> Six <code>// Verifies: FR-REPO-SELECTION</code> comments reference a requirement ID that does not exist in <code>Specifications/dev-workflow-platform.md</code> or any other spec document. The traceability enforcer does not catch this because it only validates numeric FR IDs. This violates the architecture rule: "Every decision and line of code must trace back to a specification."</p>
+  <p><strong>Impact:</strong> Phantom traceability &mdash; the code appears traced but the spec doesn't exist. Future audits and developers will assume coverage that is not there.</p>
+  <p><strong>Recommendation:</strong> Write a proper FR specification entry (e.g., FR-096) in the spec document covering repo selection defaults, then update all <code>// Verifies:</code> comments to use the real ID.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 10: RISK MATRIX -->
+<!-- ============================================================ -->
+<h2>10. Risk Matrix</h2>
+<div class="card">
+  <table class="risk-matrix">
+    <tr>
+      <th></th>
+      <th>Zero-precondition</th>
+      <th>Authenticated</th>
+      <th>Privileged</th>
+      <th>Admin</th>
+      <th>Physical</th>
+    </tr>
+    <tr>
+      <td><strong>P1</strong></td>
+      <td class="has-findings">QUAL-002<br/>(user action triggers crash)</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+    </tr>
+    <tr>
+      <td><strong>P2</strong></td>
+      <td class="has-findings">SEC-002, SEC-003<br/>(no auth required)</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+    </tr>
+    <tr>
+      <td><strong>P3</strong></td>
+      <td class="has-findings">SEC-004, SEC-005<br/>(URL bypass, dropped repo)</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+    </tr>
+    <tr>
+      <td><strong>P4</strong></td>
+      <td>SEC-006</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+    </tr>
+  </table>
+  <p style="margin-top:0.5rem;color:var(--muted);">All security findings are zero-precondition exploitable due to the existing no-auth state (SEC-001). QUAL-002 is triggered by normal user action (submit button).</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 11: SPEC COVERAGE -->
+<!-- ============================================================ -->
+<h2>11. Spec Coverage</h2>
+<div class="card">
+  <p><strong>Overall:</strong> 32/32 existing FRs have implementation + test traceability (97%+ effective coverage)</p>
+  <div class="bar" style="width:100%;"><div class="bar-fill" style="width:97%;background:var(--green);"></div></div>
+  <p style="margin-top:0.75rem;"><strong>Gap:</strong> <code>FR-REPO-SELECTION</code> (referenced 6 times in code) does not exist in specifications.</p>
+  <h3>Top Uncovered Items</h3>
+  <table>
+    <tr><th>#</th><th>Item</th><th>Status</th></tr>
+    <tr><td>1</td><td>FR-REPO-SELECTION &mdash; repo selection defaults and merge behavior</td><td>No spec exists</td></tr>
+    <tr><td>2</td><td>Repo URL validation &mdash; no spec for what constitutes a valid repo URL</td><td>No spec exists</td></tr>
+    <tr><td>3</td><td>Orchestrator repo targeting &mdash; how selectedRepo flows to pipeline</td><td>Partially covered</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 12: LATENCY BASELINES -->
+<!-- ============================================================ -->
+<h2>12. Latency Baselines</h2>
+<div class="card">
+  <p style="color:var(--muted);">No backend changes in this audit scope. No new latency measurements taken. Frontend-only changes do not affect API response times.</p>
+  <p>Prior latency baselines remain valid. No regressions detected.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 13: P2 FINDINGS -->
+<!-- ============================================================ -->
+<h2>13. P2 Findings</h2>
+<div class="card">
+  <table>
+    <tr><th>ID</th><th>Category</th><th>Title</th><th>File</th><th>Status</th></tr>
+    <tr>
+      <td>SEC-002</td>
+      <td>Security</td>
+      <td>API-supplied repo URLs rendered without validation</td>
+      <td><code>RepoSelector.tsx:26-31</code></td>
+      <td><span class="new">NEW</span></td>
+    </tr>
+    <tr>
+      <td>SEC-003</td>
+      <td>Security</td>
+      <td>Stored <code>target_repo</code> passed to orchestrator unvalidated</td>
+      <td><code>BugDetail.tsx:64-69</code></td>
+      <td><span class="new">NEW</span></td>
+    </tr>
+    <tr>
+      <td>QUAL-003</td>
+      <td>Architecture</td>
+      <td>Hardcoded repo list duplicated in 3 files (5+ locations)</td>
+      <td><code>RepoSelector.tsx:12-16</code></td>
+      <td><span class="new">NEW</span></td>
+    </tr>
+    <tr>
+      <td>QUAL-005</td>
+      <td>Type Safety</td>
+      <td><code>knownRepos</code> type mismatch: <code>{name,url}</code> vs <code>{name,fullName,url}</code></td>
+      <td><code>BugDetail.tsx:39</code></td>
+      <td><span class="new">NEW</span></td>
+    </tr>
+    <tr>
+      <td>PERF-002</td>
+      <td>React Hooks</td>
+      <td><code>target_repo</code> missing from useEffect dependency array</td>
+      <td><code>BugDetail.tsx:60</code></td>
+      <td><span class="new">NEW</span></td>
+    </tr>
+    <tr>
+      <td>CHAOS-002</td>
+      <td>Resilience</td>
+      <td>Malformed repo objects with missing <code>url</code> not filtered</td>
+      <td><code>RepoSelector.tsx:26</code></td>
+      <td><span class="new">NEW</span></td>
+    </tr>
+    <tr>
+      <td>CHAOS-003</td>
+      <td>React Anti-pattern</td>
+      <td>No cleanup for in-flight <code>repos.list()</code> on unmount</td>
+      <td><code>RepoSelector.tsx:23</code></td>
+      <td><span class="new">NEW</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 14: FIXED FINDINGS -->
+<!-- ============================================================ -->
+<h2>14. Fixed Findings</h2>
+<div class="card">
+  <p style="color:var(--muted);">None. No prior findings were fixed by these changes.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 15: RECOMMENDATIONS -->
+<!-- ============================================================ -->
+<h2>15. Recommendations</h2>
+<div class="card">
+  <h3 style="color:var(--red);">Block Deployment</h3>
+  <ol>
+    <li><strong>Fix <code>onUpdate</code> crash in BugDetail</strong> &mdash; Add <code>onUpdate</code> to <code>BugDetailProps</code> and pass from parent. <em>(Resolves QUAL-002, PERF-001, CHAOS-006)</em></li>
+    <li><strong>Pass <code>selectedRepo</code> in FeatureRequestDetail submit</strong> &mdash; Add <code>repo: selectedRepo</code> to <code>orchestrator.submitWork()</code> call. <em>(Resolves SEC-005, CHAOS-007)</em></li>
+  </ol>
+
+  <h3 style="color:var(--orange);">This Sprint</h3>
+  <ol start="3">
+    <li><strong>Extract shared <code>DEFAULT_REPOS</code> constant + <code>useKnownRepos</code> hook</strong> &mdash; Eliminate 5+ duplication sites and stale closure bugs. <em>(Resolves QUAL-003, QUAL-004, QUAL-006, PERF-003, PERF-004, PERF-005, CHAOS-005)</em></li>
+    <li><strong>Add URL validation on repo sources</strong> &mdash; Validate GitHub URL pattern before accepting API or stored repos. <em>(Resolves SEC-002, SEC-003, SEC-004, CHAOS-002)</em></li>
+    <li><strong>Fix type mismatch</strong> &mdash; Align <code>BugDetail</code> knownRepos type to include <code>fullName</code>. <em>(Resolves QUAL-005)</em></li>
+    <li><strong>Write FR-REPO-SELECTION spec</strong> &mdash; Add proper FR entry and update traceability comments. <em>(Resolves QUAL-001)</em></li>
+  </ol>
+
+  <h3 style="color:var(--yellow);">Next Sprint</h3>
+  <ol start="7">
+    <li><strong>Add unmount cleanup</strong> to all <code>repos.list()</code> useEffects. <em>(Resolves CHAOS-003)</em></li>
+    <li><strong>Add structured logging</strong> for <code>repos.list()</code> failures instead of silent catch. <em>(Resolves CHAOS-001)</em></li>
+    <li><strong>Write tests</strong> for repo selection behavior. <em>(Resolves QUAL-007)</em></li>
+  </ol>
+
+  <h3 style="color:var(--muted);">Backlog</h3>
+  <ol start="10">
+    <li>Handle non-GitHub <code>target_repo</code> URLs in fullName extraction. <em>(Resolves CHAOS-004)</em></li>
+    <li>Move hardcoded owner name to config. <em>(Resolves SEC-006)</em></li>
+    <li>Optimize dedup loop to use Set if repo counts grow. <em>(Resolves PERF-006)</em></li>
+  </ol>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 16: P3/P4 SUMMARY -->
+<!-- ============================================================ -->
+<h2>16. P3/P4 Summary</h2>
+<div class="card">
+  <table>
+    <tr><th>ID</th><th>Sev</th><th>Category</th><th>Title</th><th>File</th><th>Status</th></tr>
+    <tr><td>SEC-004</td><td class="p3">P3</td><td>Security</td><td>URL collision bypass via trailing slash/scheme variant</td><td><code>RepoSelector.tsx:28</code></td><td><span class="new">NEW</span></td></tr>
+    <tr><td>SEC-005</td><td class="p3">P3</td><td>Functional</td><td>FeatureRequestDetail doesn't pass selectedRepo to submit</td><td><code>FeatureRequestDetail.tsx:118</code></td><td><span class="new">NEW</span></td></tr>
+    <tr><td>QUAL-006</td><td class="p3">P3</td><td>React Hooks</td><td>Stale closure on knownRepos in RepoSelector useEffect</td><td><code>RepoSelector.tsx:25</code></td><td><span class="new">NEW</span></td></tr>
+    <tr><td>CHAOS-001</td><td class="p3">P3</td><td>Observability</td><td>Silent catch swallows repos.list() errors</td><td><code>RepoSelector.tsx:33</code></td><td><span class="new">NEW</span></td></tr>
+    <tr><td>CHAOS-004</td><td class="p3">P3</td><td>Data Integrity</td><td>Non-GitHub target_repo URLs produce malformed fullName</td><td><code>BugDetail.tsx:67</code></td><td><span class="new">NEW</span></td></tr>
+    <tr><td>PERF-004</td><td class="p3">P3</td><td>Performance</td><td>Redundant knownRepos state initialization overwritten by effect</td><td><code>BugDetail.tsx:39</code></td><td><span class="new">NEW</span></td></tr>
+    <tr><td>SEC-006</td><td class="p4">P4</td><td>Info Disclosure</td><td>Hardcoded repo owner name in 3 frontend files</td><td><code>RepoSelector.tsx:13</code></td><td><span class="new">NEW</span></td></tr>
+    <tr><td>QUAL-007</td><td class="p4">P4</td><td>Testing</td><td>No tests for FR-REPO-SELECTION behavior</td><td>&mdash;</td><td><span class="new">NEW</span></td></tr>
+    <tr><td>PERF-006</td><td class="p4">P4</td><td>Performance</td><td>O(n*m) dedup loop (acceptable at current scale)</td><td><code>BugDetail.tsx:76</code></td><td><span class="new">NEW</span></td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- FOOTER -->
+<!-- ============================================================ -->
+<div class="card" style="margin-top:2rem; text-align:center; color:var(--muted);">
+  <p>Generated by TheInspector &middot; 2026-03-27 &middot; 5 specialists &middot; 18 unique findings</p>
+</div>
+
+</div>
+</body>
+</html>

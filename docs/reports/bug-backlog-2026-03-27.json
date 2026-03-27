@@ -1,0 +1,266 @@
+{
+  "audit_date": "2026-03-27",
+  "branch": "cycle/run-1774591579714-b046e742",
+  "scope": "Post-work audit — TheFixer fix for work-backlog repo selection",
+  "grade": "C",
+  "summary": {
+    "p1": 2,
+    "p2": 7,
+    "p3": 6,
+    "p4": 3,
+    "total": 18
+  },
+  "findings": [
+    {
+      "id": "QUAL-002",
+      "severity": "P1",
+      "category": "runtime-error",
+      "title": "BugDetail calls onUpdate which is not in component props — guaranteed crash on submit",
+      "description": "BugDetailProps declares only bug and onClose. handleSubmitToOrchestrator calls onUpdate(updated) on line 124 which does not exist in scope. This is a TypeScript compile error and a guaranteed runtime ReferenceError on every successful orchestrator submission.",
+      "files": ["Source/Frontend/src/components/bugs/BugDetail.tsx"],
+      "line": 124,
+      "status": "NEW",
+      "recommendation": "Add onUpdate: (updated: BugReport) => void to BugDetailProps and destructure from props.",
+      "priority": "block-deployment",
+      "cross_ref": ["PERF-001", "CHAOS-006"]
+    },
+    {
+      "id": "QUAL-001",
+      "severity": "P1",
+      "category": "spec-compliance",
+      "title": "FR-REPO-SELECTION does not exist in any specification",
+      "description": "Six // Verifies: FR-REPO-SELECTION comments reference a requirement ID that does not exist in Specifications/dev-workflow-platform.md or any other spec document. Violates architecture rule: specs are source of truth.",
+      "files": [
+        "Source/Frontend/src/components/common/RepoSelector.tsx",
+        "Source/Frontend/src/components/bugs/BugDetail.tsx",
+        "Source/Frontend/src/components/feature-requests/FeatureRequestDetail.tsx"
+      ],
+      "status": "NEW",
+      "recommendation": "Write proper FR spec entry (e.g. FR-096) and update all traceability comments.",
+      "priority": "this-sprint"
+    },
+    {
+      "id": "SEC-002",
+      "severity": "P2",
+      "category": "security",
+      "title": "API-supplied repo URLs rendered and submitted without validation",
+      "description": "Repo names/URLs from repos.list() API are merged into dropdown and passed to orchestrator without any URL scheme or domain validation. A compromised or poisoned API response could inject attacker-controlled repo URLs.",
+      "files": [
+        "Source/Frontend/src/components/common/RepoSelector.tsx",
+        "Source/Frontend/src/components/bugs/BugDetail.tsx",
+        "Source/Frontend/src/components/feature-requests/FeatureRequestDetail.tsx"
+      ],
+      "status": "NEW",
+      "recommendation": "Validate repo URLs match ^https://github.com/ pattern before accepting.",
+      "priority": "this-sprint"
+    },
+    {
+      "id": "SEC-003",
+      "severity": "P2",
+      "category": "security",
+      "title": "Stored target_repo value passed to orchestrator unvalidated",
+      "description": "bug.target_repo and fr.target_repo from DB records are used as dropdown values and submitted to orchestrator without URL validation. Combined with no-auth (SEC-001), any attacker can set target_repo to a malicious URL.",
+      "files": [
+        "Source/Frontend/src/components/bugs/BugDetail.tsx",
+        "Source/Frontend/src/components/feature-requests/FeatureRequestDetail.tsx"
+      ],
+      "status": "NEW",
+      "recommendation": "Validate target_repo matches expected GitHub URL pattern before rendering and submitting.",
+      "priority": "this-sprint"
+    },
+    {
+      "id": "QUAL-003",
+      "severity": "P2",
+      "category": "architecture",
+      "title": "Hardcoded repo list duplicated in 3 files (5+ locations)",
+      "description": "The identical list of three repos (container-test, claude-ai-OS, work-backlog) with full URLs is copy-pasted at least 5 times across 3 files. Adding or renaming a repo requires editing all locations.",
+      "files": [
+        "Source/Frontend/src/components/common/RepoSelector.tsx",
+        "Source/Frontend/src/components/bugs/BugDetail.tsx",
+        "Source/Frontend/src/components/feature-requests/FeatureRequestDetail.tsx"
+      ],
+      "status": "NEW",
+      "recommendation": "Extract to shared DEFAULT_REPOS constant and useKnownRepos hook.",
+      "priority": "this-sprint",
+      "cross_ref": ["QUAL-004", "PERF-004", "PERF-005"]
+    },
+    {
+      "id": "QUAL-005",
+      "severity": "P2",
+      "category": "type-safety",
+      "title": "knownRepos type mismatch: {name,url} in BugDetail vs {name,fullName,url} elsewhere",
+      "description": "BugDetail declares knownRepos as {name: string; url: string}[] but constructs objects with fullName inside its useEffect. The type annotation is incorrect and misleading.",
+      "files": ["Source/Frontend/src/components/bugs/BugDetail.tsx"],
+      "line": 39,
+      "status": "NEW",
+      "recommendation": "Align BugDetail knownRepos type to include fullName, ideally via shared Repo type.",
+      "priority": "this-sprint"
+    },
+    {
+      "id": "PERF-002",
+      "severity": "P2",
+      "category": "react-hooks",
+      "title": "bug.target_repo and fr.target_repo missing from useEffect dependency arrays",
+      "description": "Both BugDetail and FeatureRequestDetail read target_repo inside useEffect with empty [] deps. If parent re-renders with different bug/fr, the effect won't re-run and the dropdown shows stale repo list.",
+      "files": [
+        "Source/Frontend/src/components/bugs/BugDetail.tsx",
+        "Source/Frontend/src/components/feature-requests/FeatureRequestDetail.tsx"
+      ],
+      "status": "NEW",
+      "recommendation": "Add bug.target_repo / fr.target_repo to the dependency array.",
+      "priority": "this-sprint"
+    },
+    {
+      "id": "CHAOS-002",
+      "severity": "P2",
+      "category": "resilience",
+      "title": "Malformed repo objects with missing url field not filtered",
+      "description": "No runtime guard filters out repo entries with missing or non-string url before they enter knownRepos. undefined url becomes key={undefined} in React, causing key collision warnings.",
+      "files": [
+        "Source/Frontend/src/components/common/RepoSelector.tsx",
+        "Source/Frontend/src/components/bugs/BugDetail.tsx",
+        "Source/Frontend/src/components/feature-requests/FeatureRequestDetail.tsx"
+      ],
+      "status": "NEW",
+      "recommendation": "Filter API response: r.data.filter(repo => typeof repo.url === 'string' && repo.url.length > 0).",
+      "priority": "this-sprint"
+    },
+    {
+      "id": "CHAOS-003",
+      "severity": "P2",
+      "category": "react-anti-pattern",
+      "title": "No cleanup for in-flight repos.list() fetch on component unmount",
+      "description": "All three useEffect calls launch async repos.list() with no AbortController or isMounted flag. If component unmounts before resolve, setKnownRepos is called on unmounted component.",
+      "files": [
+        "Source/Frontend/src/components/common/RepoSelector.tsx",
+        "Source/Frontend/src/components/bugs/BugDetail.tsx",
+        "Source/Frontend/src/components/feature-requests/FeatureRequestDetail.tsx"
+      ],
+      "status": "NEW",
+      "recommendation": "Return cleanup function with active flag from useEffect.",
+      "priority": "next-sprint"
+    },
+    {
+      "id": "SEC-004",
+      "severity": "P3",
+      "category": "security",
+      "title": "URL collision bypass via trailing slash or scheme variant",
+      "description": "Merge deduplication uses strict string equality on URLs. A trailing slash or http:// variant bypasses the check, allowing duplicate entries with spoofed display names.",
+      "files": ["Source/Frontend/src/components/common/RepoSelector.tsx"],
+      "line": 28,
+      "status": "NEW",
+      "recommendation": "Normalize URLs before comparison (strip trailing slash, enforce https).",
+      "priority": "this-sprint"
+    },
+    {
+      "id": "SEC-005",
+      "severity": "P3",
+      "category": "functional-bug",
+      "title": "FeatureRequestDetail doesn't pass selectedRepo to orchestrator.submitWork",
+      "description": "handleSubmitToOrchestrator in FeatureRequestDetail passes images, claudeSessionToken, and tokenLabel but omits repo: selectedRepo. User's repo selection is silently ignored. BugDetail correctly passes it.",
+      "files": ["Source/Frontend/src/components/feature-requests/FeatureRequestDetail.tsx"],
+      "line": 118,
+      "status": "NEW",
+      "recommendation": "Add repo: selectedRepo to orchestrator.submitWork() options.",
+      "priority": "block-deployment",
+      "cross_ref": ["CHAOS-007"]
+    },
+    {
+      "id": "QUAL-006",
+      "severity": "P3",
+      "category": "react-hooks",
+      "title": "Stale closure on knownRepos in RepoSelector useEffect",
+      "description": "useEffect captures knownRepos from closure at mount time. ESLint exhaustive-deps rule would flag this. Currently safe but latent bug if initialization logic changes.",
+      "files": ["Source/Frontend/src/components/common/RepoSelector.tsx"],
+      "line": 25,
+      "status": "NEW",
+      "recommendation": "Use module-level DEFAULT_REPOS constant instead of capturing state.",
+      "priority": "this-sprint",
+      "cross_ref": ["PERF-003", "CHAOS-005"]
+    },
+    {
+      "id": "CHAOS-001",
+      "severity": "P3",
+      "category": "observability",
+      "title": "Silent catch swallows repos.list() API errors",
+      "description": ".catch(() => {}) silently suppresses all errors from repos.list(). No log, no metric, no user feedback. Violates observability architecture rule.",
+      "files": [
+        "Source/Frontend/src/components/common/RepoSelector.tsx",
+        "Source/Frontend/src/components/bugs/BugDetail.tsx",
+        "Source/Frontend/src/components/feature-requests/FeatureRequestDetail.tsx"
+      ],
+      "status": "NEW",
+      "recommendation": "Log error at WARN level via project logger.",
+      "priority": "next-sprint"
+    },
+    {
+      "id": "CHAOS-004",
+      "severity": "P3",
+      "category": "data-integrity",
+      "title": "Non-GitHub target_repo URLs produce malformed fullName entries",
+      "description": "fullName is computed as saved.replace('https://github.com/', ''). Non-GitHub URLs leave fullName as the entire URL string.",
+      "files": [
+        "Source/Frontend/src/components/bugs/BugDetail.tsx",
+        "Source/Frontend/src/components/feature-requests/FeatureRequestDetail.tsx"
+      ],
+      "status": "NEW",
+      "recommendation": "Parse URL properly or validate GitHub pattern before extracting fullName.",
+      "priority": "backlog"
+    },
+    {
+      "id": "PERF-004",
+      "severity": "P3",
+      "category": "performance",
+      "title": "Redundant knownRepos state initialization overwritten by effect",
+      "description": "BugDetail and FeatureRequestDetail initialize knownRepos with 3 objects, then the useEffect re-declares the same defaults inline and overwrites the state unconditionally. Wasted allocation.",
+      "files": [
+        "Source/Frontend/src/components/bugs/BugDetail.tsx",
+        "Source/Frontend/src/components/feature-requests/FeatureRequestDetail.tsx"
+      ],
+      "status": "NEW",
+      "recommendation": "Use shared DEFAULT_REPOS constant in both locations.",
+      "priority": "this-sprint"
+    },
+    {
+      "id": "SEC-006",
+      "severity": "P4",
+      "category": "info-disclosure",
+      "title": "Hardcoded repo owner name (Jason-CullumICT) in 3 frontend files",
+      "description": "GitHub org/user name hardcoded in frontend bundle shipped to all users. Enables targeted recon.",
+      "files": [
+        "Source/Frontend/src/components/common/RepoSelector.tsx",
+        "Source/Frontend/src/components/bugs/BugDetail.tsx",
+        "Source/Frontend/src/components/feature-requests/FeatureRequestDetail.tsx"
+      ],
+      "status": "NEW",
+      "recommendation": "Move to config constant or environment variable.",
+      "priority": "backlog"
+    },
+    {
+      "id": "QUAL-007",
+      "severity": "P4",
+      "category": "testing",
+      "title": "No tests for FR-REPO-SELECTION behavior",
+      "description": "Zero tests cover: work-backlog in dropdown, merge behavior, saved target_repo preservation. Traceability enforcer doesn't catch this because FR-REPO-SELECTION is not a numeric ID.",
+      "files": [],
+      "status": "NEW",
+      "recommendation": "Write tests after spec is created (QUAL-001).",
+      "priority": "next-sprint"
+    },
+    {
+      "id": "PERF-006",
+      "severity": "P4",
+      "category": "performance",
+      "title": "O(n*m) deduplication loop acceptable at current scale",
+      "description": "Nested .some() loop for deduplication. With 3 defaults and small API result, performance is negligible.",
+      "files": [
+        "Source/Frontend/src/components/bugs/BugDetail.tsx",
+        "Source/Frontend/src/components/feature-requests/FeatureRequestDetail.tsx",
+        "Source/Frontend/src/components/common/RepoSelector.tsx"
+      ],
+      "status": "NEW",
+      "recommendation": "Replace with Set-based dedup if repo counts grow.",
+      "priority": "backlog"
+    }
+  ]
+}

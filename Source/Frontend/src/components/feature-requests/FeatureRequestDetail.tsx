@@ -36,7 +36,12 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
   const [customRepo, setCustomRepo] = useState("")
   const [showCustomRepo, setShowCustomRepo] = useState(false)
   const [validatingRepo, setValidatingRepo] = useState(false)
-  const [knownRepos, setKnownRepos] = useState<{ name: string; fullName: string; url: string }[]>([])
+  // Verifies: FR-REPO-SELECTION — hardcoded defaults include all portal-managed repos
+  const [knownRepos, setKnownRepos] = useState<{ name: string; fullName: string; url: string }[]>([
+    { name: "container-test", fullName: "Jason-CullumICT/container-test", url: "https://github.com/Jason-CullumICT/container-test" },
+    { name: "claude-ai-OS", fullName: "Jason-CullumICT/claude-ai-OS", url: "https://github.com/Jason-CullumICT/claude-ai-OS" },
+    { name: "work-backlog", fullName: "Jason-CullumICT/work-backlog", url: "https://github.com/Jason-CullumICT/work-backlog" },
+  ])
 
   // FR-084: Fetch images on mount and when FR changes
   const fetchImages = useCallback(async () => {
@@ -52,6 +57,7 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
     fetchImages()
   }, [fetchImages])
 
+  // Verifies: FR-REPO-SELECTION — merge API repos with hardcoded defaults so portal repos are always available
   useEffect(() => {
     repos.list().then((r) => {
       let repoList = r.data;
@@ -61,6 +67,17 @@ export function FeatureRequestDetail({ fr, onUpdate, onClose }: FeatureRequestDe
         const name = saved.split("/").pop() || saved;
         const fullName = saved.replace("https://github.com/", "");
         repoList = [{ name, fullName, url: saved }, ...repoList];
+      }
+      // Merge with hardcoded defaults so portal-managed repos are never lost
+      const defaults = [
+        { name: "container-test", fullName: "Jason-CullumICT/container-test", url: "https://github.com/Jason-CullumICT/container-test" },
+        { name: "claude-ai-OS", fullName: "Jason-CullumICT/claude-ai-OS", url: "https://github.com/Jason-CullumICT/claude-ai-OS" },
+        { name: "work-backlog", fullName: "Jason-CullumICT/work-backlog", url: "https://github.com/Jason-CullumICT/work-backlog" },
+      ];
+      for (const d of defaults) {
+        if (!repoList.some((repo) => repo.url === d.url)) {
+          repoList.push(d);
+        }
       }
       setKnownRepos(repoList);
     }).catch(() => {})

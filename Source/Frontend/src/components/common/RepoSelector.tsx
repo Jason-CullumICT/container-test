@@ -8,17 +8,29 @@ interface RepoSelectorProps {
 }
 
 export function RepoSelector({ value, onChange, disabled }: RepoSelectorProps) {
+  // Verifies: FR-REPO-SELECTION — hardcoded defaults include all portal-managed repos
   const [knownRepos, setKnownRepos] = useState<{ name: string; fullName: string; url: string }[]>([
     { name: "container-test", fullName: "Jason-CullumICT/container-test", url: "https://github.com/Jason-CullumICT/container-test" },
     { name: "claude-ai-OS", fullName: "Jason-CullumICT/claude-ai-OS", url: "https://github.com/Jason-CullumICT/claude-ai-OS" },
+    { name: "work-backlog", fullName: "Jason-CullumICT/work-backlog", url: "https://github.com/Jason-CullumICT/work-backlog" },
   ])
   const [showCustom, setShowCustom] = useState(false)
   const [customRepo, setCustomRepo] = useState("")
   const [validating, setValidating] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Verifies: FR-REPO-SELECTION — merge API repos with hardcoded defaults so portal repos are always available
   useEffect(() => {
-    repos.list().then((r) => setKnownRepos(r.data)).catch(() => {})
+    repos.list().then((r) => {
+      const defaults = knownRepos;
+      const merged = [...r.data];
+      for (const d of defaults) {
+        if (!merged.some((repo) => repo.url === d.url)) {
+          merged.push(d);
+        }
+      }
+      setKnownRepos(merged);
+    }).catch(() => {})
   }, [])
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
